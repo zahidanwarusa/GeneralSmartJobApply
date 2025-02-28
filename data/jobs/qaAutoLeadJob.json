@@ -1,0 +1,8 @@
+{
+    "job_id": "custom123",
+    "title": "QA Automation Lead",
+    "company": "Example Company",
+    "location": "Remote, US",
+    "skills": ["QA Automation", "Data Strategy", "Automation Framework", "AI/ML", "Design First Approach", "Reference Architectures", "Git", "CI/CD Pipelines", "Kafka", "Snowflake", "Apache Airflow", "ETL Tools"],
+    "description": "10+ Years of experience in Technology - Data Strategy and Automation Framework Background in AI/ML 5+ Years of experience in design first approach with reference architectures 5+ years experience in Automation suite of products including Git, CI/CD Pipelines and Kafka 5+ years of experience in Snowflake, Apache Airflow and ETL tools (cumulative across these products)"
+  }
