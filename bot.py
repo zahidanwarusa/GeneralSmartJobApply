@@ -25,7 +25,8 @@ from config import (
     MAX_RETRIES, 
     JOB_TITLES,
     DICE_SEARCH_URL,
-    JOBS_DIR
+    JOBS_DIR,
+    RESUME_DIR
 )
 from resume_handler import ResumeHandler
 from gemini_service import GeminiService
@@ -329,7 +330,20 @@ class DiceBot:
             
             cover_letter_path = None
             if cover_letter:
-                cover_letter_path = JOBS_DIR / f"{job_details['job_id']}_cover_letter.txt"
+                # Create a professional filename for the cover letter
+                # Get the base resume filename (without path or extension)
+                resume_filename = os.path.basename(resume_path)
+                base_name = os.path.splitext(resume_filename)[0]
+                
+                # Replace "Resume" with "Cover_Letter" in the filename
+                cover_letter_base = base_name.replace("Resume", "Cover_Letter")
+                
+                # Ensure the filename is unique
+                cover_letter_filename = self._ensure_unique_filename(cover_letter_base, ".txt")
+                
+                # Save to RESUME_DIR to keep documents together
+                cover_letter_path = RESUME_DIR / cover_letter_filename
+                
                 with open(cover_letter_path, 'w') as f:
                     f.write(cover_letter)
                 self.logger.info(f"Cover letter saved to {cover_letter_path}")
@@ -532,6 +546,24 @@ class DiceBot:
                 
                 if success:
                     self.logger.info("Application submitted successfully")
+                    
+                    # Add applied date to job details
+                    job_file = JOBS_DIR / f"{job_details['job_id']}.json"
+                    if job_file.exists():
+                        try:
+                            with open(job_file, 'r') as f:
+                                job_data = json.load(f)
+                            
+                            job_data['applied_date'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            job_data['resume_file'] = os.path.basename(resume_path)
+                            if cover_letter_path:
+                                job_data['cover_letter_file'] = os.path.basename(cover_letter_path)
+                            
+                            with open(job_file, 'w') as f:
+                                json.dump(job_data, f, indent=2)
+                        except Exception as e:
+                            self.logger.warning(f"Error updating job details with application info: {str(e)}")
+                    
                     return True
                 else:
                     self.logger.warning("No success banner found")
@@ -543,6 +575,18 @@ class DiceBot:
         except Exception as e:
             self.logger.error(f"Error submitting application: {str(e)}")
             return False
+
+    def _ensure_unique_filename(self, base_filename: str, extension: str) -> str:
+        """Ensure filename is unique by adding a counter if needed"""
+        filename = f"{base_filename}{extension}"
+        counter = 1
+        
+        while (RESUME_DIR / filename).exists():
+            # Add version number for better tracking
+            filename = f"{base_filename}_v{counter}{extension}"
+            counter += 1
+            
+        return filename
 
     def click_with_retry(self, element, retries=3) -> bool:
         """Click element with retries"""
