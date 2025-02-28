@@ -1,0 +1,52 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Logs
+logs/
+*.log
+
+# Debug files
+debug/
+
+# Temporary files
+data/temp/
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Microsoft Office temporary files
+~$*
+
+# Credentials (make sure not to commit any API keys)
+.env
+credentials.json
+
+# Chrome driver logs
+chromedriver.log
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Keep job sample files but not all job data
+data/jobs/*
+!data/jobs/qaAutoLeadJob.json
+
+# Keep only sample resume files
+data/resumes/*
+!data/resumes/QA_Automation_Lead_Example_Company_Zahid_Anwar_Resume.docx
+!data/resumes/QA_Automation_Lead_Example_Company_Zahid_Anwar_Resume.json
