@@ -5,7 +5,7 @@ import random
 import logging
 import hashlib
 from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, List
 from urllib.parse import quote
 from datetime import datetime
 
@@ -26,20 +26,26 @@ from config import (
     JOB_TITLES,
     DICE_SEARCH_URL,
     JOBS_DIR,
-    RESUME_DIR
+    RESUME_DIR,
+    DATA_DIR
 )
 from resume_handler import ResumeHandler
 from gemini_service import GeminiService
+from application_tracker import ApplicationTracker
 
 class DiceBot:
-    """Automated job application bot for Dice.com"""
+    """Automated job application bot for Dice.com with enhanced workflow and tracking"""
     
     def __init__(self):
         self.setup_logging()
         self.resume_handler = ResumeHandler()
         self.gemini = GeminiService()
+        self.tracker = ApplicationTracker(DATA_DIR)
         self.driver = None
         self.wait = None
+        self.jobs_processed = 0
+        self.jobs_applied = 0
+        self.jobs_skipped = 0
         
     def setup_logging(self):
         """Configure logging"""
@@ -71,8 +77,8 @@ class DiceBot:
             options = Options()
             
             # Set profile paths
-            user_data_dir = 'C:\\Users\\ABC\\AppData\\Local\\Google\\Chrome\\User Data'
-            profile_directory = 'Profile 1'
+            user_data_dir = CHROME_PROFILE['user_data_dir']
+            profile_directory = CHROME_PROFILE['profile_directory']
             
             # Basic Chrome options
             options.add_argument(f'--user-data-dir={user_data_dir}')
@@ -110,7 +116,7 @@ class DiceBot:
             
             # Initialize ChromeDriver service
             service = Service(
-                executable_path=r"webdriver\\chromedriver.exe",
+                executable_path=CHROMEDRIVER_PATH,
                 log_path="chromedriver.log"
             )
             
@@ -159,6 +165,54 @@ class DiceBot:
         """Add random delay between actions"""
         min_delay, max_delay = DELAYS.get(delay_type, (2, 5))
         time.sleep(random.uniform(min_delay, max_delay))
+
+    def get_job_id_from_card(self, card) -> Optional[str]:
+        """Extract job ID from card without opening job details"""
+        try:
+            # Try to get a unique identifier from the card itself
+            title_link = card.find_element(
+                By.CSS_SELECTOR,
+                "[data-cy='card-title-link']"
+            )
+            job_url = title_link.get_attribute('href')
+            
+            # Extract job ID from URL or generate a hash from the URL
+            if '/jobs/' in job_url:
+                job_id = job_url.split('/jobs/')[1].split('/')[0]
+            else:
+                # Create a hash if we can't extract a nice ID
+                job_id = hashlib.md5(job_url.encode()).hexdigest()
+            
+            return job_id
+            
+        except Exception as e:
+            self.logger.warning(f"Could not extract job ID from card: {str(e)}")
+            return None
+
+    def check_easy_apply_available(self, card) -> bool:
+        """Check if Easy Apply is available for this job"""
+        try:
+            # Look for Easy Apply indicators in the card
+            easy_apply_indicators = [
+                "[data-cy='easyApplyBtn']",  # Main Easy Apply button
+                ".easy-apply-button",        # Alternative Easy Apply class
+                ".easy-apply",               # Another alternative class
+                "apply-button-wc"            # The web component tag
+            ]
+            
+            for indicator in easy_apply_indicators:
+                try:
+                    if card.find_elements(By.CSS_SELECTOR, indicator) or (
+                       indicator == "apply-button-wc" and card.find_elements(By.TAG_NAME, indicator)):
+                        return True
+                except:
+                    continue
+            
+            return False
+            
+        except Exception as e:
+            self.logger.warning(f"Error checking Easy Apply availability: {str(e)}")
+            return False
 
     def extract_job_details(self, card) -> Optional[Tuple[Dict, str]]:
         """Extract job details from card and detailed view"""
@@ -240,6 +294,7 @@ class DiceBot:
     def is_already_applied(self, card) -> bool:
         """Check if already applied to job"""
         try:
+            # First check if we can find applied status in the UI
             applied_indicators = [
                 ".ribbon-status-applied",
                 ".search-status-ribbon-mobile.ribbon-status-applied",
@@ -250,10 +305,16 @@ class DiceBot:
             for indicator in applied_indicators:
                 if card.find_elements(By.CSS_SELECTOR, indicator):
                     return True
+            
+            # If no visual indicator, check our tracking system
+            job_id = self.get_job_id_from_card(card)
+            if job_id and self.tracker.is_job_applied(job_id):
+                return True
+                
             return False
             
         except Exception as e:
-            self.logger.error(f"Error checking applied status: {str(e)}")
+            self.logger.warning(f"Error checking applied status: {str(e)}")
             return False
 
     def wait_for_element_with_retry(self, by, selector, timeout=15, retries=2):
@@ -319,6 +380,12 @@ class DiceBot:
             resume_path = self.resume_handler.generate_resume(job_details)
             if not resume_path:
                 self.logger.error("Failed to generate resume")
+                # Record failed application in tracker
+                self.tracker.add_application(
+                    job_details, 
+                    'failed',
+                    notes="Failed to generate resume"
+                )
                 return False
                 
             self.logger.info("Generating cover letter")
@@ -354,6 +421,14 @@ class DiceBot:
             # Click Easy Apply
             if not self.click_easy_apply():
                 self.logger.error("Failed to click Easy Apply button")
+                # Record failed application in tracker
+                self.tracker.add_application(
+                    job_details, 
+                    'failed',
+                    resume_path,
+                    cover_letter_path,
+                    notes="Failed to click Easy Apply button"
+                )
                 return False
                 
             self.random_delay('between_actions')
@@ -369,6 +444,14 @@ class DiceBot:
             
             if not application_container:
                 self.logger.error("Application form not found")
+                # Record failed application in tracker
+                self.tracker.add_application(
+                    job_details, 
+                    'failed',
+                    resume_path,
+                    cover_letter_path,
+                    notes="Application form not found"
+                )
                 return False
                 
             # Check if existing resume is already selected or need to upload new one
@@ -405,6 +488,14 @@ class DiceBot:
                             file_inputs[0].send_keys(str(resume_path))
                         else:
                             self.logger.error("No file input found for resume")
+                            # Record failed application in tracker
+                            self.tracker.add_application(
+                                job_details, 
+                                'failed',
+                                resume_path,
+                                cover_letter_path,
+                                notes="No file input found for resume"
+                            )
                             return False
                 else:
                     self.logger.warning("Resume container not found, looking for file input")
@@ -414,6 +505,14 @@ class DiceBot:
                         file_inputs[0].send_keys(str(resume_path))
                     else:
                         self.logger.error("No file input found for resume")
+                        # Record failed application in tracker
+                        self.tracker.add_application(
+                            job_details, 
+                            'failed',
+                            resume_path,
+                            cover_letter_path,
+                            notes="No file input found for resume"
+                        )
                         return False
             except Exception as e:
                 self.logger.error(f"Error handling resume upload: {str(e)}")
@@ -564,16 +663,47 @@ class DiceBot:
                         except Exception as e:
                             self.logger.warning(f"Error updating job details with application info: {str(e)}")
                     
+                    # Record successful application in tracker
+                    self.tracker.add_application(
+                        job_details, 
+                        'success',
+                        resume_path,
+                        cover_letter_path
+                    )
+                    
+                    self.jobs_applied += 1
                     return True
                 else:
                     self.logger.warning("No success banner found")
+                    # Record failed application in tracker
+                    self.tracker.add_application(
+                        job_details, 
+                        'failed',
+                        resume_path,
+                        cover_letter_path,
+                        notes="No success banner found"
+                    )
                     return False
             except Exception as e:
                 self.logger.warning(f"Error verifying application success: {str(e)}")
+                # Record failed application in tracker
+                self.tracker.add_application(
+                    job_details, 
+                    'failed',
+                    resume_path,
+                    cover_letter_path,
+                    notes=f"Error verifying application success: {str(e)}"
+                )
                 return False
             
         except Exception as e:
             self.logger.error(f"Error submitting application: {str(e)}")
+            # Record failed application in tracker
+            self.tracker.add_application(
+                job_details, 
+                'failed',
+                notes=f"Error submitting application: {str(e)}"
+            )
             return False
 
     def _ensure_unique_filename(self, base_filename: str, extension: str) -> str:
@@ -612,8 +742,9 @@ class DiceBot:
                         return False
         return False
 
-    def process_search_results(self):
-        """Process all jobs on current page"""
+    def process_search_results(self) -> int:
+        """Process all jobs on current page, returns number of new jobs found"""
+        new_jobs_found = 0
         try:
             # Find all job cards
             job_cards = self.wait.until(
@@ -625,38 +756,79 @@ class DiceBot:
             self.logger.info(f"Found {len(job_cards)} job cards")
             
             for card in job_cards:
-                if not self.is_already_applied(card):
-                    # Extract job details and keep window open
-                    result = self.extract_job_details(card)
-                    if not result:
-                        continue
-                        
-                    job_details, original_window = result
-                    
-                    # Submit application while on the detail page
-                    application_result = self.submit_application(job_details)
-                    
-                    if application_result:
-                        self.logger.info(
-                            f"Successfully applied to {job_details['title']}"
-                        )
-                    else:
-                        self.logger.warning(
-                            f"Failed to apply to {job_details['title']}"
-                        )
-                    
-                    # Now close the detail window and return to search results
-                    self.logger.info("Closing job detail window")
-                    if len(self.driver.window_handles) > 1:
-                        self.driver.close()
-                        self.driver.switch_to.window(original_window)
-                        
-                    self.random_delay('between_applications')
-                else:
+                self.jobs_processed += 1
+                self.tracker.increment_jobs_found()
+                new_jobs_found += 1
+                
+                # Optimized flow: First check if already applied
+                if self.is_already_applied(card):
                     self.logger.info("Skipping already applied job")
+                    self.jobs_skipped += 1
+                    continue
+                
+                # Then check if Easy Apply is available
+                if not self.check_easy_apply_available(card):
+                    self.logger.info("Skipping job without Easy Apply")
                     
+                    # Try to get basic job info to record the skip
+                    try:
+                        job_id = self.get_job_id_from_card(card)
+                        title = card.find_element(By.CSS_SELECTOR, "[data-cy='card-title-link']").text
+                        company = card.find_element(By.CSS_SELECTOR, "[data-cy='search-result-company-name']").text
+                        location = card.find_element(By.CSS_SELECTOR, "[data-cy='search-result-location']").text
+                        
+                        job_info = {
+                            'job_id': job_id,
+                            'title': title,
+                            'company': company,
+                            'location': location
+                        }
+                        
+                        # Record skipped application in tracker
+                        self.tracker.add_application(
+                            job_info, 
+                            'skipped',
+                            notes="No Easy Apply available"
+                        )
+                    except Exception as e:
+                        self.logger.warning(f"Error recording skipped job: {str(e)}")
+                    
+                    self.jobs_skipped += 1
+                    continue
+                
+                # Now we only process jobs that are not applied and have Easy Apply
+                # Extract job details and keep window open
+                result = self.extract_job_details(card)
+                if not result:
+                    continue
+                    
+                job_details, original_window = result
+                
+                # Submit application while on the detail page
+                application_result = self.submit_application(job_details)
+                
+                if application_result:
+                    self.logger.info(
+                        f"Successfully applied to {job_details['title']}"
+                    )
+                else:
+                    self.logger.warning(
+                        f"Failed to apply to {job_details['title']}"
+                    )
+                
+                # Now close the detail window and return to search results
+                self.logger.info("Closing job detail window")
+                if len(self.driver.window_handles) > 1:
+                    self.driver.close()
+                    self.driver.switch_to.window(original_window)
+                    
+                self.random_delay('between_applications')
+            
+            return new_jobs_found
+                
         except Exception as e:
             self.logger.error(f"Error processing search results: {str(e)}")
+            return new_jobs_found
 
     def next_page_exists(self) -> bool:
         """Check if next page exists"""
@@ -702,6 +874,36 @@ class DiceBot:
             self.logger.error(f"Error searching jobs: {str(e)}")
             return False
 
+    def generate_summary_report(self):
+        """Generate and print summary of the session"""
+        report = self.tracker.generate_report()
+        
+        # Add session-specific stats
+        session_report = [
+            "",
+            "Current Session Stats:",
+            f"- Jobs processed: {self.jobs_processed}",
+            f"- Jobs applied: {self.jobs_applied}",
+            f"- Jobs skipped: {self.jobs_skipped}",
+            f"- Success rate: {(self.jobs_applied / max(1, self.jobs_processed)) * 100:.1f}%",
+            ""
+        ]
+        
+        full_report = report + "\n" + "\n".join(session_report)
+        
+        # Print to console
+        print("\n" + full_report)
+        
+        # Save to file
+        report_dir = Path('reports')
+        report_dir.mkdir(exist_ok=True)
+        
+        report_path = report_dir / f'application_report_{datetime.now():%Y%m%d_%H%M%S}.txt'
+        with open(report_path, 'w') as f:
+            f.write(full_report)
+            
+        return report_path
+
     def run(self):
         """Main execution flow"""
         try:
@@ -718,9 +920,14 @@ class DiceBot:
                     continue
                     
                 page = 1
+                total_new_jobs = 0
+                
                 while True:
                     self.logger.info(f"Processing page {page}")
-                    self.process_search_results()
+                    new_jobs = self.process_search_results()
+                    total_new_jobs += new_jobs
+                    
+                    self.logger.info(f"Found {new_jobs} new jobs on page {page}")
                     
                     if not self.next_page_exists():
                         break
@@ -730,8 +937,13 @@ class DiceBot:
                         
                     page += 1
                     self.random_delay('between_pages')
-                    
+                
+                self.logger.info(f"Total new jobs found for '{title}': {total_new_jobs}")
                 self.random_delay('between_actions')
+                
+            # Generate summary report
+            report_path = self.generate_summary_report()
+            self.logger.info(f"Session report saved to: {report_path}")
                 
         except Exception as e:
             self.logger.error(f"Error in main execution: {str(e)}")
@@ -740,7 +952,3 @@ class DiceBot:
             if self.driver:
                 self.driver.quit()
                 self.logger.info("Browser closed")
-
-if __name__ == "__main__":
-    bot = DiceBot()
-    bot.run()

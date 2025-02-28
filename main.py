@@ -1,13 +1,16 @@
 import argparse
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Optional
+from datetime import datetime
 
 from bot import DiceBot
 from resume_handler import ResumeHandler
 from gemini_service import GeminiService
-from config import JOBS_DIR, RESUME_DIR
+from application_tracker import ApplicationTracker
+from config import JOBS_DIR, RESUME_DIR, DATA_DIR
 
 def setup_logging():
     """Configure logging"""
@@ -55,8 +58,21 @@ def generate_cover_letter(job_description_file: str, resume_path: str) -> Option
         cover_letter = gemini.generate_cover_letter(job_details, resume_path)
         
         if cover_letter:
-            # Save cover letter
-            cover_letter_path = Path(job_description_file).parent / "cover_letter.txt"
+            # Create a professional filename for the cover letter
+            # Get the base resume filename (without path or extension)
+            resume_filename = os.path.basename(resume_path)
+            base_name = os.path.splitext(resume_filename)[0]
+            
+            # Replace "Resume" with "Cover_Letter" in the filename
+            cover_letter_base = base_name.replace("Resume", "Cover_Letter")
+            cover_letter_path = RESUME_DIR / f"{cover_letter_base}.txt"
+            
+            # Check for existing file
+            counter = 1
+            while cover_letter_path.exists():
+                cover_letter_path = RESUME_DIR / f"{cover_letter_base}_v{counter}.txt"
+                counter += 1
+                
             with open(cover_letter_path, 'w') as f:
                 f.write(cover_letter)
                 
@@ -73,48 +89,85 @@ def generate_cover_letter(job_description_file: str, resume_path: str) -> Option
 def list_applications():
     """List all tracked job applications"""
     try:
-        applications = []
+        tracker = ApplicationTracker(DATA_DIR)
         
-        # Get all job files
-        for job_file in JOBS_DIR.glob("*.json"):
-            with open(job_file, 'r') as f:
-                job_data = json.load(f)
+        # Get statistics
+        stats = tracker.get_application_stats()
+        applications = tracker.get_recent_applications(limit=50)
+        
+        # Print statistics
+        print("\n=======================================")
+        print("SmartApplyPro Application Statistics")
+        print("=======================================")
+        print(f"Total jobs found: {stats.get('total_jobs_found', 0)}")
+        print(f"Total applications: {stats.get('total_applications', 0)}")
+        print(f"Successful applications: {stats.get('successful_applications', 0)}")
+        print(f"Failed applications: {stats.get('failed_applications', 0)}")
+        print(f"Skipped applications: {stats.get('skipped_applications', 0)}")
+        
+        # Get today's stats
+        today = datetime.now().strftime("%Y-%m-%d")
+        today_stats = stats.get('daily_stats', {}).get(today, {})
+        
+        print("\nToday's Activity:")
+        print(f"Jobs found: {today_stats.get('jobs_found', 0)}")
+        print(f"Applications: {today_stats.get('applications', 0)}")
+        print(f"Successful: {today_stats.get('successful', 0)}")
+        print(f"Failed: {today_stats.get('failed', 0)}")
+        print(f"Skipped: {today_stats.get('skipped', 0)}")
+        
+        # Print recent applications
+        if applications:
+            print("\nRecent Applications:")
+            print("-" * 100)
+            print(f"{'Date':<20} {'Status':<10} {'Title':<30} {'Company':<30} {'Resume':<20}")
+            print("-" * 100)
+            
+            for app in applications:
+                applied_date = app.get('applied_date', 'Unknown')
+                status = app.get('status', 'Unknown')
+                title = app.get('title', 'Unknown')[:30]
+                company = app.get('company', 'Unknown')[:30]
+                resume = app.get('resume_file', 'N/A')[:20]
                 
-            # Check for resume and cover letter
-            resume_path = RESUME_DIR / f"{job_data['job_id']}_resume.docx"
-            cover_letter_path = JOBS_DIR / f"{job_data['job_id']}_cover_letter.txt"
+                print(f"{applied_date:<20} {status:<10} {title:<30} {company:<30} {resume:<20}")
             
-            applications.append({
-                'title': job_data['title'],
-                'company': job_data['company'],
-                'applied_date': job_data.get('applied_date', 'Unknown'),
-                'has_resume': resume_path.exists(),
-                'has_cover_letter': cover_letter_path.exists()
-            })
-            
-        # Print applications
-        print("\nJob Applications:")
-        print("-" * 80)
-        for app in applications:
-            print(f"\nTitle: {app['title']}")
-            print(f"Company: {app['company']}")
-            print(f"Applied: {app['applied_date']}")
-            print(f"Resume: {'Yes' if app['has_resume'] else 'No'}")
-            print(f"Cover Letter: {'Yes' if app['has_cover_letter'] else 'No'}")
-            print("-" * 80)
+            print("-" * 100)
+        else:
+            print("\nNo applications found.")
             
     except Exception as e:
         print(f"\nError listing applications: {str(e)}")
 
+def generate_report():
+    """Generate comprehensive application report"""
+    try:
+        tracker = ApplicationTracker(DATA_DIR)
+        report_path = Path('reports') / f'application_report_{datetime.now():%Y%m%d_%H%M%S}.txt'
+        
+        # Create reports directory if needed
+        report_path.parent.mkdir(exist_ok=True)
+        
+        # Generate the report
+        report_text = tracker.generate_report(str(report_path))
+        
+        print(f"\nReport generated successfully: {report_path}")
+        print("\nReport summary:")
+        print("-" * 50)
+        print(report_text)
+        
+    except Exception as e:
+        print(f"\nError generating report: {str(e)}")
+
 def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(
-        description="Job Application Automation System"
+        description="SmartApplyPro - AI-Powered Job Application Automation System"
     )
     
     parser.add_argument(
         '--mode',
-        choices=['auto', 'resume', 'cover', 'list'],
+        choices=['auto', 'resume', 'cover', 'list', 'report'],
         default='auto',
         help='Operation mode'
     )
@@ -151,6 +204,9 @@ def main():
         
     elif args.mode == 'list':
         list_applications()
+        
+    elif args.mode == 'report':
+        generate_report()
 
 if __name__ == "__main__":
     main()
