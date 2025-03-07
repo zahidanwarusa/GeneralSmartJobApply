@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 import os
+import sys
 from pathlib import Path
 from typing import Optional
 from datetime import datetime
@@ -10,17 +11,32 @@ from bot import DiceBot
 from resume_handler import ResumeHandler
 from gemini_service import GeminiService
 from application_tracker import ApplicationTracker
-from config import JOBS_DIR, RESUME_DIR, DATA_DIR
+from config import JOBS_DIR, RESUME_DIR, DATA_DIR, DEBUG_MODE
 
 def setup_logging():
     """Configure logging"""
+    log_dir = Path('logs')
+    log_dir.mkdir(exist_ok=True)
+    
     logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s'
+        level=logging.INFO if not DEBUG_MODE else logging.DEBUG,
+        format='%(asctime)s - %(levelname)s - %(name)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_dir / f'smartapplypro_{datetime.now():%Y%m%d_%H%M%S}.log'),
+            logging.StreamHandler(sys.stdout)
+        ]
     )
+    
+    # Set specific loggers to WARNING to reduce noise
+    logging.getLogger('urllib3').setLevel(logging.WARNING)
+    logging.getLogger('selenium').setLevel(logging.WARNING)
 
 def run_auto_apply():
     """Run automated job application bot"""
+    print("\nStarting SmartApplyPro automated job applications...")
+    print("Press Ctrl+C at any time to stop the process.\n")
+    
+    # Create bot and run
     bot = DiceBot()
     bot.run()
 
@@ -59,11 +75,8 @@ def generate_cover_letter(job_description_file: str, resume_path: str) -> Option
         
         if cover_letter:
             # Create a professional filename for the cover letter
-            # Get the base resume filename (without path or extension)
             resume_filename = os.path.basename(resume_path)
             base_name = os.path.splitext(resume_filename)[0]
-            
-            # Replace "Resume" with "Cover_Letter" in the filename
             cover_letter_base = base_name.replace("Resume", "Cover_Letter")
             cover_letter_path = RESUME_DIR / f"{cover_letter_base}.txt"
             
@@ -91,6 +104,11 @@ def list_applications():
     try:
         tracker = ApplicationTracker(DATA_DIR)
         
+        # Clean duplicates first
+        duplicates = tracker.clean_duplicates()
+        if duplicates > 0:
+            print(f"\nCleaned {duplicates} duplicate application entries.")
+        
         # Get statistics
         stats = tracker.get_application_stats()
         applications = tracker.get_recent_applications(limit=50)
@@ -104,6 +122,13 @@ def list_applications():
         print(f"Successful applications: {stats.get('successful_applications', 0)}")
         print(f"Failed applications: {stats.get('failed_applications', 0)}")
         print(f"Skipped applications: {stats.get('skipped_applications', 0)}")
+        
+        # Success rate
+        total_apps = stats.get('total_applications', 0)
+        success_apps = stats.get('successful_applications', 0)
+        if total_apps > 0:
+            success_rate = (success_apps / total_apps) * 100
+            print(f"Success rate: {success_rate:.1f}%")
         
         # Get today's stats
         today = datetime.now().strftime("%Y-%m-%d")
@@ -120,7 +145,7 @@ def list_applications():
         if applications:
             print("\nRecent Applications:")
             print("-" * 100)
-            print(f"{'Date':<20} {'Status':<10} {'Title':<30} {'Company':<30} {'Resume':<20}")
+            print(f"{'Date':<20} {'Status':<10} {'Title':<30} {'Company':<30}")
             print("-" * 100)
             
             for app in applications:
@@ -128,9 +153,8 @@ def list_applications():
                 status = app.get('status', 'Unknown')
                 title = app.get('title', 'Unknown')[:30]
                 company = app.get('company', 'Unknown')[:30]
-                resume = app.get('resume_file', 'N/A')[:20]
                 
-                print(f"{applied_date:<20} {status:<10} {title:<30} {company:<30} {resume:<20}")
+                print(f"{applied_date:<20} {status:<10} {title:<30} {company:<30}")
             
             print("-" * 100)
         else:
@@ -152,12 +176,73 @@ def generate_report():
         report_text = tracker.generate_report(str(report_path))
         
         print(f"\nReport generated successfully: {report_path}")
-        print("\nReport summary:")
+        print("\nReport preview:")
         print("-" * 50)
-        print(report_text)
+        
+        # Print preview (first 20 lines)
+        preview_lines = report_text.split('\n')[:20]
+        print('\n'.join(preview_lines))
+        if len(preview_lines) < len(report_text.split('\n')):
+            print("...")
+        
+        print(f"\nFull report available at: {report_path}")
         
     except Exception as e:
         print(f"\nError generating report: {str(e)}")
+
+def debug_mode():
+    """Run system in debug mode with extended diagnostics"""
+    try:
+        print("\n*** DEBUG MODE ACTIVATED ***")
+        print("This mode will provide detailed diagnostics and verbose logging.")
+        
+        # Create debug directory
+        debug_dir = Path('debug')
+        debug_dir.mkdir(exist_ok=True)
+        
+        # Initialize application tracker
+        tracker = ApplicationTracker(DATA_DIR)
+        
+        # Check for applied jobs
+        job_count = len(tracker.applied_job_ids)
+        print(f"\nFound {job_count} previously applied jobs in tracker.")
+        
+        # Test Gemini API
+        print("\nTesting Gemini API connection...")
+        gemini = GeminiService()
+        test_result = gemini.test_connection()
+        if test_result:
+            print("✓ Gemini API connection successful.")
+        else:
+            print("✗ Gemini API connection failed. Check your API key.")
+        
+        # Initialize bot for diagnostic checks only
+        print("\nInitializing browser for diagnostics...")
+        bot = DiceBot()
+        if bot.setup_driver():
+            print("✓ Browser initialization successful.")
+            
+            # Test a search query
+            print("\nTesting search functionality...")
+            if bot.search_jobs("SDET"):
+                print("✓ Search functionality working.")
+                
+                # Analyze page structure
+                print("\nAnalyzing Dice.com page structure...")
+                bot.analyze_page_structure()
+                print("✓ Page structure analysis completed. Check debug directory for details.")
+                
+                # Clean up
+                bot.driver.quit()
+            else:
+                print("✗ Search functionality failed.")
+        else:
+            print("✗ Browser initialization failed.")
+        
+        print("\nDebug diagnostics completed. Check the logs directory for detailed information.")
+        
+    except Exception as e:
+        print(f"\nError in debug mode: {str(e)}")
 
 def main():
     """Main entry point"""
@@ -167,7 +252,7 @@ def main():
     
     parser.add_argument(
         '--mode',
-        choices=['auto', 'resume', 'cover', 'list', 'report'],
+        choices=['auto', 'resume', 'cover', 'list', 'report', 'debug'],
         default='auto',
         help='Operation mode'
     )
@@ -182,12 +267,22 @@ def main():
         help='Resume file for cover letter generation'
     )
     
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='Enable verbose debug output'
+    )
+    
     args = parser.parse_args()
+    
+    # Set up logging with debug if requested
+    global DEBUG_MODE
+    if args.debug:
+        DEBUG_MODE = True
     
     setup_logging()
     
     if args.mode == 'auto':
-        print("\nStarting automated job applications...")
         run_auto_apply()
         
     elif args.mode == 'resume':
@@ -207,6 +302,9 @@ def main():
         
     elif args.mode == 'report':
         generate_report()
+        
+    elif args.mode == 'debug':
+        debug_mode()
 
 if __name__ == "__main__":
     main()
