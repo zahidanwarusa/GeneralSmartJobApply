@@ -183,45 +183,44 @@ class DiceBot:
         time.sleep(random.uniform(min_delay, max_delay))
 
     def get_job_id_from_card(self, card) -> Optional[str]:
-        """Extract job ID from card without opening job details"""
+        """Extract job ID from card with updated selectors for new UI"""
         try:
-            # Try to get a unique identifier from the card
-            job_url = None
-            
-            # First try to get the link directly
-            try:
-                title_link = card.find_element(By.CSS_SELECTOR, "[data-cy='card-title-link']")
-                job_url = title_link.get_attribute('href')
-            except NoSuchElementException:
-                # Try alternative selectors
-                for selector in [".card-title-link", "a.job-title", "h2 a", "h3 a"]:
-                    try:
-                        title_link = card.find_element(By.CSS_SELECTOR, selector)
-                        job_url = title_link.get_attribute('href')
-                        if job_url:
-                            break
-                    except:
-                        continue
-            
-            # Extract job ID from URL or generate a hash
-            if job_url:
-                if '/jobs/' in job_url:
-                    job_id = job_url.split('/jobs/')[1].split('/')[0]
-                else:
-                    job_id = hashlib.md5(job_url.encode()).hexdigest()
-                
+            # Method 1: Get the data-id attribute directly from the card (new UI)
+            job_id = card.get_attribute("data-id")
+            if job_id:
                 return job_id
-            else:
-                # Create a hash from the card text as fallback
-                card_text = card.text
-                return hashlib.md5(card_text.encode()).hexdigest()
+                
+            # Method 2: Extract from the job link (fallback)
+            try:
+                job_link = card.find_element(By.CSS_SELECTOR, "a[data-testid='job-search-job-detail-link']")
+                job_url = job_link.get_attribute("href")
+                
+                if '/job-detail/' in job_url:
+                    job_id = job_url.split('/job-detail/')[1]
+                    return job_id
+            except NoSuchElementException:
+                pass
+                
+            # Method 3: Old UI selectors (fallback)
+            try:
+                title_link = card.find_element(By.CSS_SELECTOR, "[data-cy='card-title-link'], a.job-title, h2 a, h3 a")
+                job_url = title_link.get_attribute('href')
+                if job_url and '/jobs/' in job_url:
+                    job_id = job_url.split('/jobs/')[1].split('/')[0]
+                    return job_id
+            except NoSuchElementException:
+                pass
+            
+            # Method 4: Create a hash from the card text as fallback
+            card_text = card.text
+            return hashlib.md5(card_text.encode()).hexdigest()
             
         except Exception as e:
             self.logger.warning(f"Could not extract job ID from card: {str(e)}")
             return None
 
     def check_easy_apply_available(self, card) -> bool:
-        """Improved check if Easy Apply is available with proper delay and retries"""
+        """Check if Easy Apply is available with improved detection for new UI"""
         max_retries = MAX_RETRIES.get('status_check', 3)
         
         for attempt in range(max_retries):
@@ -230,48 +229,53 @@ class DiceBot:
                 
                 # First delay to allow the page to fully update
                 self.random_delay('status_check')
+                time.sleep(2) 
                 
-                # Method 1: Check for apply-button-wc web component (shadow DOM)
-                apply_buttons = card.find_elements(By.TAG_NAME, "apply-button-wc")
-                if apply_buttons:
-                    for apply_button in apply_buttons:
-                        # Check if it has an apply button in shadow DOM
-                        has_apply = self.driver.execute_script("""
-                            const applyButton = arguments[0];
-                            if (!applyButton.shadowRoot) return false;
-                            const button = applyButton.shadowRoot.querySelector('button');
-                            return button && !button.disabled;
-                        """, apply_button)
-                        
-                        if has_apply:
-                            self.logger.info("Found Easy Apply in shadow DOM")
-                            return True
+                # Method 1: Check for "Easy Apply" text in buttons (new UI)
+                try:
+                    # Look for Easy Apply text with lightning bolt icon
+                    easy_apply_elements = card.find_elements(
+                        By.XPATH, 
+                        ".//span[contains(text(), 'Easy Apply')]"
+                    )
+                    if easy_apply_elements and any(elem.is_displayed() for elem in easy_apply_elements):
+                        self.logger.info("Found Easy Apply text")
+                        return True
+                    
+                    # Look for the lightning bolt icon that indicates Easy Apply
+                    lightning_icons = card.find_elements(
+                        By.XPATH,
+                        ".//svg[contains(@viewBox, '0 0 512 512')]//path[contains(@d, 'M315.27 33 96 304h128')]"
+                    )
+                    if lightning_icons and any(icon.is_displayed() for icon in lightning_icons):
+                        self.logger.info("Found Easy Apply lightning icon")
+                        return True
+                except:
+                    pass
                 
-                # Method 2: Look for standard Easy Apply indicators
-                easy_apply_indicators = [
+                # Method 2: Look for "Easy Apply" box in the new UI design
+                try:
+                    easy_apply_box = card.find_elements(By.CSS_SELECTOR, 
+                        "div.box[aria-labelledby='easyApply-label']")
+                    if easy_apply_box and any(box.is_displayed() for box in easy_apply_box):
+                        self.logger.info("Found Easy Apply box")
+                        return True
+                except:
+                    pass
+                    
+                # Method 3: Old UI selectors (fallback)
+                for indicator in [
                     "[data-cy='easyApplyBtn']",
                     ".easy-apply-button",
                     ".easy-apply",
                     "button[class*='easyApply']",
                     "button[class*='easy-apply']"
-                ]
-                
-                for indicator in easy_apply_indicators:
+                ]:
                     elements = card.find_elements(By.CSS_SELECTOR, indicator)
                     for element in elements:
                         if element.is_displayed():
                             self.logger.info(f"Found Easy Apply indicator: {indicator}")
                             return True
-                
-                # Method 3: Look for "Easy Apply" text
-                easy_apply_elements = card.find_elements(
-                    By.XPATH, 
-                    ".//*[contains(translate(text(), 'EASY APPLY', 'easy apply'), 'easy apply')]"
-                )
-                for element in easy_apply_elements:
-                    if element.is_displayed():
-                        self.logger.info("Found Easy Apply text")
-                        return True
                 
                 # If this is not the last attempt, wait longer before retry
                 if attempt < max_retries - 1:
@@ -287,7 +291,7 @@ class DiceBot:
         return False
     
     def is_already_applied(self, card) -> bool:
-        """Improved check if already applied to job with proper delay and retries"""
+        """Enhanced method to check if already applied to a job with new UI selectors"""
         max_retries = MAX_RETRIES.get('status_check', 3)
         
         try:
@@ -314,7 +318,26 @@ class DiceBot:
                 # Add delay to allow the page to update its status
                 self.random_delay('status_check')
                 
-                # Method 1: Check for visible "Applied" indicators
+                # Method 1: Look for "Applied" text in the card
+                card_text = card.text.lower()
+                applied_indicators = ["applied", "application submitted", "app submitted"]
+                if any(indicator in card_text for indicator in applied_indicators):
+                    self.logger.info(f"Found applied text in card")
+                    return True
+                
+                # Method 2: Check for any CSS classes that might indicate applied status
+                try:
+                    applied_elements = card.find_elements(
+                        By.XPATH, 
+                        ".//*[contains(@class, 'applied') or contains(@class, 'submitted')]"
+                    )
+                    if applied_elements and any(elem.is_displayed() for elem in applied_elements):
+                        self.logger.info("Found applied class indicator")
+                        return True
+                except:
+                    pass
+                
+                # Method 3: Old UI indicators (fallback)
                 applied_indicators = [
                     ".ribbon-status-applied",
                     ".search-status-ribbon-mobile.ribbon-status-applied",
@@ -325,37 +348,6 @@ class DiceBot:
                 for indicator in applied_indicators:
                     if card.find_elements(By.CSS_SELECTOR, indicator):
                         self.logger.info(f"Found applied indicator: {indicator}")
-                        return True
-                
-                # Method 2: Check shadow DOM for "Application Submitted" text
-                apply_buttons = card.find_elements(By.TAG_NAME, "apply-button-wc")
-                if apply_buttons:
-                    for apply_button in apply_buttons:
-                        is_applied = self.driver.execute_script("""
-                            const applyButton = arguments[0];
-                            if (!applyButton.shadowRoot) return false;
-                            
-                            // Check for application-submitted component
-                            const appSubmitted = applyButton.shadowRoot.querySelector('application-submitted');
-                            if (appSubmitted) return true;
-                            
-                            // Check text content
-                            const shadowText = applyButton.shadowRoot.textContent.toLowerCase();
-                            return shadowText.includes('application submitted') || 
-                                shadowText.includes('applied') ||
-                                shadowText.includes('app submitted');
-                        """, apply_button)
-                        
-                        if is_applied:
-                            self.logger.info("Found applied status in shadow DOM")
-                            return True
-                
-                # Method 3: Check card text
-                card_text = card.text.lower()
-                applied_texts = ['application submitted', 'applied', 'app submitted']
-                for text in applied_texts:
-                    if text in card_text:
-                        self.logger.info(f"Found applied text: '{text}'")
                         return True
                 
                 # If this is not the last attempt, wait longer before retry
@@ -372,7 +364,7 @@ class DiceBot:
         return False
     
     def extract_job_details(self, card) -> Optional[Tuple[Dict, str]]:
-        """Extract job details from card and detailed view"""
+        """Extract job details from card and detailed view with updated selectors for new UI"""
         original_window = self.driver.current_window_handle
         
         try:
@@ -383,45 +375,71 @@ class DiceBot:
                 'location': 'Unknown Location'
             }
             
-            # Extract title
-            for selector in ["[data-cy='card-title-link']", ".card-title-link", "a.job-title", "h2 a", "h3 a"]:
-                try:
-                    title_elem = card.find_element(By.CSS_SELECTOR, selector)
-                    if title_elem:
-                        job_details['title'] = title_elem.text.strip()
-                        break
-                except:
-                    continue
+            # Extract title (new UI)
+            try:
+                title_elem = card.find_element(By.CSS_SELECTOR, "a[data-testid='job-search-job-detail-link']")
+                if title_elem:
+                    job_details['title'] = title_elem.text.strip()
+            except NoSuchElementException:
+                # Fallback to old UI selectors
+                for selector in ["[data-cy='card-title-link']", ".card-title-link", "a.job-title", "h2 a", "h3 a"]:
+                    try:
+                        title_elem = card.find_element(By.CSS_SELECTOR, selector)
+                        if title_elem:
+                            job_details['title'] = title_elem.text.strip()
+                            break
+                    except:
+                        continue
             
-            # Extract company
-            for selector in ["[data-cy='search-result-company-name']", ".company-name", ".employer", "[data-cy='company-name']"]:
-                try:
-                    company_elem = card.find_element(By.CSS_SELECTOR, selector)
-                    if company_elem:
-                        job_details['company'] = company_elem.text.strip()
-                        break
-                except:
-                    continue
+            # Extract company (new UI)
+            try:
+                company_elem = card.find_element(By.CSS_SELECTOR, "a[data-rac][href*='company-profile']")
+                if company_elem:
+                    job_details['company'] = company_elem.text.strip()
+            except NoSuchElementException:
+                # Fallback to old UI selectors
+                for selector in ["[data-cy='search-result-company-name']", ".company-name", ".employer", "[data-cy='company-name']"]:
+                    try:
+                        company_elem = card.find_element(By.CSS_SELECTOR, selector)
+                        if company_elem:
+                            job_details['company'] = company_elem.text.strip()
+                            break
+                    except:
+                        continue
             
-            # Extract location
-            for selector in ["[data-cy='search-result-location']", ".location", ".job-location"]:
-                try:
-                    location_elem = card.find_element(By.CSS_SELECTOR, selector)
-                    if location_elem:
-                        job_details['location'] = location_elem.text.strip()
-                        break
-                except:
-                    continue
+            # Extract location (new UI)
+            try:
+                location_elems = card.find_elements(By.CSS_SELECTOR, "p.text-sm.font-normal.text-zinc-600")
+                if location_elems:
+                    for loc_elem in location_elems:
+                        # Filter out date info
+                        if "ago" not in loc_elem.text.lower():
+                            job_details['location'] = loc_elem.text.strip()
+                            break
+            except NoSuchElementException:
+                # Fallback to old UI selectors
+                for selector in ["[data-cy='search-result-location']", ".location", ".job-location"]:
+                    try:
+                        location_elem = card.find_element(By.CSS_SELECTOR, selector)
+                        if location_elem:
+                            job_details['location'] = location_elem.text.strip()
+                            break
+                    except:
+                        continue
             
-            # Find title link to click
+            # Find title link to click (new UI)
             title_link = None
-            for selector in ["[data-cy='card-title-link']", ".card-title-link", "a.job-title", "h2 a", "h3 a"]:
-                try:
-                    title_link = card.find_element(By.CSS_SELECTOR, selector)
-                    if title_link:
-                        break
-                except:
-                    continue
+            try:
+                title_link = card.find_element(By.CSS_SELECTOR, "a[data-testid='job-search-job-detail-link']")
+            except NoSuchElementException:
+                # Fallback to old UI selectors
+                for selector in ["[data-cy='card-title-link']", ".card-title-link", "a.job-title", "h2 a", "h3 a"]:
+                    try:
+                        title_link = card.find_element(By.CSS_SELECTOR, selector)
+                        if title_link:
+                            break
+                    except:
+                        continue
             
             if not title_link:
                 self.logger.error("Could not find job title link to click")
@@ -462,31 +480,45 @@ class DiceBot:
                 lambda d: d.execute_script("return document.readyState") == "complete"
             )
             
-            # Extract skills
+            # Extract skills (new UI)
             skills = []
             
-            # Try dedicated skills section first
-            for selector in ["[data-cy='skillsList']", ".skills-list", ".job-skills"]:
-                try:
-                    skills_element = self.driver.find_element(By.CSS_SELECTOR, selector)
-                    skill_items = skills_element.find_elements(By.CSS_SELECTOR, "span, li")
-                    if skill_items:
-                        skills = [skill.text.strip() for skill in skill_items if skill.text.strip()]
-                        break
-                except:
-                    continue
+            # Try new UI skills section first
+            try:
+                skills_element = self.driver.find_element(By.CSS_SELECTOR, "[data-cy='skillsList'], [data-testid='skillsList']")
+                skill_items = skills_element.find_elements(By.CSS_SELECTOR, ".chip_chip__cYJs6 span, span, li")
+                if skill_items:
+                    skills = [skill.text.strip() for skill in skill_items if skill.text.strip()]
+            except NoSuchElementException:
+                # Try old UI selectors
+                for selector in ["[data-cy='skillsList']", ".skills-list", ".job-skills"]:
+                    try:
+                        skills_element = self.driver.find_element(By.CSS_SELECTOR, selector)
+                        skill_items = skills_element.find_elements(By.CSS_SELECTOR, "span, li")
+                        if skill_items:
+                            skills = [skill.text.strip() for skill in skill_items if skill.text.strip()]
+                            break
+                    except:
+                        continue
             
             # If no skills found, try extracting from description
             if not skills:
                 description_text = ''
-                for selector in ["#jobDescription", ".job-description", "[data-cy='description']"]:
-                    try:
-                        desc_elem = self.driver.find_element(By.CSS_SELECTOR, selector)
-                        if desc_elem:
-                            description_text = desc_elem.text
-                            break
-                    except:
-                        continue
+                # Try new UI description selectors
+                try:
+                    desc_elem = self.driver.find_element(By.CSS_SELECTOR, "#jobDescription, [data-testid='jobDescriptionHtml']")
+                    if desc_elem:
+                        description_text = desc_elem.text
+                except NoSuchElementException:
+                    # Try old UI selectors
+                    for selector in ["#jobDescription", ".job-description", "[data-cy='description']"]:
+                        try:
+                            desc_elem = self.driver.find_element(By.CSS_SELECTOR, selector)
+                            if desc_elem:
+                                description_text = desc_elem.text
+                                break
+                        except:
+                            continue
                 
                 if description_text:
                     # Extract skills from description (simplified)
@@ -498,24 +530,36 @@ class DiceBot:
                             if skills:
                                 break
             
-            # Extract description
+            # Extract description (new UI)
             description = "No description available"
-            for selector in ["#jobDescription", ".job-description", "[data-cy='description']"]:
-                try:
-                    desc_elem = self.driver.find_element(By.CSS_SELECTOR, selector)
-                    if desc_elem:
-                        description = desc_elem.text
-                        if description.strip():
-                            break
-                except:
-                    continue
+            try:
+                desc_elem = self.driver.find_element(By.CSS_SELECTOR, "#jobDescription, [data-testid='jobDescriptionHtml']")
+                if desc_elem:
+                    description = desc_elem.text
+            except NoSuchElementException:
+                # Fallback to old UI selectors
+                for selector in ["#jobDescription", ".job-description", "[data-cy='description']"]:
+                    try:
+                        desc_elem = self.driver.find_element(By.CSS_SELECTOR, selector)
+                        if desc_elem:
+                            description = desc_elem.text
+                            if description.strip():
+                                break
+                    except:
+                        continue
             
             job_details['skills'] = skills or ["Not specified"]
             job_details['description'] = description
             
-            # Generate unique job ID
-            content = f"{job_details['title']}{job_details['company']}{job_details['description'][:100]}"
-            job_details['job_id'] = hashlib.md5(content.encode()).hexdigest()
+            # Extract or generate job ID
+            if 'job_id' not in job_details or not job_details['job_id']:
+                job_url = self.driver.current_url
+                if '/job-detail/' in job_url:
+                    job_details['job_id'] = job_url.split('/job-detail/')[1]
+                else:
+                    # Generate unique job ID
+                    content = f"{job_details['title']}{job_details['company']}{job_details['description'][:100]}"
+                    job_details['job_id'] = hashlib.md5(content.encode()).hexdigest()
             
             # Add to processed jobs set
             self.processed_job_ids.add(job_details['job_id'])
@@ -535,7 +579,7 @@ class DiceBot:
             return None
 
     def click_easy_apply(self) -> bool:
-        """Simplified method to click the Easy Apply button"""
+        """Click the Easy Apply button with support for shadow DOM in new UI"""
         try:
             self.logger.info("Attempting to find and click Easy Apply button")
             
@@ -545,29 +589,62 @@ class DiceBot:
                 debug_dir.mkdir(parents=True, exist_ok=True)
                 self.driver.save_screenshot(f'debug/easy_apply_click/before_click_{self.jobs_processed}.png')
             
-            # Method 1: Look for apply-button-wc web component
-            apply_buttons = self.driver.find_elements(By.TAG_NAME, "apply-button-wc")
-            if apply_buttons:
-                for apply_button in apply_buttons:
-                    # Try to click the button inside shadow DOM
-                    clicked = self.driver.execute_script("""
-                        const applyButton = arguments[0];
-                        if (!applyButton.shadowRoot) return false;
-                        
-                        const button = applyButton.shadowRoot.querySelector('button');
-                        if (button && !button.disabled) {
-                            button.click();
-                            return true;
-                        }
-                        return false;
-                    """, apply_button)
+            # Method 1: Look for apply-button-wc in shadow DOM (new UI)
+            try:
+                apply_button_wc = self.driver.find_element(By.CSS_SELECTOR, "apply-button-wc")
+                
+                # Access the shadow root and find the button
+                clicked = self.driver.execute_script("""
+                    const applyButtonWc = arguments[0];
+                    if (!applyButtonWc.shadowRoot) return false;
                     
-                    if clicked:
-                        self.logger.info("Clicked button in shadow DOM")
-                        time.sleep(2)
-                        return True
+                    const applyButton = applyButtonWc.shadowRoot.querySelector('.btn-primary, button.btn');
+                    if (applyButton) {
+                        applyButton.click();
+                        return true;
+                    }
+                    return false;
+                """, apply_button_wc)
+                
+                if clicked:
+                    self.logger.info("Clicked Easy Apply button in shadow DOM")
+                    time.sleep(2)
+                    return True
+            except NoSuchElementException:
+                self.logger.info("No apply-button-wc found, trying alternative methods")
+                
+            # Method 2: Look for Easy Apply button in job details page (new UI)
+            try:
+                apply_button_selectors = [
+                    "a[data-rac] span:contains('Easy Apply')",
+                    "a.outline-offset-2 span:contains('Easy Apply')",
+                    "button:contains('Easy Apply')",
+                    "div.btn-group--block button.btn-primary"
+                ]
+                
+                for selector in apply_button_selectors:
+                    try:
+                        # For XPath selectors
+                        if "contains" in selector:
+                            xpath_selector = selector.replace(":contains('", "[contains(text(), '").replace("')", "')]")
+                            buttons = self.driver.find_elements(By.XPATH, f"//{xpath_selector}")
+                        else:
+                            buttons = self.driver.find_elements(By.CSS_SELECTOR, selector)
+                            
+                        for button in buttons:
+                            if button.is_displayed() and button.is_enabled():
+                                self.logger.info(f"Found Easy Apply button with selector: {selector}")
+                                self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button)
+                                time.sleep(0.5)
+                                button.click()
+                                time.sleep(1)
+                                return True
+                    except:
+                        continue
+            except Exception as e:
+                self.logger.warning(f"Error finding Easy Apply button in new UI: {str(e)}")
             
-            # Method 2: Standard button selectors
+            # Method 3: Old UI selectors (fallback)
             button_selectors = [
                 "[data-cy='easyApplyBtn']",
                 ".easy-apply-button",
@@ -599,7 +676,7 @@ class DiceBot:
                             except:
                                 continue
             
-            # Method 3: Look for any button with "Apply" text
+            # Method 4: Look for any button with "Apply" text
             apply_elements = self.driver.find_elements(
                 By.XPATH, 
                 "//button[contains(translate(text(), 'APPLY', 'apply'), 'apply')] | //a[contains(translate(text(), 'APPLY', 'apply'), 'apply')]"
@@ -629,7 +706,7 @@ class DiceBot:
             return False
 
     def submit_application(self, job_details: Dict) -> bool:
-        """Submit job application"""
+        """Submit job application with support for new UI"""
         try:
             self.logger.info(f"Generating optimized resume for {job_details['title']}")
             # Generate resume
@@ -674,12 +751,15 @@ class DiceBot:
                 
             self.random_delay('between_actions')
             
-            # Wait for application form
+            # Wait for application form to appear
             application_selectors = [
                 ".apply-container",
                 ".application-form",
                 "form[data-cy='applicationForm']",
-                ".resume-container"
+                ".resume-container",
+                "div[role='dialog']",  # New UI often uses dialog role
+                ".modal-content",
+                "div.rWCJ"  # Observed in the new UI
             ]
             
             application_container = None
@@ -689,6 +769,7 @@ class DiceBot:
                         EC.presence_of_element_located((By.CSS_SELECTOR, selector))
                     )
                     if application_container:
+                        self.logger.info(f"Found application container with selector: {selector}")
                         break
                 except:
                     continue
@@ -709,10 +790,12 @@ class DiceBot:
             try:
                 # Check if there's a resume container
                 resume_container = None
-                for selector in [".resume-container", ".file-upload-container", ".document-upload"]:
+                for selector in [".resume-container", ".file-upload-container", ".document-upload", 
+                                "div[role='dialog']", ".modal-content"]:
                     try:
                         resume_container = self.driver.find_element(By.CSS_SELECTOR, selector)
                         if resume_container:
+                            self.logger.info(f"Found resume container with selector: {selector}")
                             break
                     except:
                         continue
@@ -736,27 +819,69 @@ class DiceBot:
                     
                     if file_inputs:
                         file_inputs[0].send_keys(os.path.abspath(resume_path))
+                        self.logger.info("Uploaded resume via file input")
                         time.sleep(2)
+                    else:
+                        # Try to find a button that might trigger file selection
+                        upload_buttons = resume_container.find_elements(
+                            By.XPATH, 
+                            ".//*[contains(text(), 'Upload') or contains(text(), 'Browse') or contains(text(), 'Select')]"
+                        )
+                        if upload_buttons:
+                            upload_buttons[0].click()
+                            self.logger.info("Clicked upload button to trigger file selection")
+                            time.sleep(2)
+                            
+                            # Now try to find file input that might have appeared
+                            file_inputs = self.driver.find_elements(By.CSS_SELECTOR, "input[type='file']")
+                            if file_inputs:
+                                file_inputs[0].send_keys(os.path.abspath(resume_path))
+                                self.logger.info("Uploaded resume after clicking upload button")
+                                time.sleep(2)
                 else:
                     # Look for any file input
                     file_inputs = self.driver.find_elements(By.CSS_SELECTOR, "input[type='file']")
                     if file_inputs:
                         file_inputs[0].send_keys(os.path.abspath(resume_path))
+                        self.logger.info("Uploaded resume via file input (no container found)")
                         time.sleep(2)
                     else:
-                        self.logger.error("No file input found for resume")
-                        self.tracker.add_application(
-                            job_details, 'failed', resume_path, cover_letter_path,
-                            notes="No file input found for resume"
+                        # Look for upload buttons
+                        upload_buttons = self.driver.find_elements(
+                            By.XPATH, 
+                            "//*[contains(text(), 'Upload') or contains(text(), 'Browse') or contains(text(), 'Select')]"
                         )
-                        return False
+                        if upload_buttons:
+                            for button in upload_buttons:
+                                try:
+                                    if button.is_displayed():
+                                        button.click()
+                                        self.logger.info("Clicked upload button")
+                                        time.sleep(2)
+                                        
+                                        # Now try to find file input that might have appeared
+                                        file_inputs = self.driver.find_elements(By.CSS_SELECTOR, "input[type='file']")
+                                        if file_inputs:
+                                            file_inputs[0].send_keys(os.path.abspath(resume_path))
+                                            self.logger.info("Uploaded resume after clicking button")
+                                            time.sleep(2)
+                                            break
+                                except:
+                                    continue
+                        else:
+                            self.logger.error("No file input found for resume")
+                            self.tracker.add_application(
+                                job_details, 'failed', resume_path, cover_letter_path,
+                                notes="No file input found for resume"
+                            )
+                            return False
             except Exception as e:
                 self.logger.error(f"Error handling resume upload: {str(e)}")
                 
             # Handle file picker if it appeared - with improved handling for the specific modal
             try:
                 # Wait for file picker modal to appear
-                WebDriverWait(self.driver, 10).until(
+                WebDriverWait(self.driver, 5).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, ".fsp-modal__body, .file-picker-modal"))
                 )
                 
@@ -766,7 +891,7 @@ class DiceBot:
                 try:
                     file_input = self.driver.find_element(By.CSS_SELECTOR, "#fsp-fileUpload, input[type='file']")
                     file_input.send_keys(os.path.abspath(resume_path))
-                    self.logger.info("Uploaded file using file input")
+                    self.logger.info("Uploaded file using file input in modal")
                     time.sleep(2)
                 except:
                     # If standard file input not found, try JavaScript approach
@@ -791,7 +916,12 @@ class DiceBot:
                 else:
                     # Try clicking with standard method as fallback
                     upload_buttons = self.driver.find_elements(By.CSS_SELECTOR, 
-                        ".fsp-button-upload, .fsp-button--primary, .upload-button")
+                        ".fsp-button-upload, .fsp-button--primary, .upload-button, button:contains('Upload')")
+                    
+                    if not upload_buttons:
+                        # Try XPath for buttons with "Upload" text
+                        upload_buttons = self.driver.find_elements(By.XPATH, 
+                            "//button[contains(text(), 'Upload')]")
                     
                     for button in upload_buttons:
                         try:
@@ -820,15 +950,28 @@ class DiceBot:
                     cover_letter_selectors = [
                         ".file-picker-wrapper.cover-letter",
                         ".cover-letter-container",
-                        "[data-cy='coverLetterUpload']"
+                        "[data-cy='coverLetterUpload']",
+                        "label:contains('Cover Letter')",
+                        "//label[contains(text(), 'Cover Letter')]"
                     ]
                     
                     cover_letter_container = None
                     for selector in cover_letter_selectors:
-                        elements = self.driver.find_elements(By.CSS_SELECTOR, selector)
-                        if elements:
-                            cover_letter_container = elements[0]
-                            break
+                        try:
+                            if selector.startswith("//"):  # XPath selector
+                                elements = self.driver.find_elements(By.XPATH, selector)
+                            elif ":contains" in selector:  # Convert to XPath
+                                xpath_selector = selector.replace(":contains('", "[contains(text(), '").replace("')", "')]")
+                                elements = self.driver.find_elements(By.XPATH, f"//{xpath_selector}")
+                            else:  # CSS selector
+                                elements = self.driver.find_elements(By.CSS_SELECTOR, selector)
+                                
+                            if elements:
+                                cover_letter_container = elements[0]
+                                self.logger.info(f"Found cover letter container with selector: {selector}")
+                                break
+                        except:
+                            continue
                     
                     if cover_letter_container:
                         # Try to click using JavaScript first
@@ -850,6 +993,14 @@ class DiceBot:
                                 self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", buttons[0])
                                 time.sleep(0.5)
                                 buttons[0].click()
+                                self.logger.info("Clicked button in cover letter container")
+                            else:
+                                # Try to find file input directly
+                                file_inputs = cover_letter_container.find_elements(By.CSS_SELECTOR, "input[type='file']")
+                                if file_inputs:
+                                    file_inputs[0].send_keys(os.path.abspath(cover_letter_path))
+                                    self.logger.info("Uploaded cover letter directly via file input")
+                                    time.sleep(2)
                         
                         # Wait for file picker modal
                         time.sleep(2)
@@ -857,13 +1008,14 @@ class DiceBot:
                         # Handle file picker modal for cover letter
                         try:
                             # Wait for file picker modal
-                            WebDriverWait(self.driver, 10).until(
+                            WebDriverWait(self.driver, 5).until(
                                 EC.presence_of_element_located((By.CSS_SELECTOR, ".fsp-modal__body, .file-picker-modal"))
                             )
                             
                             # Try to find file input 
                             file_input = self.driver.find_element(By.CSS_SELECTOR, "#fsp-fileUpload, input[type='file']")
                             file_input.send_keys(os.path.abspath(cover_letter_path))
+                            self.logger.info("Uploaded cover letter via file input in modal")
                             time.sleep(2)
                             
                             # Click upload button using JavaScript for reliability
@@ -871,7 +1023,9 @@ class DiceBot:
                                 const uploadBtn = document.querySelector('.fsp-button-upload, .fsp-button--primary');
                                 if (uploadBtn) {
                                     uploadBtn.click();
+                                    return true;
                                 }
+                                return false;
                             """)
                             
                             self.logger.info("Cover letter uploaded successfully")
@@ -884,28 +1038,44 @@ class DiceBot:
             # Navigate through application steps
             try:
                 # Look for next/submit buttons and click them
-                for _ in range(3):  # Try up to 3 steps
+                for step in range(5):  # Try up to 5 steps - increased from 3 to handle more complex forms
                     button_selectors = [
+                        # New UI selectors
+                        "button.btn-primary",
+                        "button.submit-application",
+                        "button:contains('Next')",
+                        "button:contains('Submit')",
+                        "button:contains('Apply')",
+                        
+                        # Old UI selectors
                         ".navigation-buttons .btn-next",
                         ".navigation-buttons .btn-submit",
                         "button[type='submit']",
                         ".submit-button",
-                        ".apply-button",
-                        "button:contains('Next')",
-                        "button:contains('Submit')"
+                        ".apply-button"
                     ]
                     
                     button_found = False
                     for selector in button_selectors:
                         try:
-                            buttons = WebDriverWait(self.driver, 5).until(
-                                EC.presence_of_all_elements_located((By.CSS_SELECTOR, selector))
-                            )
+                            if "contains" in selector:
+                                # Convert to XPath for text content search
+                                text = selector.split("'")[1]
+                                xpath_selector = f"//button[contains(text(), '{text}')]"
+                                buttons = WebDriverWait(self.driver, 5).until(
+                                    EC.presence_of_all_elements_located((By.XPATH, xpath_selector))
+                                )
+                            else:
+                                buttons = WebDriverWait(self.driver, 5).until(
+                                    EC.presence_of_all_elements_located((By.CSS_SELECTOR, selector))
+                                )
+                                
                             for button in buttons:
                                 if button.is_displayed() and button.is_enabled():
                                     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button)
                                     time.sleep(0.5)
                                     button.click()
+                                    self.logger.info(f"Clicked {selector} button in step {step+1}")
                                     button_found = True
                                     time.sleep(2)
                                     break
@@ -915,26 +1085,41 @@ class DiceBot:
                             continue
                     
                     if not button_found:
+                        self.logger.info(f"No more buttons found after step {step+1}")
                         break
             except Exception as e:
                 self.logger.warning(f"Error navigating application steps: {str(e)}")
             
             # Verify application success
             try:
+                # New UI success indicators
                 success_indicators = [
                     ".post-apply-banner",
                     ".success-message",
                     ".application-submitted",
-                    "div:contains('Application Submitted')"
+                    "div:contains('Application Submitted')",
+                    ".application-status",
+                    ".status-applied",
+                    ".confirmation-message"
                 ]
                 
                 success = False
                 for selector in success_indicators:
                     try:
-                        element = WebDriverWait(self.driver, 5).until(
-                            EC.presence_of_element_located((By.CSS_SELECTOR, selector))
-                        )
+                        if ":contains" in selector:
+                            # Convert to XPath for text content search
+                            text = selector.split("'")[1]
+                            xpath_selector = f"//*[contains(text(), '{text}')]"
+                            element = WebDriverWait(self.driver, 5).until(
+                                EC.presence_of_element_located((By.XPATH, xpath_selector))
+                            )
+                        else:
+                            element = WebDriverWait(self.driver, 5).until(
+                                EC.presence_of_element_located((By.CSS_SELECTOR, selector))
+                            )
+                            
                         if element:
+                            self.logger.info(f"Found success indicator: {selector}")
                             success = True
                             break
                     except:
@@ -953,11 +1138,37 @@ class DiceBot:
                 else:
                     # Check page content for success indicators
                     page_source = self.driver.page_source.lower()
-                    text_indicators = ["application submitted", "thank you for applying", "successfully applied"]
+                    text_indicators = [
+                        "application submitted", 
+                        "thank you for applying", 
+                        "successfully applied",
+                        "your application has been submitted",
+                        "application complete",
+                        "application received"
+                    ]
                     
                     for indicator in text_indicators:
                         if indicator in page_source:
                             self.logger.info(f"Application likely successful (found text: {indicator})")
+                            self.tracker.add_application(
+                                job_details, 'success', resume_path, cover_letter_path
+                            )
+                            self.jobs_applied += 1
+                            return True
+                    
+                    # Look for visual cues like checkmarks or success icons
+                    success_icon_selectors = [
+                        ".success-icon",
+                        ".check-icon",
+                        ".status-success",
+                        "svg[class*='success']",
+                        "svg[class*='check']"
+                    ]
+                    
+                    for selector in success_icon_selectors:
+                        icons = self.driver.find_elements(By.CSS_SELECTOR, selector)
+                        if icons and any(icon.is_displayed() for icon in icons):
+                            self.logger.info(f"Found success icon: {selector}")
                             self.tracker.add_application(
                                 job_details, 'success', resume_path, cover_letter_path
                             )
@@ -986,28 +1197,39 @@ class DiceBot:
             return False
 
     def process_search_results(self) -> int:
-        """Process all jobs on current page with improved status checking, returns number of new jobs found"""
+        """Process all jobs on current page with updated selectors for new UI"""
         new_jobs_found = 0
         try:
-            # Find all job cards
+            # Find all job cards (new UI)
             job_cards = []
-            selectors = [
-                "dhi-search-card[data-cy='search-card']",
-                ".search-card",
-                ".job-card"
-            ]
             
-            for selector in selectors:
-                try:
-                    cards = WebDriverWait(self.driver, 10).until(
-                        EC.presence_of_all_elements_located((By.CSS_SELECTOR, selector))
-                    )
-                    if cards and len(cards) > 0:
-                        job_cards = cards
-                        self.logger.info(f"Found {len(cards)} job cards with selector: {selector}")
-                        break
-                except:
-                    continue
+            # Try new UI selectors first
+            try:
+                cards = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div[data-id]"))
+                )
+                if cards and len(cards) > 0:
+                    job_cards = cards
+                    self.logger.info(f"Found {len(cards)} job cards with new UI selector: div[data-id]")
+            except:
+                # Fallback to old UI selectors
+                selectors = [
+                    "dhi-search-card[data-cy='search-card']",
+                    ".search-card",
+                    ".job-card"
+                ]
+                
+                for selector in selectors:
+                    try:
+                        cards = WebDriverWait(self.driver, 10).until(
+                            EC.presence_of_all_elements_located((By.CSS_SELECTOR, selector))
+                        )
+                        if cards and len(cards) > 0:
+                            job_cards = cards
+                            self.logger.info(f"Found {len(cards)} job cards with selector: {selector}")
+                            break
+                    except:
+                        continue
             
             if not job_cards:
                 self.logger.error("No job cards found on current page")
@@ -1038,17 +1260,30 @@ class DiceBot:
                     job_id = self.get_job_id_from_card(card)
                     title = "Unknown"
                     company = "Unknown"
+                    
+                    # Try to extract title (new UI)
                     try:
-                        title_elem = card.find_element(By.CSS_SELECTOR, "[data-cy='card-title-link']")
+                        title_elem = card.find_element(By.CSS_SELECTOR, "a[data-testid='job-search-job-detail-link']")
                         title = title_elem.text
                     except:
-                        pass
-                        
+                        # Try old UI selector
+                        try:
+                            title_elem = card.find_element(By.CSS_SELECTOR, "[data-cy='card-title-link']")
+                            title = title_elem.text
+                        except:
+                            pass
+                    
+                    # Try to extract company (new UI)
                     try:
-                        company_elem = card.find_element(By.CSS_SELECTOR, "[data-cy='search-result-company-name']")
+                        company_elem = card.find_element(By.CSS_SELECTOR, "a[data-rac][href*='company-profile']")
                         company = company_elem.text
                     except:
-                        pass
+                        # Try old UI selector
+                        try:
+                            company_elem = card.find_element(By.CSS_SELECTOR, "[data-cy='search-result-company-name']")
+                            company = company_elem.text
+                        except:
+                            pass
                     
                     job_info = {
                         'job_id': job_id or f"unknown_{self.jobs_processed}",
@@ -1097,36 +1332,66 @@ class DiceBot:
             return new_jobs_found
         
     def next_page_exists(self) -> bool:
-        """Check if next page exists"""
+        """Check if next page exists with updated selectors for new UI"""
         try:
-            next_button = self.driver.find_element(
-                By.CSS_SELECTOR,
-                "li.pagination-next:not(.disabled), a.next-page:not(.disabled)"
-            )
-            return bool(next_button)
+            # Try new UI selectors first
+            try:
+                next_button = self.driver.find_element(
+                    By.CSS_SELECTOR,
+                    "span[role='link'][aria-label='Next'], a[aria-label='Next']"
+                )
+                return not ("disabled" in next_button.get_attribute("class") or 
+                           next_button.get_attribute("aria-disabled") == "true")
+            except NoSuchElementException:
+                # Fallback to old UI selectors
+                next_button = self.driver.find_element(
+                    By.CSS_SELECTOR,
+                    "li.pagination-next:not(.disabled), a.next-page:not(.disabled)"
+                )
+                return bool(next_button)
         except:
             return False
 
     def go_to_next_page(self) -> bool:
-        """Go to next page of results"""
+        """Go to next page of results with updated selectors for new UI"""
         try:
-            next_button = self.driver.find_element(
-                By.CSS_SELECTOR,
-                "li.pagination-next:not(.disabled) a, a.next-page:not(.disabled)"
-            )
-            
+            # Try new UI selectors first
             try:
+                next_button = self.driver.find_element(
+                    By.CSS_SELECTOR,
+                    "span[role='link'][aria-label='Next'], a[aria-label='Next']"
+                )
+                
+                if "disabled" in next_button.get_attribute("class") or next_button.get_attribute("aria-disabled") == "true":
+                    return False
+                    
                 self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", next_button)
                 time.sleep(0.5)
                 next_button.click()
-            except:
+                self.logger.info("Clicked next page button (new UI)")
+                self.random_delay('page_load')
+                return True
+            except NoSuchElementException:
+                # Fallback to old UI selectors
+                next_button = self.driver.find_element(
+                    By.CSS_SELECTOR,
+                    "li.pagination-next:not(.disabled) a, a.next-page:not(.disabled)"
+                )
+                
                 try:
-                    self.driver.execute_script("arguments[0].click();", next_button)
+                    self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", next_button)
+                    time.sleep(0.5)
+                    next_button.click()
+                    self.logger.info("Clicked next page button (old UI)")
                 except:
-                    return False
-                    
-            self.random_delay('page_load')
-            return True
+                    try:
+                        self.driver.execute_script("arguments[0].click();", next_button)
+                        self.logger.info("Clicked next page button using JavaScript")
+                    except:
+                        return False
+                        
+                self.random_delay('page_load')
+                return True
         except:
             return False
 
@@ -1137,8 +1402,13 @@ class DiceBot:
             self.driver.get(search_url)
             self.random_delay('page_load')
             
-            # Verify search results loaded
+            # Verify search results loaded (new UI)
             results_selectors = [
+                # New UI selectors
+                "div[data-testid='jobSearchResultsContainer']",
+                "div.max-w-[1400px]",
+                
+                # Old UI selectors
                 "div[id='searchDisplay-div']",
                 ".job-cards-container",
                 ".search-results"
@@ -1150,6 +1420,7 @@ class DiceBot:
                         EC.presence_of_element_located((By.CSS_SELECTOR, selector))
                     )
                     if results:
+                        self.logger.info(f"Search results loaded with selector: {selector}")
                         return True
                 except:
                     continue
@@ -1193,6 +1464,71 @@ class DiceBot:
             f.write(full_report)
             
         return report_path
+
+    def analyze_page_structure(self):
+        """Debug helper method to analyze page structure and save elements info"""
+        debug_dir = Path('debug/page_structure')
+        debug_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Take screenshot of the page
+        self.driver.save_screenshot(f'{debug_dir}/page_screenshot.png')
+        
+        # Save page source
+        with open(f'{debug_dir}/page_source.html', 'w', encoding='utf-8') as f:
+            f.write(self.driver.page_source)
+        
+        # Analyze key elements
+        elements_to_analyze = [
+            {"name": "job_cards", "selectors": ["div[data-id]", "dhi-search-card[data-cy='search-card']", ".search-card"]},
+            {"name": "apply_buttons", "selectors": ["a[data-rac] span:contains('Easy Apply')", "[data-cy='easyApplyBtn']", ".easy-apply-button"]},
+            {"name": "pagination", "selectors": ["span[role='link'][aria-label='Next']", "li.pagination-next"]}
+        ]
+        
+        analysis_results = []
+        for element_type in elements_to_analyze:
+            name = element_type["name"]
+            selectors = element_type["selectors"]
+            
+            analysis_results.append(f"\n--- {name} Analysis ---")
+            
+            for selector in selectors:
+                try:
+                    if ":contains" in selector:
+                        # Convert to XPath for text content search
+                        text = selector.split("'")[1]
+                        xpath_selector = f"//*[contains(text(), '{text}')]"
+                        elements = self.driver.find_elements(By.XPATH, xpath_selector)
+                    else:
+                        elements = self.driver.find_elements(By.CSS_SELECTOR, selector)
+                        
+                    if elements:
+                        analysis_results.append(f"Selector {selector}: Found {len(elements)} elements")
+                        # Get more details about the first element
+                        if len(elements) > 0:
+                            elem = elements[0]
+                            try:
+                                displayed = elem.is_displayed()
+                                enabled = elem.is_enabled()
+                                tag_name = elem.tag_name
+                                attributes = self.driver.execute_script(
+                                    'var items = {}; for (var i = 0; i < arguments[0].attributes.length; i++) { items[arguments[0].attributes[i].name] = arguments[0].attributes[i].value }; return items;', 
+                                    elem
+                                )
+                                analysis_results.append(f"  First element: {tag_name}, Displayed: {displayed}, Enabled: {enabled}")
+                                analysis_results.append(f"  Attributes: {json.dumps(attributes, indent=2)}")
+                            except:
+                                analysis_results.append(f"  Error getting details for first element")
+                    else:
+                        analysis_results.append(f"Selector {selector}: No elements found")
+                except Exception as e:
+                    analysis_results.append(f"Selector {selector}: Error - {str(e)}")
+        
+        # Save analysis results
+        with open(f'{debug_dir}/element_analysis.txt', 'w', encoding='utf-8') as f:
+            f.write("\n".join(analysis_results))
+            
+        self.logger.info("Page structure analysis completed and saved to debug directory")
+        return analysis_results
 
     def run(self):
         """Main execution flow with improved job title handling and API key monitoring"""

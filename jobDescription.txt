@@ -1,11 +1,11 @@
-Job Title: SAP BRIM Tester
-Duration: 10 Months
-Location: Remote
+Need someone with Healthcare Background
+Need someone really Strong on VB Script and UFT
 
-Job Description:
-1) 5+ year of SAP Testing experience in SAP SOM, SD, FI, and RAR modules.
-2) Proven experience with SAP BRIM (Billing and Revenue Innovation Management) processes, including configuration and integration.
-3) Preferred atleast one full implementation cycle of SAP BRIM testing experience.
-4) Proficient in creating and executing test plans, test cases, and test scripts.
-5) Experience with SAP testing tools and methodologies.
-6) Strong understanding of functional, integration, regression, and performance testing.
+Role: SDET with VB and UFT
+Duration: Long Term
+Location: Remote but need candidate from EST only
+Client: Excellus Health Plans
+
+
+Need candidate from Healthcare Background
+Need Strong SDET with VBScript  and UFT "Unified Functional Testing"

@@ -82,7 +82,7 @@ python main.py --mode report
 ```
 
 # Basic usage - generate resume
-python main.py --mode process-description --job-description example-job.txt
+python main.py --mode process-description --job-description jobDescription.txt
 
 # Generate both resume and cover letter
 python main.py --mode process-description --job-description example-job.txt --output-type generate_both --job-title "Senior SDET" --company "HealthTech Solutions"

@@ -19,11 +19,18 @@ if not DEFAULT_RESUME.exists():
 
 # API Keys - Support for multiple keys with rotation
 # The system will use these keys in order and rotate when limits are reached
-GEMINI_API_KEYS = [
-    'AIzaSyB3g63kzoe9oKt6JxH8luvit3xS_GGIpBE',  # Primary key
-    'AIzaSyA3-UQ3YWkv4xuG7yC3y0eyBwRR8edCX2I',  # Secondary key
+GEMINI_API_KEYS = [  # Primary key
+    'AIzaSyB3g63kzoe9oKt6JxH8luvit3xS_GGIpBE',
+    'AIzaSyA3-UQ3YWkv4xuG7yC3y0eyBwRR8edCX2I',
+      
+      # Secondary key
     # Add more keys as needed
 ]
+
+BLACKLISTED_COMPANIES = [
+    "ExampleCompany"  # Will match any company with this substring
+]
+
 
 # API limits and settings
 API_DAILY_LIMIT = 1500  # Maximum requests per day per key
@@ -65,75 +72,20 @@ MAX_RETRIES = {
 # Job Search Settings
 JOB_TITLES = [
   "SDET",
-  "Software Development Engineer in Test",
-  "Automation Engineer",
-  "QA Automation Engineer",
-  "Test Automation Engineer",
+  "Software Development in Test",
+  "QA Automation",
+  "Test Automation",
   "Senior SDET",
   "Lead SDET",
   "Healthcare SDET",
   "Medical Device SDET",
   "Clinical Systems SDET",
-  "Healthcare Test Engineer",
-  "Medical Device Test Engineer",
-  "Clinical Systems Test Engineer",
-  "Healthcare Software Test Engineer",
-  "Medical Software Test Engineer",
-  "Healthcare Quality Engineer",
-  "Medical Device Quality Engineer",
-  "SDET (Test Automation)",
-  "Software Test Automation Engineer",
-  "Quality Automation Engineer",
-  "Test Engineer (Automation)",
-  "Senior Test Automation Engineer",
-  "Lead Test Automation Engineer",
-  "SDET II",
-  "SDET III",
-  "Automation Test Lead",
-  "Quality Engineer (Automation)",
-  "Software Test Engineer (Automation)",
-  "Test Automation Developer",
-  "Senior Quality Automation Engineer",
-  "Lead Quality Automation Engineer",
-  "Test Automation Specialist",
-  "Senior Test Automation Specialist",
-  "Automation Architect",
-  "Test Automation Architect",
-  "HL7 Testing Engineer",
-  "FHIR Testing Engineer",
-  "EHR Testing Engineer",
-  "Cloud SDET",
-  "Cloud Test Engineer",
-  "Security SDET",
-  "Security Test Engineer",
-  "Performance Test Engineer",
-  "Mobile Test Automation Engineer",
-  "API Test Automation Engineer",
-  "DevOps Test Engineer",
-  "AI Test Engineer",
-  "Machine Learning Test Engineer",
-  "Data Quality Engineer",
-  "Accessibility Test Engineer",
-  "Embedded Systems Test Engineer",
-  "Digital Health Test Engineer",
-  "Usability Test Engineer",
-  "Integration Test Engineer",
-  "Regression Test Engineer",
-  "System Test Engineer",
-  "Acceptance Test Engineer",
-  "Exploratory Test Engineer",
-  "Test Manager",
-  "Quality Assurance Manager",
-  "Test Lead",
-  "Quality Lead",
-  "Software Tester",
-  "Manual Tester",
-  "Test Analyst",
-  "Quality Analyst"
+  "Healthcare Test ",
+  "Healthcare QA"
 ]
 
 # Search URL template
-DICE_SEARCH_URL = "https://www.dice.com/jobs?q={}&countryCode=US&radius=30&radiusUnit=mi&pageSize=20&filters.workplaceTypes=Remote&filters.easyApply=true&language=en"
+DICE_SEARCH_URL = "https://www.dice.com/jobs?q={}&countryCode=US&pageSize=20&filters.workplaceTypes=Remote&filters.easyApply=true&language=en"
 
 # Application Limits
 MAX_APPLICATIONS_PER_DAY = 2
