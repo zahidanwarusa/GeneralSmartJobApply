@@ -81,83 +81,98 @@ class DiceBot:
             self.logger.addHandler(ch)
 
     def setup_driver(self) -> bool:
-        """Initialize Chrome WebDriver with automatic driver management"""
+        """Simple Chrome WebDriver initialization with fresh profile"""
         try:
-            self.logger.info("Initializing Chrome WebDriver...")
+            self.logger.info("Starting Chrome with fresh profile...")
             
-            # Import webdriver-manager
-            from webdriver_manager.chrome import ChromeDriverManager
-            
-            # Create Chrome options
+            # Clean, simple Chrome options
             options = Options()
-            
-            # Essential options
             options.add_argument('--start-maximized')
-            options.add_argument('--disable-blink-features=AutomationControlled')
-            options.add_argument('--no-sandbox')
-            options.add_argument('--disable-dev-shm-usage')
+            options.add_argument('--disable-blink-features=AutomationControlled')  # Hide automation
             options.add_experimental_option("excludeSwitches", ["enable-automation"])
             options.add_experimental_option('useAutomationExtension', False)
             
-            # Set user agent
-            options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36')
+            # Create driver with fresh profile (no conflicts)
+            self.driver = webdriver.Chrome(options=options)
+            self.wait = WebDriverWait(self.driver, 15)
             
-            # Try with user profile first
-            try:
-                # Add profile arguments
-                user_data_dir = CHROME_PROFILE['user_data_dir']
-                profile_directory = CHROME_PROFILE['profile_directory']
-                
-                options.add_argument(f'--user-data-dir={user_data_dir}')
-                options.add_argument(f'--profile-directory={profile_directory}')
-                
-                # Use webdriver-manager to get the correct ChromeDriver
-                service = Service(ChromeDriverManager().install())
-                
-                # Create driver
-                self.driver = webdriver.Chrome(service=service, options=options)
-                self.wait = WebDriverWait(self.driver, 15)
-                
-                self.logger.info("Chrome initialized successfully with user profile")
-                
-            except Exception as profile_error:
-                self.logger.warning(f"Failed with profile: {str(profile_error)}")
-                self.logger.info("Trying without profile...")
-                
-                # Create new options without profile
-                options = Options()
-                options.add_argument('--start-maximized')
-                options.add_argument('--disable-blink-features=AutomationControlled')
-                options.add_argument('--no-sandbox')
-                options.add_argument('--disable-dev-shm-usage')
-                options.add_experimental_option("excludeSwitches", ["enable-automation"])
-                options.add_experimental_option('useAutomationExtension', False)
-                options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36')
-                
-                # Use webdriver-manager to get the correct ChromeDriver
-                service = Service(ChromeDriverManager().install())
-                self.driver = webdriver.Chrome(service=service, options=options)
-                self.wait = WebDriverWait(self.driver, 15)
-                
-                self.logger.info("Chrome initialized successfully without profile")
-            
-            # Execute script to hide webdriver property
+            # Hide the fact that this is automated (helps with detection)
             self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
             
-            # Maximize window
-            self.driver.maximize_window()
-            time.sleep(1)
-            
-            self.logger.info("WebDriver setup completed successfully")
+            self.logger.info("Chrome started successfully with fresh profile")
             return True
             
         except Exception as e:
-            self.logger.error(f"Failed to initialize WebDriver: {str(e)}")
-            if hasattr(self, 'driver') and self.driver:
+            self.logger.error(f"Failed to start Chrome: {str(e)}")
+            return False
+
+    def login_to_dice(self) -> bool:
+        """Handle the two-step Dice login process"""
+        try:
+            from config import DICE_LOGIN
+            
+            self.logger.info("Starting Dice login process...")
+            
+            # Navigate to login page
+            self.driver.get("https://www.dice.com/dashboard/login")
+            time.sleep(3)  # Allow page to load
+            
+            # Step 1: Enter email and click Continue
+            self.logger.info("Entering email address...")
+            email_input = self.wait.until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='email']"))
+            )
+            email_input.clear()
+            email_input.send_keys(DICE_LOGIN['email'])
+            
+            # Click Continue button
+            continue_button = self.driver.find_element(By.CSS_SELECTOR, "button[data-testid='sign-in-button']")
+            continue_button.click()
+            time.sleep(3)  # Wait for password form to appear
+            
+            # Step 2: Enter password and click Sign In
+            self.logger.info("Entering password...")
+            password_input = self.wait.until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='password']"))
+            )
+            password_input.clear()
+            password_input.send_keys(DICE_LOGIN['password'])
+            
+            # Click Sign In button
+            signin_button = self.driver.find_element(By.CSS_SELECTOR, "button[data-testid='submit-password']")
+            signin_button.click()
+            time.sleep(10)  # Wait for login to complete
+            
+            # Step 3: Verify successful login
+            return self.verify_login_success()
+            
+        except Exception as e:
+            self.logger.error(f"Login failed: {str(e)}")
+            return False
+
+    def verify_login_success(self) -> bool:
+        """Verify that login was successful by checking for user name"""
+        try:
+            # Check if we're on the home feed page
+            if "home-feed" in self.driver.current_url:
+                self.logger.info("Successfully reached home feed page")
+                
+                # Look for the user name in the dropdown to confirm login
                 try:
-                    self.driver.quit()
+                    user_dropdown = self.wait.until(
+                        EC.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Zahid Anwar')]"))
+                    )
+                    self.logger.info("Login verified - user name found in header")
+                    return True
                 except:
-                    pass
+                    self.logger.warning("On home feed but couldn't find user name - assuming login worked")
+                    return True
+            else:
+                self.logger.error(f"Login may have failed - current URL: {self.driver.current_url}")
+                return False
+                
+        except Exception as e:
+            self.logger.error(f"Error verifying login: {str(e)}")
             return False
 
     def random_delay(self, delay_type: str):
@@ -1518,7 +1533,14 @@ class DiceBot:
         try:
             if not self.setup_driver():
                 return
+            
                 
+            # Login to Dice
+            if not self.login_to_dice():
+                self.logger.error("Failed to login to Dice")
+                return
+                
+            self.logger.info("Successfully logged in - proceeding with job search...")
             # Initialize the Gemini service for API key monitoring
             gemini_service = GeminiService()
                 

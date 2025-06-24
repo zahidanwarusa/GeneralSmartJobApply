@@ -39,7 +39,12 @@ API_WARNING_THRESHOLD = 0.85  # Warn when usage reaches 85% of limit
 # Chrome Settings
 CHROME_PROFILE = {
     'user_data_dir': 'C:\\Users\\ABC\\AppData\\Local\\Google\\Chrome\\User Data',
-    'profile_directory': 'Profile 1'
+    'profile_directory': 'Profile 2'
+}
+
+DICE_LOGIN = {
+    'email': 'zahidsdet@gmail.com',
+    'password': 'Woodbridge@2023'
 }
 
 # ChromeDriver path
