@@ -1,17 +1,56 @@
-Job Title: SDET (Software Development Engineer in Test)
- 
-Location: Remote 
-Experience: 5–8 years
-Employment Type: Contract - 6 months to start but multi-year project 
-$50/hr on w2
-Client : Excelsoft
+Role:QA
+Location: Remote
+Job Responsibilities:
 
-Required Skills and Experience
-5–8 years of experience as an SDET, QA Automation Engineer, or Test Developer.
-Strong coding skills in Java or Python for automation framework development.
-Hands-on experience with test automation tools/frameworks: Selenium, Cypress, Playwright, or REST Assured.
-Experience with API testing (Postman, REST Assured, Karate, etc.).
-Good understanding of DevOps and CI/CD pipelines — Jenkins, GitHub Actions, or AWS CodePipeline.
-Exposure to AWS services such as Lambda, ECS, CloudWatch, or S3 for test execution and reporting.
-Knowledge of database testing (SQL and NoSQL) and test data automation.
-Strong analytical and debugging skills in distributed or microservices-based environments.
+Create detailed, comprehensive and well-structured test plans and test cases
+
+Estimate, prioritize, plan and coordinate testing activities
+
+Performs quality assurance testing, automation as needed.
+
+Identify, record, document thoroughly and track bugs (root cause analysis)
+
+Perform thorough regression testing when bugs are resolved
+
+Develop and apply testing processes for new and existing products to meet business needs
+
+Communicates with multiple levels of personnel
+
+Documents and submits status reports
+
+Documents testing results and coordinates with developers on test issues
+
+Stay up-to-date with new testing tools and test strategies
+
+Collaboration with different development teams
+
+ 
+
+Proven work experience in software quality assurance and development
+
+Strong knowledge of software QA methodologies, tools and processes
+
+Experience in writing clear, concise and comprehensive test plans and test cases that meet the corporate standards and industry best practices
+
+Solid knowledge of SQL and Scripting
+
+Solid Experience in web application automation using Selenium and Java
+
+Strong understanding of multiple platforms and complex processes - Java,REST Api, ETL tools (Informatica), Database and able to perform QA/Testing on them
+
+Experience with various test management tools like ALM, JIRA
+
+Experience working in an Agile/Scrum development process
+
+Experience with performance testing
+
+Experience with automated testing tools.
+
+Must be able to manage multiple assignments simultaneously and have strong organizational skills
+
+Good knowledge of security protocols including OAuth, IDM and SSO.
+
+Bachelor’s Degree or related experience
+
+6+ years’ experience as a QA Analyst, with roles of increasing responsibility and complexity
+
