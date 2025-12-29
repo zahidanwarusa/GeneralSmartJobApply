@@ -8,7 +8,7 @@ def index():
     """Landing page"""
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
-    return render_template('index.html')
+    return render_template('landing.html')
 
 @main_bp.route('/dashboard')
 @login_required
