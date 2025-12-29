@@ -44,6 +44,7 @@
             align-items: center;
             position: relative;
             overflow: hidden;
+            padding: 80px 0 60px;
         }
 
         .hero-section::before {
@@ -79,19 +80,19 @@
         }
 
         .hero-title {
-            font-size: 4rem;
+            font-size: 3rem;
             font-weight: 800;
-            line-height: 1.1;
+            line-height: 1.2;
             color: var(--white);
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             letter-spacing: -0.02em;
         }
 
         .hero-subtitle {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 400;
             color: var(--gray-300);
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             max-width: 600px;
         }
 
@@ -181,18 +182,18 @@
         /* Stats Section */
         .stats-section {
             background: var(--white);
-            padding: 4rem 0;
+            padding: 3rem 0;
             border-top: 1px solid var(--gray-200);
             border-bottom: 1px solid var(--gray-200);
         }
 
         .stat-item {
             text-align: center;
-            padding: 1.5rem;
+            padding: 1rem;
         }
 
         .stat-number {
-            font-size: 3.5rem;
+            font-size: 2.5rem;
             font-weight: 800;
             color: var(--black);
             line-height: 1;
@@ -201,7 +202,7 @@
 
         .stat-label {
             color: var(--gray-600);
-            font-size: 0.95rem;
+            font-size: 0.875rem;
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -210,29 +211,29 @@
         /* Features Section */
         .features-section {
             background: var(--gray-50);
-            padding: 6rem 0;
+            padding: 4rem 0;
         }
 
         .section-title {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: 800;
             color: var(--black);
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             text-align: center;
         }
 
         .section-subtitle {
-            font-size: 1.25rem;
+            font-size: 1.125rem;
             color: var(--gray-600);
             text-align: center;
-            margin-bottom: 4rem;
+            margin-bottom: 3rem;
         }
 
         .feature-card {
             background: var(--white);
             border: 1px solid var(--gray-200);
             border-radius: 12px;
-            padding: 2.5rem;
+            padding: 2rem;
             transition: all 0.4s ease;
             height: 100%;
             position: relative;
@@ -555,25 +556,25 @@
             <div class="row">
                 <div class="col-6 col-md-3">
                     <div class="stat-item">
-                        <div class="stat-number">10K+</div>
+                        <div class="stat-number" data-target="10000" data-suffix="K+">0</div>
                         <div class="stat-label">Resumes Created</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="stat-item">
-                        <div class="stat-number">95%</div>
+                        <div class="stat-number" data-target="95" data-suffix="%">0</div>
                         <div class="stat-label">Success Rate</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="stat-item">
-                        <div class="stat-number">5K+</div>
+                        <div class="stat-number" data-target="5000" data-suffix="K+">0</div>
                         <div class="stat-label">Happy Users</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="stat-item">
-                        <div class="stat-number">24/7</div>
+                        <div class="stat-number" data-target="24" data-suffix="/7">0</div>
                         <div class="stat-label">AI Available</div>
                     </div>
                 </div>
@@ -758,6 +759,65 @@
                 navbar.classList.remove('scrolled');
             }
         });
+
+        // Animated Counter for Stats
+        function animateCounter(element) {
+            const target = parseInt(element.getAttribute('data-target'));
+            const suffix = element.getAttribute('data-suffix') || '';
+            const duration = 2000; // 2 seconds
+            const increment = target / (duration / 16); // 60fps
+            let current = 0;
+
+            const updateCounter = () => {
+                current += increment;
+                if (current < target) {
+                    // Format number based on target value
+                    if (target >= 1000) {
+                        // For 10K+ and 5K+, show as whole number
+                        element.textContent = Math.floor(current / 1000) + suffix;
+                    } else {
+                        // For percentages and other numbers
+                        element.textContent = Math.floor(current) + suffix;
+                    }
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    // Final value
+                    if (target >= 1000) {
+                        element.textContent = Math.floor(target / 1000) + suffix;
+                    } else {
+                        element.textContent = target + suffix;
+                    }
+                }
+            };
+
+            updateCounter();
+        }
+
+        // Intersection Observer for triggering animation when stats come into view
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statNumbers = entry.target.querySelectorAll('.stat-number');
+                    statNumbers.forEach((stat, index) => {
+                        setTimeout(() => {
+                            animateCounter(stat);
+                        }, index * 100); // Stagger animation by 100ms
+                    });
+                    observer.unobserve(entry.target); // Only animate once
+                }
+            });
+        }, observerOptions);
+
+        // Observe the stats section
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            observer.observe(statsSection);
+        }
     </script>
 </body>
 </html>
