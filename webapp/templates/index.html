@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}SmartApply Pro - AI-Powered Resume Optimization{% endblock %}
+
+{% block body %}
+<div class="auth-container">
+    <div class="auth-box" style="max-width: 600px; text-align: center;">
+        <div class="auth-logo">
+            <h1 style="font-size: 36px;">SmartApply Pro</h1>
+            <p style="font-size: 16px; margin-top: 16px;">
+                AI-Powered Resume Optimization for Job Applications
+            </p>
+        </div>
+
+        <div style="margin: 40px 0;">
+            <p style="color: var(--gray-700); line-height: 1.8;">
+                Optimize your resume for every job application using advanced AI technology.
+                Stand out from the competition with tailored resumes that match job requirements perfectly.
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 16px; justify-content: center; margin-top: 32px;">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
+                Get Started Free
+            </a>
+            <a href="{{ url_for('auth.login') }}" class="btn" style="border: 1px solid var(--gray-300);">
+                Sign In
+            </a>
+        </div>
+
+        <div style="margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--gray-200);">
+            <h3 style="font-size: 18px; margin-bottom: 24px;">Key Features</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; text-align: left;">
+                <div>
+                    <h4 style="font-size: 14px; margin-bottom: 8px;">🎯 Job-Specific Optimization</h4>
+                    <p class="text-small text-muted">Tailor your resume for each job application</p>
+                </div>
+                <div>
+                    <h4 style="font-size: 14px; margin-bottom: 8px;">🤖 AI-Powered</h4>
+                    <p class="text-small text-muted">Google Gemini AI analyzes and optimizes</p>
+                </div>
+                <div>
+                    <h4 style="font-size: 14px; margin-bottom: 8px;">📊 Track Applications</h4>
+                    <p class="text-small text-muted">Monitor all your job applications</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

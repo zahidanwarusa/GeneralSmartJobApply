@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - SmartApply Pro{% endblock %}
+
+{% block body %}
+<div style="padding: 40px; text-align: center;">
+    <h1>Welcome to SmartApply Pro Dashboard</h1>
+    <p>Dashboard UI will be built in Week 3</p>
+    <p>Currently logged in as: {{ current_user.full_name or current_user.username }}</p>
+    <br>
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-primary">Logout</a>
+</div>
+{% endblock %}

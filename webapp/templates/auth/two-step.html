@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Two Step Verification - SmartApply Pro</title>
+    <meta name="description" content="Two-step verification for SmartApply Pro" />
+    <meta name="author" content="SmartApply Pro" />
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" type="text/css">
+
+    <!--Material Icon -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/materialdesignicons.min.css') }}" />
+
+    <!-- Custom  Css -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/heyauth.css') }}" />
+</head>
+
+<body>
+    <!-- START -->
+    <div class="account-pages">
+        <div class="container">
+            <div class="row g-0 bg-white align-items-center">
+
+                <div class="col-lg-6">
+                    <div class="bg-login">
+                        <img src="{{ url_for('static', filename='img/bg-login-1.png') }}" class="img-fluid" alt="">
+                        <div class="auth-contain">
+                            <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-indicators">
+                                    <button type="button" data-bs-target="#carouselExampleIndicators"
+                                        data-bs-slide-to="0" class="active" aria-current="true"
+                                        aria-label="Slide 1"></button>
+                                    <button type="button" data-bs-target="#carouselExampleIndicators"
+                                        data-bs-slide-to="1" aria-label="Slide 2"></button>
+                                    <button type="button" data-bs-target="#carouselExampleIndicators"
+                                        data-bs-slide-to="2" aria-label="Slide 3"></button>
+                                </div>
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <div class="text-center text-white my-4 p-4">
+                                            <h3>Secure Your Account</h3>
+                                            <p class="text-white-50 f-20 mt-3">Two-step verification adds an extra layer of security to your SmartApply Pro account.</p>
+                                        </div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <div class="text-center text-white my-4 p-4">
+                                            <h3>AI-Powered Optimization</h3>
+                                            <p class="text-white-50 f-20 mt-3">Let SmartApply Pro optimize your resume with cutting-edge AI technology.</p>
+                                        </div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <div class="text-center text-white my-4 p-4">
+                                            <h3>Track Your Applications</h3>
+                                            <p class="text-white-50 f-20 mt-3">Keep all your job applications organized in one place.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+
+                <div class="col-lg-6">
+                    <div class="auth-box">
+                        <div class="mb-4 mb-md-5 text-center">
+                            <a href="{{ url_for('main.index') }}" class="auth-logo">
+                                <h2 class="fw-bold text-dark">SmartApply Pro</h2>
+                            </a>
+                        </div>
+
+                        <div class="auth-content">
+                            <div class="text-center mb-4">
+                                <h4>Verify Your Email</h4>
+                                <p class="text-muted">Please enter the 4 digit code sent to <span class="fw-semibold">{{ email or 'your email' }}</span></p>
+                            </div>
+
+                            <!-- Flash Messages -->
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    {% for category, message in messages %}
+                                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                            {{ message }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+
+                            <form method="POST" action="{{ url_for('auth.verify_two_step') }}">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <div class="mb-3">
+                                            <label for="digit1-input" class="visually-hidden">Digit 1</label>
+                                            <input type="text" class="form-control form-control-lg text-center"
+                                                onkeyup="moveToNext(this, 2)" maxlength="1" id="digit1-input" name="digit1" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-3">
+                                        <div class="mb-3">
+                                            <label for="digit2-input" class="visually-hidden">Digit 2</label>
+                                            <input type="text" class="form-control form-control-lg text-center"
+                                                onkeyup="moveToNext(this, 3)" maxlength="1" id="digit2-input" name="digit2" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-3">
+                                        <div class="mb-3">
+                                            <label for="digit3-input" class="visually-hidden">Digit 3</label>
+                                            <input type="text" class="form-control form-control-lg text-center"
+                                                onkeyup="moveToNext(this, 4)" maxlength="1" id="digit3-input" name="digit3" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-3">
+                                        <div class="mb-3">
+                                            <label for="digit4-input" class="visually-hidden">Digit 4</label>
+                                            <input type="text" class="form-control form-control-lg text-center"
+                                                maxlength="1" id="digit4-input" name="digit4" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <button class="btn btn-dark shadow-none w-100" type="submit">Confirm</button>
+                                </div>
+
+                                <hr>
+
+                                <div class="mt-3 text-center">
+                                    <p class="mb-0 text-muted">Didn't receive a code? <a href="{{ url_for('auth.resend_code') }}"
+                                            class="text-success fw-bold text-decoraton-underline ms-1"> Resend
+                                        </a></p>
+                                </div>
+                            </form>
+
+                            <div class="row justify-content-center align-items-center mt-4 mt-md-5">
+                                <div class="col-12 text-center">
+                                    <p class="text-muted f-14 mb-0">Powered by AI Technology</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+            </div>
+        </div>
+    </div>
+    <!-- END -->
+
+    <!-- bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Auto-focus script -->
+    <script>
+        function moveToNext(current, nextFieldID) {
+            if (current.value.length >= current.maxLength) {
+                if (nextFieldID <= 4) {
+                    document.getElementById('digit' + nextFieldID + '-input').focus();
+                }
+            }
+        }
+
+        // Auto-focus first input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('digit1-input').focus();
+        });
+    </script>
+</body>
+</html>

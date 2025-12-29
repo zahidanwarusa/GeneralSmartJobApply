@@ -1,0 +1,212 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    RESUME TO JSON CONVERTER - QUICK START                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ WHAT YOU NEED                                                                │
+└──────────────────────────────────────────────────────────────────────────────┘
+  ✓ Your resume file (PDF, DOCX, or TXT)
+  ✓ All dependencies already installed
+  ✓ Gemini API keys already configured
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 3-STEP QUICK START                                                           │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  STEP 1: Convert Your Resume
+  ────────────────────────────
+  python resume_converter.py --input resume.pdf
+
+  STEP 2: Review the Output
+  ──────────────────────────
+  notepad data\resumes\Your_Name_resume.json
+
+  STEP 3: Set as Default
+  ───────────────────────
+  copy data\resumes\Your_Name_resume.json zahid_resume_v2.json
+
+  Done! Now SmartApplyPro will use your resume for all applications.
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ COMMON COMMANDS                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  Basic Conversion:
+  ─────────────────
+  python resume_converter.py --input resume.pdf
+
+  Custom Output File:
+  ───────────────────
+  python resume_converter.py --input resume.docx --output my_resume.json
+
+  Override Name:
+  ──────────────
+  python resume_converter.py --input resume.txt --name "John Doe"
+
+  Optimize for Job:
+  ─────────────────
+  python resume_converter.py --input resume.pdf --optimize --job-file data/jobs/job.json
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ COMPLETE WORKFLOW: Apply for a Job                                          │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  You have: resume.pdf + job_description.txt
+
+  Step 1: Convert job description
+  ────────────────────────────────
+  python main.py --mode process-description --job-description job_description.txt --output-type save_json_only
+
+  Step 2: Convert and optimize resume
+  ────────────────────────────────────
+  python resume_converter.py --input resume.pdf --optimize --job-file data/jobs/job.json
+
+  Step 3: Generate final documents
+  ─────────────────────────────────
+  python main.py --mode resume --job-file data/jobs/job.json
+
+  Step 4: Get your files
+  ──────────────────────
+  Check data/resumes/ for:
+  - Optimized resume DOCX
+  - Cover letter TXT
+  - Resume JSON
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ COMMAND OPTIONS                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  --input / -i      Your resume file (PDF/DOCX/TXT)        [REQUIRED]
+  --output / -o     Output JSON file path                  [Optional]
+  --name / -n       Your name (override extraction)        [Optional]
+  --optimize        Optimize for job description           [Optional]
+  --job-file / -j   Job JSON file (needed for optimize)    [Optional]
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ OUTPUT STRUCTURE                                                             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  Your JSON file will have:
+
+  ✓ header              - Name, email, phone, LinkedIn
+  ✓ professional_summary - Title, track record, expertise, value
+  ✓ core_competencies   - 8 skill categories
+  ✓ professional_experience - Work history with achievements
+  ✓ education           - Degrees and universities
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ WHAT OPTIMIZATION DOES                                                       │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  When you use --optimize:
+
+  → Highlights skills matching the job with **bold**
+  → Tailors professional summary to the role
+  → Emphasizes relevant work experience
+  → Strategically places keywords
+  → Prioritizes matching competencies
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ TROUBLESHOOTING                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  Problem: Name extracted wrong
+  Solution: python resume_converter.py --input resume.pdf --name "Correct Name"
+
+  Problem: Missing info in output
+  Solution: Edit the JSON file manually in notepad
+
+  Problem: Conversion failed
+  Solution: Try again (AI responses vary), check resume format
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ API USAGE                                                                    │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  Basic conversion:      1 Gemini API call
+  With optimization:     4 Gemini API calls
+
+  Daily limit:          1,600 calls (800 per key × 2 keys)
+
+  You can convert:
+  → 1,600 basic conversions/day OR
+  → 400 optimized conversions/day
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ INTEGRATION OPTIONS                                                          │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  Option 1: One-Time Setup
+  ─────────────────────────
+  1. Convert your resume
+  2. Copy to zahid_resume_v2.json
+  3. Use SmartApplyPro normally
+
+  Option 2: Per-Job Optimization
+  ───────────────────────────────
+  1. Convert job description
+  2. Optimize resume for job
+  3. Generate final documents
+  4. Apply!
+
+  Option 3: Automation
+  ────────────────────
+  1. Set your resume as default
+  2. Run: python main.py --mode auto
+  3. Let it apply automatically
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ EXAMPLE: First-Time User                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  python resume_converter.py --input MyResume.pdf --name "John Doe"
+
+  → Output: data/resumes/John_Doe_resume.json
+
+  notepad data\resumes\John_Doe_resume.json
+
+  → Review and verify the content
+
+  copy data\resumes\John_Doe_resume.json zahid_resume_v2.json
+
+  → Now set as default
+
+  python main.py --mode auto
+
+  → Start applying to jobs!
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ FILES CREATED                                                                │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  resume_converter.py              - Main tool
+  README_RESUME_CONVERTER.md       - Overview
+  RESUME_CONVERTER_GUIDE.md        - Complete documentation
+  example_resume_conversion.md     - Examples and workflows
+  RESUME_CONVERTER_SUMMARY.txt     - Detailed reference
+  QUICK_START_RESUME_CONVERTER.txt - This file
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ WHERE TO GO NEXT                                                             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  Quick Examples:        example_resume_conversion.md
+  Full Documentation:    RESUME_CONVERTER_GUIDE.md
+  Complete Reference:    RESUME_CONVERTER_SUMMARY.txt
+  Overview:              README_RESUME_CONVERTER.md
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ READY TO START?                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  Run this command with YOUR resume file:
+
+  ┌────────────────────────────────────────────────────────────────────────────┐
+  │ python resume_converter.py --input your_resume.pdf                         │
+  └────────────────────────────────────────────────────────────────────────────┘
+
+  Then check: data/resumes/
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║               Your resume → JSON → Optimized applications → Jobs!            ║
+╚══════════════════════════════════════════════════════════════════════════════╝

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(findstr:*)",
+      "Bash(pip show:*)",
+      "Bash(dir /B resume_converter.* RESUME_CONVERTER*.* example_resume_conversion.md)",
+      "Bash(python convert_my_resume.py:*)",
+      "Bash(pip install:*)",
+      "Bash(python init_db.py:*)",
+      "Bash(python app.py:*)",
+      "Bash(curl:*)",
+      "Bash(dir:*)",
+      "Bash(python:*)",
+      "Bash(ls:*)"
+    ]
+  }
+}
