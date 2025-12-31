@@ -9,17 +9,16 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
+    supabase_user_id = db.Column(db.String(255), unique=True, index=True)  # UUID from Supabase Auth
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     username = db.Column(db.String(80), unique=True, nullable=False, index=True)
-    password_hash = db.Column(db.String(255), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=True)  # Nullable for OAuth users
 
     # Profile information
     full_name = db.Column(db.String(120))
-    phone = db.Column(db.String(20))
 
     # Account status
     is_active = db.Column(db.Boolean, default=True)
-    is_verified = db.Column(db.Boolean, default=False)
 
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

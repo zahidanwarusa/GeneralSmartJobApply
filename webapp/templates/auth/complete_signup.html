@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Complete Your Registration - SmartApply Pro{% endblock %}
+
+{% block body %}
+<div class="auth-page">
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center bg-gradient-primary">
+                <div class="text-center text-white p-4">
+                    <h2 class="fw-bold mb-4">Welcome to SmartApply Pro!</h2>
+                    <p class="lead">You're almost done! Just a few more details to complete your account.</p>
+                    <div class="mt-5">
+                        <i class="mdi mdi-account-check" style="font-size: 100px;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="auth-box">
+                    <div class="mb-4 mb-md-5 text-center">
+                        <a href="{{ url_for('main.index') }}" class="auth-logo">
+                            <h2 class="fw-bold text-dark">SmartApply Pro</h2>
+                        </a>
+                    </div>
+
+                    <div class="auth-content">
+                        <div class="mb-4 pb-3 text-center">
+                            <h4 class="fw-normal">Complete Your <span class="fw-bold">Registration</span></h4>
+                            <p class="text-muted mb-0">Authenticated with {{ oauth_data.provider|title }}. Please provide additional information.</p>
+                        </div>
+
+                        <!-- Display flash messages -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <!-- OAuth Info Card -->
+                        <div class="card mb-4 bg-light">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    {% if oauth_data.picture %}
+                                    <img src="{{ oauth_data.picture }}" alt="Profile" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                                    {% else %}
+                                    <div class="rounded-circle bg-primary text-white me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="mdi mdi-account" style="font-size: 24px;"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <h6 class="mb-0">{{ oauth_data.email }}</h6>
+                                        <small class="text-muted">Authenticated with {{ oauth_data.provider|title }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Registration Form -->
+                        <form method="POST" action="{{ url_for('auth.complete_signup') }}">
+                            <div class="mb-3">
+                                <label for="full_name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="full_name"
+                                       name="full_name"
+                                       value="{{ oauth_data.full_name }}"
+                                       placeholder="Enter your full name"
+                                       required>
+                                <div class="form-text">Your real name as you'd like it to appear</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="username"
+                                       name="username"
+                                       value="{{ oauth_data.email.split('@')[0] }}"
+                                       placeholder="Choose a username"
+                                       required
+                                       pattern="[a-zA-Z0-9_]+"
+                                       title="Username can only contain letters, numbers, and underscores">
+                                <div class="form-text">Letters, numbers, and underscores only</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email"
+                                       class="form-control"
+                                       id="email"
+                                       value="{{ oauth_data.email }}"
+                                       disabled>
+                                <div class="form-text">From your {{ oauth_data.provider|title }} account</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="terms" required>
+                                    <label class="form-check-label" for="terms">
+                                        I agree to the <a href="#" class="text-success">Terms of Service</a> and <a href="#" class="text-success">Privacy Policy</a>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="mdi mdi-check me-2"></i>Complete Registration
+                                </button>
+                            </div>
+
+                            <div class="text-center">
+                                <a href="{{ url_for('auth.register') }}" class="text-muted">
+                                    <i class="mdi mdi-arrow-left me-1"></i>Cancel and start over
+                                </a>
+                            </div>
+                        </form>
+
+                        <div class="row justify-content-center align-items-center mt-4 mt-md-5">
+                            <div class="col-12 text-center">
+                                <p class="text-muted f-14 mb-0">Secured by Supabase Authentication</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .auth-page {
+        min-height: 100vh;
+    }
+    .auth-box {
+        padding: 40px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    @media (max-width: 991px) {
+        .auth-box {
+            min-height: auto;
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}

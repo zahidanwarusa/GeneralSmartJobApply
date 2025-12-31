@@ -3,11 +3,164 @@
 {% block title %}Dashboard - SmartApply Pro{% endblock %}
 
 {% block body %}
-<div style="padding: 40px; text-align: center;">
-    <h1>Welcome to SmartApply Pro Dashboard</h1>
-    <p>Dashboard UI will be built in Week 3</p>
-    <p>Currently logged in as: {{ current_user.full_name or current_user.username }}</p>
-    <br>
-    <a href="{{ url_for('auth.logout') }}" class="btn btn-primary">Logout</a>
+<div class="container py-5">
+    <!-- Success Alert -->
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Login Successful!</strong> You have successfully authenticated via OAuth.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body text-center py-5">
+                    <h1 class="display-4 mb-3">Welcome to SmartApply Pro</h1>
+                    <p class="lead text-muted">OAuth Authentication Verified!</p>
+                    <hr class="my-4">
+                    <h3 class="text-primary">{{ current_user.full_name or current_user.username }}</h3>
+                    <p class="text-muted">{{ current_user.email }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Information -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Account Details</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <td class="text-muted"><strong>User ID:</strong></td>
+                                <td>{{ current_user.id }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted"><strong>Username:</strong></td>
+                                <td>{{ current_user.username }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted"><strong>Email:</strong></td>
+                                <td>{{ current_user.email }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted"><strong>Full Name:</strong></td>
+                                <td>{{ current_user.full_name or 'Not set' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted"><strong>Account Status:</strong></td>
+                                <td>
+                                    {% if current_user.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted"><strong>Last Login:</strong></td>
+                                <td>{{ current_user.last_login.strftime('%Y-%m-%d %H:%M:%S') if current_user.last_login else 'N/A' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">OAuth Session Info</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <td class="text-muted"><strong>Authentication:</strong></td>
+                                <td><span class="badge bg-success">OAuth Connected</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted"><strong>Provider:</strong></td>
+                                <td>Google / Supabase</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted"><strong>Session Active:</strong></td>
+                                <td>
+                                    {% if session.get('access_token') %}
+                                        <span class="badge bg-success">Yes</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">No token found</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted"><strong>Supabase User ID:</strong></td>
+                                <td>{{ session.get('supabase_user_id', 'Not available')[:20] }}...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h2 class="text-primary">0</h2>
+                    <p class="text-muted mb-0">Resumes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h2 class="text-success">0</h2>
+                    <p class="text-muted mb-0">Applications</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h2 class="text-info">0</h2>
+                    <p class="text-muted mb-0">Optimizations</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body text-center">
+                    <p class="text-muted mb-3">Dashboard UI will be fully built in Week 3</p>
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-danger btn-lg">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .card {
+        border: none;
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>
 {% endblock %}

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completing Sign In...</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .auth-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        p {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="spinner"></div>
+        <h2>Completing Sign In</h2>
+        <p id="status">Processing your authentication...</p>
+    </div>
+
+    <script>
+        // Parse URL hash to get tokens
+        function getHashParams() {
+            const hash = window.location.hash.substring(1);
+            const params = {};
+            hash.split('&').forEach(item => {
+                const [key, value] = item.split('=');
+                if (key) params[key] = decodeURIComponent(value);
+            });
+            return params;
+        }
+
+        // Get tokens from URL
+        const params = getHashParams();
+        const statusEl = document.getElementById('status');
+
+        // If no hash or no access_token, redirect to landing page
+        if (!window.location.hash || Object.keys(params).length === 0) {
+            window.location.href = '/landing';
+            return;
+        }
+
+        if (params.access_token) {
+            console.log('[DEBUG] Access token found in URL hash');
+            console.log('[DEBUG] Token length:', params.access_token.length);
+            statusEl.textContent = 'Verifying your credentials...';
+
+            // Send tokens to backend to create session
+            console.log('[DEBUG] Sending tokens to /auth/supabase/session');
+            fetch('/auth/supabase/session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    access_token: params.access_token,
+                    refresh_token: params.refresh_token,
+                    expires_at: params.expires_at,
+                    provider_token: params.provider_token
+                })
+            })
+            .then(response => {
+                console.log('[DEBUG] Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('[DEBUG] Response data:', data);
+                if (data.success) {
+                    console.log('[DEBUG] Authentication successful!');
+
+                    // Check if requires form (for signup)
+                    if (data.requires_form) {
+                        statusEl.textContent = 'Please complete your registration...';
+                        setTimeout(() => {
+                            console.log('[DEBUG] Redirecting to complete signup form');
+                            window.location.href = data.redirect;
+                        }, 500);
+                    } else {
+                        statusEl.textContent = 'Success! Redirecting to dashboard...';
+                        setTimeout(() => {
+                            console.log('[DEBUG] Redirecting to /dashboard');
+                            window.location.href = '/dashboard';
+                        }, 500);
+                    }
+                } else {
+                    console.error('[ERROR] Authentication failed:', data.message);
+                    statusEl.textContent = 'Error: ' + (data.message || 'Authentication failed');
+                    statusEl.style.color = '#dc3545';
+
+                    // Use custom redirect if provided, otherwise default to login
+                    const redirectUrl = data.redirect || '/auth/login';
+                    setTimeout(() => {
+                        window.location.href = redirectUrl + '?error=' + encodeURIComponent(data.message || 'Authentication failed');
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                console.error('[ERROR] Network error:', error);
+                statusEl.textContent = 'Error: Could not connect to server';
+                statusEl.style.color = '#dc3545';
+                setTimeout(() => {
+                    window.location.href = '/auth/login?error=network_error';
+                }, 3000);
+            });
+        } else if (params.error) {
+            console.error('[ERROR] OAuth error:', params.error);
+            statusEl.textContent = 'Error: ' + (params.error_description || params.error);
+            statusEl.style.color = '#dc3545';
+            setTimeout(() => {
+                window.location.href = '/auth/login?error=' + encodeURIComponent(params.error);
+            }, 3000);
+        } else {
+            console.warn('[WARN] No authentication data found in URL hash');
+            statusEl.textContent = 'No authentication data found';
+            statusEl.style.color = '#ffc107';
+            setTimeout(() => {
+                window.location.href = '/auth/login';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
