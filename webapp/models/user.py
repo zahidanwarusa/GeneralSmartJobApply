@@ -16,6 +16,11 @@ class User(UserMixin, db.Model):
 
     # Profile information
     full_name = db.Column(db.String(120))
+    date_of_birth = db.Column(db.Date, nullable=True)
+    gender = db.Column(db.String(20), nullable=True)  # male, female, other, prefer_not_to_say
+    country = db.Column(db.String(100), nullable=True)
+    language = db.Column(db.String(50), nullable=True)
+    profile_completed = db.Column(db.Boolean, default=False)  # Track if onboarding is complete
 
     # Account status
     is_active = db.Column(db.Boolean, default=True)

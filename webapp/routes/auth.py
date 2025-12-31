@@ -45,12 +45,33 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
 
+    from datetime import datetime
+    now = datetime.now()
+
     form = RegistrationForm()
     if form.validate_on_submit():
+        # Get additional fields from request
+        date_of_birth = request.form.get('date_of_birth')
+        gender = request.form.get('gender')
+        country = request.form.get('country')
+        language = request.form.get('language')
+
+        # Parse date of birth
+        try:
+            dob = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
+        except (ValueError, TypeError):
+            flash('Invalid date format', 'error')
+            return render_template('auth/register.html', form=form, now=now)
+
         user = User(
             email=form.email.data.lower(),
             username=form.username.data.lower(),
-            full_name=form.full_name.data
+            full_name=form.full_name.data,
+            date_of_birth=dob,
+            gender=gender,
+            country=country,
+            language=language,
+            profile_completed=True
         )
         user.set_password(form.password.data)
 
@@ -60,14 +81,16 @@ def register():
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('auth.login'))
 
-    return render_template('auth/register.html', form=form)
+    return render_template('auth/register.html', form=form, now=now)
 
 @auth_bp.route('/logout')
 def logout():
     """User logout"""
     logout_user()
+    # Clear all flash messages
+    session.pop('_flashes', None)
     flash('You have been logged out.', 'info')
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('main.index'))
 
 @auth_bp.route('/complete-signup', methods=['GET', 'POST'])
 def complete_signup():
@@ -82,18 +105,32 @@ def complete_signup():
         # Get form data
         username = request.form.get('username')
         full_name = request.form.get('full_name')
+        date_of_birth = request.form.get('date_of_birth')
+        gender = request.form.get('gender')
+        country = request.form.get('country')
+        language = request.form.get('language')
         email = oauth_data['email']
 
+        from datetime import datetime
+        now = datetime.now()
+
         # Validate required fields
-        if not username or not full_name:
+        if not all([username, full_name, date_of_birth, gender, country, language]):
             flash('Please fill in all required fields', 'error')
-            return render_template('auth/complete_signup.html', oauth_data=oauth_data)
+            return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
 
         # Check if username is already taken
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             flash('Username already taken. Please choose another.', 'error')
-            return render_template('auth/complete_signup.html', oauth_data=oauth_data)
+            return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
+
+        # Parse date of birth
+        try:
+            dob = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
+        except ValueError:
+            flash('Invalid date format', 'error')
+            return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
 
         # Create user
         user = User(
@@ -101,6 +138,11 @@ def complete_signup():
             email=email,
             username=username,
             full_name=full_name,
+            date_of_birth=dob,
+            gender=gender,
+            country=country,
+            language=language,
+            profile_completed=True,
             is_active=True,
             password_hash=None  # OAuth users don't need password
         )
@@ -123,7 +165,8 @@ def complete_signup():
         return redirect(url_for('main.dashboard'))
 
     # GET request - show form
-    return render_template('auth/complete_signup.html', oauth_data=oauth_data)
+    from datetime import datetime
+    return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=datetime.now())
 
 @auth_bp.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -296,40 +339,47 @@ def oauth_callback():
     if result['success']:
         user_data = result['user']
 
-        # Check if user exists in database, if not create them
+        # Check if user exists in database
         user = User.query.filter_by(email=user_data.email).first()
 
         if not user:
-            # Create new user from OAuth data
-            user = User(
-                supabase_user_id=user_data.id,
-                email=user_data.email,
-                username=user_data.email.split('@')[0],  # Generate username from email
-                full_name=user_data.user_metadata.get('full_name', ''),
-                is_active=True
-            )
-            # OAuth users don't need password
-            user.password_hash = None
-            db.session.add(user)
-            db.session.commit()
+            # New user - redirect to complete signup form
+            metadata = user_data.user_metadata or {}
+
+            # Store OAuth data in session for registration form
+            session['oauth_signup_data'] = {
+                'supabase_user_id': user_data.id,
+                'email': user_data.email,
+                'full_name': metadata.get('full_name') or metadata.get('name', ''),
+                'picture': metadata.get('picture') or metadata.get('avatar_url', ''),
+                'provider': 'google'
+            }
+
+            # Store Supabase tokens
+            supabase_session = result['session']
+            session['access_token'] = supabase_session.access_token
+            session['refresh_token'] = supabase_session.refresh_token
+
+            return redirect(url_for('auth.complete_signup'))
         else:
+            # Existing user - log in directly
             # Update supabase_user_id if not set
             if not user.supabase_user_id:
                 user.supabase_user_id = user_data.id
                 db.session.commit()
 
-        # Log in the user
-        login_user(user, remember=True)
-        user.update_last_login()
+            # Log in the user
+            login_user(user, remember=True)
+            user.update_last_login()
 
-        # Store Supabase session data in Flask session (convert to dict for JSON serialization)
-        supabase_session = result['session']
-        session['supabase_access_token'] = supabase_session.access_token
-        session['supabase_refresh_token'] = supabase_session.refresh_token
-        session['supabase_user_id'] = user_data.id
+            # Store Supabase session data in Flask session (convert to dict for JSON serialization)
+            supabase_session = result['session']
+            session['supabase_access_token'] = supabase_session.access_token
+            session['supabase_refresh_token'] = supabase_session.refresh_token
+            session['supabase_user_id'] = user_data.id
 
-        flash(f'Welcome, {user.full_name or user.username}!', 'success')
-        return redirect(url_for('main.dashboard'))
+            flash(f'Welcome back, {user.full_name or user.username}!', 'success')
+            return redirect(url_for('main.dashboard'))
     else:
         flash(result['message'], 'error')
         return redirect(url_for('auth.login'))
