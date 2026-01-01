@@ -31,9 +31,22 @@
             --gray-900: #171717;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
             color: var(--gray-900);
+        }
+
+        * {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        img {
+            will-change: auto;
+            transform: translateZ(0);
         }
 
         /* Hero Section */
@@ -98,12 +111,6 @@
 
         .hero-image {
             position: relative;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
         }
 
         /* Navbar */
@@ -155,8 +162,7 @@
             background: var(--gray-900);
             border-color: var(--gray-900);
             color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .btn-outline-black {
@@ -176,7 +182,6 @@
         .btn-outline-black:hover {
             background: var(--white);
             color: var(--black);
-            transform: translateY(-2px);
         }
 
         /* Stats Section */
@@ -234,7 +239,7 @@
             border: 1px solid var(--gray-200);
             border-radius: 12px;
             padding: 2rem;
-            transition: all 0.4s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
             height: 100%;
             position: relative;
             overflow: hidden;
@@ -250,7 +255,7 @@
             background: linear-gradient(90deg, var(--black) 0%, var(--gray-400) 100%);
             transform: scaleX(0);
             transform-origin: left;
-            transition: transform 0.4s ease;
+            transition: transform 0.3s ease;
         }
 
         .feature-card:hover::before {
@@ -258,8 +263,7 @@
         }
 
         .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             border-color: var(--black);
         }
 
@@ -272,11 +276,6 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .feature-card:hover .feature-icon {
-            transform: scale(1.1) rotate(-5deg);
         }
 
         .feature-title {
@@ -395,8 +394,7 @@
         .btn-white:hover {
             background: transparent;
             color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255,255,255,0.2);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.15);
         }
 
         /* Footer */
@@ -453,19 +451,8 @@
         }
 
         /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         .animate-fade-in {
-            animation: fadeInUp 0.8s ease-out;
+            opacity: 1;
         }
 
         .badge-custom {
