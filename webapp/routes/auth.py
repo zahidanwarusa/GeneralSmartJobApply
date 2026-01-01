@@ -1,13 +1,16 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify
 from flask_login import login_user, logout_user, current_user
 from urllib.parse import urlparse
 from extensions import db
 from models.user import User
 from forms.auth import LoginForm, RegistrationForm
 from services.auth_service import AuthService
+from services.email_service import EmailService
+from datetime import datetime
 
 auth_bp = Blueprint('auth', __name__)
 auth_service = AuthService()
+email_service = EmailService()
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -27,6 +30,25 @@ def login():
             flash('Your account has been deactivated. Please contact support.', 'error')
             return redirect(url_for('auth.login'))
 
+        # Check if email is verified
+        if not user.email_verified:
+            # Generate new verification code
+            code = user.generate_verification_code()
+            db.session.commit()
+
+            # Store email in session
+            session['pending_verification_email'] = user.email
+
+            # Send verification email
+            email_result = email_service.send_verification_code(user.email, code)
+            if not email_result['success']:
+                print(f"[WARNING] Failed to send email: {email_result['message']}")
+                # Still show the code in console as fallback
+                print(f"[VERIFICATION CODE] Email: {user.email}, Code: {code}")
+
+            flash('Please verify your email address. A verification code has been sent.', 'warning')
+            return redirect(url_for('auth.verify_email'))
+
         login_user(user, remember=form.remember_me.data)
         user.update_last_login()
 
@@ -45,41 +67,97 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
 
-    from datetime import datetime
+    from datetime import datetime, date
     now = datetime.now()
 
     form = RegistrationForm()
     if form.validate_on_submit():
-        # Get additional fields from request
-        date_of_birth = request.form.get('date_of_birth')
-        gender = request.form.get('gender')
-        country = request.form.get('country')
-        language = request.form.get('language')
-
-        # Parse date of birth
         try:
-            dob = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
-        except (ValueError, TypeError):
-            flash('Invalid date format', 'error')
+            # Get additional fields from request
+            date_of_birth = request.form.get('date_of_birth')
+            gender = request.form.get('gender')
+            country = request.form.get('country')
+            language = request.form.get('language')
+
+            # Validate required fields
+            if not all([date_of_birth, gender, country, language]):
+                flash('Please fill in all required fields', 'error')
+                return render_template('auth/register.html', form=form, now=now)
+
+            # Validate gender value
+            valid_genders = ['male', 'female', 'other', 'prefer_not_to_say']
+            if gender not in valid_genders:
+                flash('Invalid gender selection', 'error')
+                return render_template('auth/register.html', form=form, now=now)
+
+            # Parse and validate date of birth
+            try:
+                dob = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
+
+                # Check if user is at least 13 years old
+                today = date.today()
+                age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+                if age < 13:
+                    flash('You must be at least 13 years old to register', 'error')
+                    return render_template('auth/register.html', form=form, now=now)
+
+                # Check if date is not in the future
+                if dob > today:
+                    flash('Date of birth cannot be in the future', 'error')
+                    return render_template('auth/register.html', form=form, now=now)
+
+            except (ValueError, TypeError):
+                flash('Invalid date format. Please use a valid date.', 'error')
+                return render_template('auth/register.html', form=form, now=now)
+
+            # Validate country
+            if not country or len(country) > 100:
+                flash('Invalid country selection', 'error')
+                return render_template('auth/register.html', form=form, now=now)
+
+            # Validate language
+            if not language or len(language) > 50:
+                flash('Invalid language selection', 'error')
+                return render_template('auth/register.html', form=form, now=now)
+
+            # Create new user
+            user = User(
+                email=form.email.data.lower().strip(),
+                username=form.username.data.lower().strip(),
+                full_name=form.full_name.data.strip(),
+                date_of_birth=dob,
+                gender=gender,
+                country=country,
+                language=language,
+                profile_completed=True
+            )
+            user.set_password(form.password.data)
+
+            db.session.add(user)
+            db.session.commit()
+
+            # Generate and send verification code
+            code = user.generate_verification_code()
+            db.session.commit()
+
+            # Store email in session for verification
+            session['pending_verification_email'] = user.email
+
+            # Send verification email
+            email_result = email_service.send_verification_code(user.email, code)
+            if not email_result['success']:
+                print(f"[WARNING] Failed to send email: {email_result['message']}")
+                # Still show the code in console as fallback
+                print(f"[VERIFICATION CODE] Email: {user.email}, Code: {code}")
+
+            flash('Registration successful! Please check your email for the verification code.', 'success')
+            return redirect(url_for('auth.verify_email'))
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Registration error: {str(e)}")
+            flash('An error occurred during registration. Please try again.', 'error')
             return render_template('auth/register.html', form=form, now=now)
-
-        user = User(
-            email=form.email.data.lower(),
-            username=form.username.data.lower(),
-            full_name=form.full_name.data,
-            date_of_birth=dob,
-            gender=gender,
-            country=country,
-            language=language,
-            profile_completed=True
-        )
-        user.set_password(form.password.data)
-
-        db.session.add(user)
-        db.session.commit()
-
-        flash('Registration successful! Please log in.', 'success')
-        return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html', form=form, now=now)
 
@@ -102,67 +180,113 @@ def complete_signup():
         return redirect(url_for('auth.register'))
 
     if request.method == 'POST':
-        # Get form data
-        username = request.form.get('username')
-        full_name = request.form.get('full_name')
-        date_of_birth = request.form.get('date_of_birth')
-        gender = request.form.get('gender')
-        country = request.form.get('country')
-        language = request.form.get('language')
-        email = oauth_data['email']
-
-        from datetime import datetime
+        from datetime import datetime, date
         now = datetime.now()
 
-        # Validate required fields
-        if not all([username, full_name, date_of_birth, gender, country, language]):
-            flash('Please fill in all required fields', 'error')
-            return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
-
-        # Check if username is already taken
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
-            flash('Username already taken. Please choose another.', 'error')
-            return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
-
-        # Parse date of birth
         try:
-            dob = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
-        except ValueError:
-            flash('Invalid date format', 'error')
-            return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
+            # Get form data
+            username = request.form.get('username', '').strip()
+            full_name = request.form.get('full_name', '').strip()
+            date_of_birth = request.form.get('date_of_birth')
+            gender = request.form.get('gender')
+            country = request.form.get('country')
+            language = request.form.get('language')
+            email = oauth_data['email']
 
-        # Create user
-        user = User(
-            supabase_user_id=oauth_data['supabase_user_id'],
-            email=email,
-            username=username,
-            full_name=full_name,
-            date_of_birth=dob,
-            gender=gender,
-            country=country,
-            language=language,
-            profile_completed=True,
-            is_active=True,
-            password_hash=None  # OAuth users don't need password
-        )
-        db.session.add(user)
-        db.session.commit()
+            # Validate required fields
+            if not all([username, full_name, date_of_birth, gender, country, language]):
+                flash('Please fill in all required fields', 'error')
+                return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
 
-        # Log in the user
-        login_user(user, remember=True)
-        user.update_last_login()
+            # Validate username length and format
+            if len(username) < 3 or len(username) > 80:
+                flash('Username must be between 3 and 80 characters', 'error')
+                return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
 
-        # Store Supabase tokens in session
-        session['supabase_user_id'] = oauth_data['supabase_user_id']
-        # access_token and refresh_token are already in session from OAuth flow
+            # Check if username is already taken
+            existing_user = User.query.filter_by(username=username.lower()).first()
+            if existing_user:
+                flash('Username already taken. Please choose another.', 'error')
+                return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
 
-        # Clear OAuth signup data
-        session.pop('oauth_signup_data', None)
-        session.pop('oauth_flow', None)
+            # Validate full name length
+            if len(full_name) < 2 or len(full_name) > 120:
+                flash('Full name must be between 2 and 120 characters', 'error')
+                return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
 
-        flash(f'Welcome to SmartApply Pro, {user.full_name}!', 'success')
-        return redirect(url_for('main.dashboard'))
+            # Validate gender value
+            valid_genders = ['male', 'female', 'other', 'prefer_not_to_say']
+            if gender not in valid_genders:
+                flash('Invalid gender selection', 'error')
+                return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
+
+            # Parse and validate date of birth
+            try:
+                dob = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
+
+                # Check if user is at least 13 years old
+                today = date.today()
+                age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+                if age < 13:
+                    flash('You must be at least 13 years old to register', 'error')
+                    return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
+
+                # Check if date is not in the future
+                if dob > today:
+                    flash('Date of birth cannot be in the future', 'error')
+                    return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
+
+            except (ValueError, TypeError):
+                flash('Invalid date format. Please use a valid date.', 'error')
+                return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
+
+            # Validate country
+            if not country or len(country) > 100:
+                flash('Invalid country selection', 'error')
+                return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
+
+            # Validate language
+            if not language or len(language) > 50:
+                flash('Invalid language selection', 'error')
+                return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=now)
+
+            # Create user
+            user = User(
+                supabase_user_id=oauth_data['supabase_user_id'],
+                email=email.lower().strip(),
+                username=username.lower(),
+                full_name=full_name,
+                date_of_birth=dob,
+                gender=gender,
+                country=country,
+                language=language,
+                profile_completed=True,
+                is_active=True,
+                password_hash=None  # OAuth users don't need password
+            )
+            db.session.add(user)
+            db.session.commit()
+
+            # Log in the user
+            login_user(user, remember=True)
+            user.update_last_login()
+
+            # Store Supabase tokens in session
+            session['supabase_user_id'] = oauth_data['supabase_user_id']
+            # access_token and refresh_token are already in session from OAuth flow
+
+            # Clear OAuth signup data
+            session.pop('oauth_signup_data', None)
+            session.pop('oauth_flow', None)
+
+            flash(f'Welcome to SmartApply Pro, {user.full_name}!', 'success')
+            return redirect(url_for('main.dashboard'))
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"OAuth signup completion error: {str(e)}")
+            flash('An error occurred during registration. Please try again.', 'error')
+            return render_template('auth/complete_signup.html', oauth_data=oauth_data, now=datetime.now())
 
     # GET request - show form
     from datetime import datetime
@@ -219,50 +343,6 @@ def email_verification():
     email = request.args.get('email', 'your email')
     return render_template('auth/email-verification.html', email=email)
 
-@auth_bp.route('/verify-email', methods=['POST'])
-def verify_email():
-    """Process email verification"""
-    # TODO: Implement email verification logic
-    flash('Email verified successfully!', 'success')
-    return redirect(url_for('auth.login'))
-
-@auth_bp.route('/resend-verification')
-def resend_verification():
-    """Resend verification email"""
-    # TODO: Implement resend verification email
-    flash('Verification email has been resent.', 'info')
-    return redirect(url_for('auth.email_verification'))
-
-@auth_bp.route('/two-step-verification')
-def two_step_verification():
-    """Two-step verification page"""
-    email = request.args.get('email', 'your email')
-    return render_template('auth/two-step.html', email=email)
-
-@auth_bp.route('/verify-two-step', methods=['POST'])
-def verify_two_step():
-    """Process two-step verification code"""
-    digit1 = request.form.get('digit1')
-    digit2 = request.form.get('digit2')
-    digit3 = request.form.get('digit3')
-    digit4 = request.form.get('digit4')
-
-    code = f"{digit1}{digit2}{digit3}{digit4}"
-
-    # TODO: Validate the code
-    if code == "1234":  # Placeholder validation
-        flash('Verification successful!', 'success')
-        return redirect(url_for('main.dashboard'))
-    else:
-        flash('Invalid verification code', 'error')
-        return redirect(url_for('auth.two_step_verification'))
-
-@auth_bp.route('/resend-code')
-def resend_code():
-    """Resend two-step verification code"""
-    # TODO: Implement resend code logic
-    flash('Verification code has been resent.', 'info')
-    return redirect(url_for('auth.two_step_verification'))
 
 # Supabase OAuth Routes
 @auth_bp.route('/oauth/signup/<provider>')
@@ -597,3 +677,73 @@ def supabase_session():
         traceback.print_exc()
         print(f"[ERROR] ==========================================")
         return jsonify({'success': False, 'message': f'Server error: {str(e)}'})
+
+
+@auth_bp.route('/email-verification', methods=['GET', 'POST'])
+def verify_email():
+    """Email verification page"""
+    email = session.get('pending_verification_email')
+    
+    if not email:
+        flash('No pending verification. Please register or log in.', 'error')
+        return redirect(url_for('auth.register'))
+    
+    if request.method == 'POST':
+        verification_code = request.form.get('verification_code', '').strip()
+        
+        if not verification_code or len(verification_code) != 6:
+            flash('Please enter a valid 6-digit code', 'error')
+            return render_template('auth/email_verification.html', email=email)
+        
+        user = User.query.filter_by(email=email).first()
+        
+        if not user:
+            flash('User not found', 'error')
+            return redirect(url_for('auth.register'))
+        
+        if user.verify_code(verification_code):
+            user.email_verified = True
+            user.verification_code = None
+            user.verification_code_expires = None
+            db.session.commit()
+            
+            # Clear session
+            session.pop('pending_verification_email', None)
+            
+            # Log in the user
+            login_user(user, remember=True)
+            user.update_last_login()
+            
+            flash('Email verified successfully! Welcome to SmartApply Pro.', 'success')
+            return redirect(url_for('main.dashboard'))
+        else:
+            flash('Invalid or expired verification code', 'error')
+            return render_template('auth/email_verification.html', email=email)
+    
+    return render_template('auth/email_verification.html', email=email)
+
+@auth_bp.route('/resend-verification-code', methods=['POST'])
+def resend_verification_code():
+    """Resend verification code"""
+    email = session.get('pending_verification_email')
+
+    if not email:
+        return jsonify({'success': False, 'message': 'No pending verification'})
+
+    user = User.query.filter_by(email=email).first()
+
+    if not user:
+        return jsonify({'success': False, 'message': 'User not found'})
+
+    # Generate new code
+    code = user.generate_verification_code()
+    db.session.commit()
+
+    # Send verification email
+    email_result = email_service.send_verification_code(user.email, code)
+    if not email_result['success']:
+        print(f"[WARNING] Failed to send email: {email_result['message']}")
+        # Still show the code in console as fallback
+        print(f"[VERIFICATION CODE RESENT] Email: {user.email}, Code: {code}")
+
+    return jsonify({'success': True, 'message': 'Verification code resent'})

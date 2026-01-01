@@ -330,7 +330,7 @@
                                         <button type="button" class="btn btn-outline-secondary btn-nav" onclick="prevStep()">
                                             <i class="mdi mdi-arrow-left me-1"></i> Back
                                         </button>
-                                        <button type="submit" class="btn btn-dark shadow-none flex-grow-1">
+                                        <button type="button" class="btn btn-dark shadow-none flex-grow-1" onclick="validateAndSubmit()">
                                             {{ form.submit.label.text }}
                                         </button>
                                     </div>
@@ -499,6 +499,86 @@
             if (currentStep > 1) {
                 currentStep--;
                 showStep(currentStep);
+            }
+        }
+
+        function validateAndSubmit() {
+            // Clear all previous validation errors in step 2
+            document.querySelectorAll('#step-2 .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.querySelectorAll('#step-2 .invalid-feedback.custom-error').forEach(el => el.remove());
+
+            let valid = true;
+
+            // Get Step 2 field values
+            const dateOfBirth = document.getElementById('date_of_birth');
+            const gender = document.getElementById('gender');
+            const country = document.getElementById('country');
+            const language = document.getElementById('language');
+            const termsCheckbox = document.getElementById('flexCheckDefault');
+
+            // Validate Date of Birth
+            if (!dateOfBirth.value) {
+                dateOfBirth.classList.add('is-invalid');
+                showError(dateOfBirth, 'Date of birth is required');
+                valid = false;
+            } else {
+                // Validate age (must be at least 13 years old)
+                const dob = new Date(dateOfBirth.value);
+                const today = new Date();
+                let age = today.getFullYear() - dob.getFullYear();
+                const monthDiff = today.getMonth() - dob.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                    age--;
+                }
+
+                if (age < 13) {
+                    dateOfBirth.classList.add('is-invalid');
+                    showError(dateOfBirth, 'You must be at least 13 years old');
+                    valid = false;
+                }
+
+                // Check if date is in the future
+                if (dob > today) {
+                    dateOfBirth.classList.add('is-invalid');
+                    showError(dateOfBirth, 'Date of birth cannot be in the future');
+                    valid = false;
+                }
+            }
+
+            // Validate Gender
+            if (!gender.value) {
+                gender.classList.add('is-invalid');
+                showError(gender, 'Please select your gender');
+                valid = false;
+            }
+
+            // Validate Country
+            if (!country.value) {
+                country.classList.add('is-invalid');
+                showError(country, 'Please select your country');
+                valid = false;
+            }
+
+            // Validate Language
+            if (!language.value) {
+                language.classList.add('is-invalid');
+                showError(language, 'Please select your preferred language');
+                valid = false;
+            }
+
+            // Validate Terms checkbox
+            if (!termsCheckbox.checked) {
+                termsCheckbox.classList.add('is-invalid');
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback d-block custom-error';
+                errorDiv.textContent = 'You must agree to the terms and conditions';
+                termsCheckbox.parentNode.appendChild(errorDiv);
+                valid = false;
+            }
+
+            // If all validations pass, submit the form
+            if (valid) {
+                document.getElementById('registrationForm').submit();
             }
         }
 

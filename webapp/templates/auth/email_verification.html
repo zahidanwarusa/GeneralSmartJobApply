@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Email Verification - SmartApply Pro</title>
+    <meta name="description" content="Verify your email for SmartApply Pro" />
+    <meta name="author" content="SmartApply Pro" />
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" type="text/css">
+
+    <!--Material Icon -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/materialdesignicons.min.css') }}" />
+
+    <!-- Custom  Css -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/heyauth.css') }}" />
+
+    <style>
+        .verification-code-input {
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 8px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+        }
+
+        .verification-code-input:focus {
+            border-color: #198754;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+        }
+
+        .code-container {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .resend-timer {
+            color: #6c757d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- START -->
+    <div class="account-pages">
+        <div class="container">
+            <div class="row g-0 bg-white align-items-center justify-content-center">
+                <div class="col-lg-6 col-md-8">
+                    <div class="auth-box" style="padding: 60px 40px;">
+                        <div class="mb-4 mb-md-5 text-center">
+                            <a href="{{ url_for('main.index') }}" class="auth-logo">
+                                <h2 class="fw-bold text-dark">SmartApply Pro</h2>
+                            </a>
+                        </div>
+
+                        <div class="auth-content">
+                            <div class="text-center mb-4">
+                                <div class="mb-4">
+                                    <i class="mdi mdi-email-check-outline" style="font-size: 80px; color: #198754;"></i>
+                                </div>
+                                <h4 class="fw-normal">Verify Your <span class="fw-bold">Email</span></h4>
+                                <p class="text-muted mb-0">We've sent a 6-digit verification code to</p>
+                                <p class="fw-bold">{{ email }}</p>
+                            </div>
+
+                            <!-- Flash Messages -->
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    {% for category, message in messages %}
+                                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                            {{ message }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+
+                            <form method="POST" action="{{ url_for('auth.verify_email') }}" id="verificationForm">
+                                <!-- Verification Code Inputs -->
+                                <div class="code-container">
+                                    <input type="text" class="verification-code-input" maxlength="1" id="code-1" autocomplete="off">
+                                    <input type="text" class="verification-code-input" maxlength="1" id="code-2" autocomplete="off">
+                                    <input type="text" class="verification-code-input" maxlength="1" id="code-3" autocomplete="off">
+                                    <input type="text" class="verification-code-input" maxlength="1" id="code-4" autocomplete="off">
+                                    <input type="text" class="verification-code-input" maxlength="1" id="code-5" autocomplete="off">
+                                    <input type="text" class="verification-code-input" maxlength="1" id="code-6" autocomplete="off">
+                                </div>
+
+                                <!-- Hidden input for full code -->
+                                <input type="hidden" name="verification_code" id="fullCode">
+
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-success shadow-none w-100" id="verifyButton">
+                                        <i class="mdi mdi-check me-2"></i>Verify Email
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="mt-4 text-center">
+                                <p class="text-muted mb-2">Didn't receive the code?</p>
+                                <button type="button" class="btn btn-link text-success" id="resendButton" onclick="resendCode()">
+                                    Resend Code
+                                </button>
+                                <p class="resend-timer" id="timerText"></p>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <a href="{{ url_for('auth.logout') }}" class="text-muted">
+                                    <i class="mdi mdi-arrow-left me-1"></i>Back to Login
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END -->
+
+    <!-- bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Verification Code Script -->
+    <script>
+        const inputs = document.querySelectorAll('.verification-code-input');
+        const fullCodeInput = document.getElementById('fullCode');
+        const verifyButton = document.getElementById('verifyButton');
+        const resendButton = document.getElementById('resendButton');
+        const timerText = document.getElementById('timerText');
+
+        let resendTimer = 60;
+        let timerInterval;
+
+        // Auto-focus first input
+        inputs[0].focus();
+
+        // Handle input
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                const value = e.target.value;
+
+                if (value.length === 1) {
+                    // Move to next input
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                }
+
+                // Update hidden input with full code
+                updateFullCode();
+            });
+
+            input.addEventListener('keydown', (e) => {
+                // Handle backspace
+                if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                    inputs[index - 1].focus();
+                }
+
+                // Handle paste
+                if (e.ctrlKey && e.key === 'v') {
+                    e.preventDefault();
+                    navigator.clipboard.readText().then(text => {
+                        const code = text.replace(/\D/g, '').slice(0, 6);
+                        inputs.forEach((inp, i) => {
+                            inp.value = code[i] || '';
+                        });
+                        updateFullCode();
+                        if (code.length === 6) {
+                            inputs[5].focus();
+                        }
+                    });
+                }
+            });
+
+            // Only allow numbers
+            input.addEventListener('keypress', (e) => {
+                if (!/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        function updateFullCode() {
+            const code = Array.from(inputs).map(input => input.value).join('');
+            fullCodeInput.value = code;
+
+            // Enable/disable verify button
+            if (code.length === 6) {
+                verifyButton.disabled = false;
+            } else {
+                verifyButton.disabled = true;
+            }
+        }
+
+        function resendCode() {
+            // Disable resend button
+            resendButton.disabled = true;
+
+            // Make AJAX request to resend code
+            fetch('{{ url_for("auth.resend_verification_code") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Verification code resent successfully!');
+                    startResendTimer();
+                } else {
+                    alert(data.message || 'Failed to resend code');
+                    resendButton.disabled = false;
+                }
+            })
+            .catch(error => {
+                alert('An error occurred. Please try again.');
+                resendButton.disabled = false;
+            });
+        }
+
+        function startResendTimer() {
+            resendTimer = 60;
+            timerText.textContent = `You can resend the code in ${resendTimer} seconds`;
+
+            timerInterval = setInterval(() => {
+                resendTimer--;
+                if (resendTimer > 0) {
+                    timerText.textContent = `You can resend the code in ${resendTimer} seconds`;
+                } else {
+                    clearInterval(timerInterval);
+                    timerText.textContent = '';
+                    resendButton.disabled = false;
+                }
+            }, 1000);
+        }
+
+        // Start timer on page load
+        startResendTimer();
+
+        // Auto-submit when all 6 digits are entered
+        inputs[5].addEventListener('input', (e) => {
+            if (e.target.value.length === 1) {
+                const code = Array.from(inputs).map(input => input.value).join('');
+                if (code.length === 6) {
+                    setTimeout(() => {
+                        document.getElementById('verificationForm').submit();
+                    }, 300);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

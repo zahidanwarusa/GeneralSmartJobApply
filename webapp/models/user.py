@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from extensions import db
@@ -24,6 +24,9 @@ class User(UserMixin, db.Model):
 
     # Account status
     is_active = db.Column(db.Boolean, default=True)
+    email_verified = db.Column(db.Boolean, default=False)
+    verification_code = db.Column(db.String(6), nullable=True)
+    verification_code_expires = db.Column(db.DateTime, nullable=True)
 
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -47,6 +50,22 @@ class User(UserMixin, db.Model):
         """Update the last login timestamp"""
         self.last_login = datetime.utcnow()
         db.session.commit()
+
+    def generate_verification_code(self):
+        """Generate a 6-digit verification code"""
+        import random
+        code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+        self.verification_code = code
+        self.verification_code_expires = datetime.utcnow() + timedelta(minutes=15)
+        return code
+
+    def verify_code(self, code):
+        """Verify if the provided code matches and is not expired"""
+        if not self.verification_code or not self.verification_code_expires:
+            return False
+        if datetime.utcnow() > self.verification_code_expires:
+            return False
+        return self.verification_code == code
 
     def __repr__(self):
         return f'<User {self.username}>'
