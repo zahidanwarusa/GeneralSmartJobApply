@@ -12,7 +12,8 @@
       "Bash(dir:*)",
       "Bash(python:*)",
       "Bash(ls:*)",
-      "Bash(timeout 3 bash -c 'until curl -s http://localhost:5000 > nul 2>&1; do sleep 0.5; done')"
+      "Bash(timeout 3 bash -c 'until curl -s http://localhost:5000 > nul 2>&1; do sleep 0.5; done')",
+      "Bash(tree:*)"
     ]
   }
 }

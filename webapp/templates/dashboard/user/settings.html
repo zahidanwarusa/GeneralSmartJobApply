@@ -135,6 +135,28 @@
                     </h5>
 
                     <div class="mb-3">
+                        <label class="form-label fw-semibold">Theme Appearance</label>
+                        <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="theme-icon-display">
+                                    <i class="bx bx-moon fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 theme-text-display">Light Mode</h6>
+                                    <small class="text-muted">Switch between light and dark theme</small>
+                                </div>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input theme-toggle-switch"
+                                       type="checkbox"
+                                       role="switch"
+                                       id="themeSwitch"
+                                       style="width: 48px; height: 24px; cursor: pointer;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
                         <label class="form-label">Language</label>
                         <select class="form-select" disabled>
                             <option>{{ current_user.language or 'English' }}</option>
@@ -148,7 +170,7 @@
 
                     <div class="alert alert-secondary mb-0">
                         <i class="bx bx-time me-2"></i>
-                        <small>Update these preferences in your profile page.</small>
+                        <small>Update language and country preferences in your profile page.</small>
                     </div>
                 </div>
             </div>
@@ -255,6 +277,39 @@ document.addEventListener('DOMContentLoaded', function() {
         confirmCheckbox.checked = false;
         deleteBtn.disabled = true;
     });
+
+    // Theme toggle functionality
+    const themeSwitch = document.getElementById('themeSwitch');
+    const themeIcon = document.querySelector('.theme-icon-display i');
+    const themeText = document.querySelector('.theme-text-display');
+
+    // Load saved theme from localStorage or default to light
+    let savedTheme = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute("data-bs-theme", savedTheme);
+
+    // Update switch and display based on saved theme
+    updateThemeDisplay(savedTheme);
+
+    // On switch toggle, change theme
+    themeSwitch.addEventListener('change', function() {
+        let newTheme = this.checked ? "dark" : "light";
+        document.documentElement.setAttribute("data-bs-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+        updateThemeDisplay(newTheme);
+    });
+
+    // Function to update the switch, icon, and text
+    function updateThemeDisplay(theme) {
+        if (theme === "dark") {
+            themeSwitch.checked = true;
+            themeIcon.className = "bx bx-sun fs-4";
+            themeText.textContent = "Dark Mode";
+        } else {
+            themeSwitch.checked = false;
+            themeIcon.className = "bx bx-moon fs-4";
+            themeText.textContent = "Light Mode";
+        }
+    }
 });
 </script>
 
