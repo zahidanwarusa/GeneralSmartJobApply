@@ -32,6 +32,8 @@ Thumbs.db
 # Credentials (make sure not to commit any API keys)
 .env
 credentials.json
+google-drive-credentials.json
+*-credentials.json
 
 # Chrome driver logs
 chromedriver.log

@@ -20,6 +20,7 @@ class User(UserMixin, db.Model):
     gender = db.Column(db.String(20), nullable=True)  # male, female, other, prefer_not_to_say
     country = db.Column(db.String(100), nullable=True)
     language = db.Column(db.String(50), nullable=True)
+    profile_picture = db.Column(db.String(500), nullable=True)  # Path to profile picture
     profile_completed = db.Column(db.Boolean, default=False)  # Track if onboarding is complete
 
     # Account status

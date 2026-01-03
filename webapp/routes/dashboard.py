@@ -185,10 +185,100 @@ def user_analytics():
                          stats=stats,
                          monthly_data=monthly_data)
 
-@dashboard_bp.route('/user/profile')
+@dashboard_bp.route('/user/profile', methods=['GET', 'POST'])
 @login_required
 def user_profile():
     """User profile management"""
+    if request.method == 'POST':
+        try:
+            # Update profile information
+            current_user.full_name = request.form.get('full_name', '').strip()
+
+            # Parse date of birth if provided
+            dob_str = request.form.get('date_of_birth', '').strip()
+            if dob_str:
+                try:
+                    current_user.date_of_birth = datetime.strptime(dob_str, '%Y-%m-%d').date()
+                except ValueError:
+                    pass
+
+            current_user.gender = request.form.get('gender', '').strip()
+            current_user.country = request.form.get('country', '').strip()
+            current_user.language = request.form.get('language', '').strip()
+
+            # Handle profile picture upload
+            if 'profile_picture' in request.files:
+                file = request.files['profile_picture']
+                if file and file.filename:
+                    # Validate file type
+                    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+                    file_ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else ''
+
+                    if file_ext in allowed_extensions:
+                        import os
+                        from werkzeug.utils import secure_filename
+                        from services.supabase_storage import get_storage_service
+
+                        # Generate unique filename
+                        filename = f"user_{current_user.id}_{datetime.utcnow().timestamp()}.{file_ext}"
+                        filename = secure_filename(filename)
+
+                        # Get MIME type
+                        mime_types = {
+                            'png': 'image/png',
+                            'jpg': 'image/jpeg',
+                            'jpeg': 'image/jpeg',
+                            'gif': 'image/gif',
+                            'webp': 'image/webp'
+                        }
+                        mimetype = mime_types.get(file_ext, 'image/jpeg')
+
+                        # Try to upload to Supabase Storage first
+                        storage_service = get_storage_service()
+                        if storage_service.is_available():
+                            # Delete old profile picture from Supabase if exists
+                            if current_user.profile_picture and 'supabase' in current_user.profile_picture:
+                                old_filename = storage_service.get_filename_from_url(current_user.profile_picture)
+                                if old_filename:
+                                    storage_service.delete_file(old_filename)
+
+                            # Upload to Supabase Storage
+                            file_data = file.read()
+                            result = storage_service.upload_file(file_data, filename, mimetype)
+
+                            if result['success']:
+                                # Store Supabase Storage public URL
+                                current_user.profile_picture = result['public_url']
+                                flash('Profile picture uploaded successfully!', 'success')
+                            else:
+                                # Fallback to local storage
+                                file.seek(0)  # Reset file pointer
+                                upload_folder = os.path.join('webapp', 'static', 'uploads', 'profiles')
+                                os.makedirs(upload_folder, exist_ok=True)
+                                filepath = os.path.join(upload_folder, filename)
+                                file.save(filepath)
+                                current_user.profile_picture = f"uploads/profiles/{filename}"
+                                flash('Profile picture uploaded locally (Supabase Storage unavailable).', 'warning')
+                        else:
+                            # Fallback to local storage
+                            upload_folder = os.path.join('webapp', 'static', 'uploads', 'profiles')
+                            os.makedirs(upload_folder, exist_ok=True)
+                            filepath = os.path.join(upload_folder, filename)
+                            file.save(filepath)
+                            current_user.profile_picture = f"uploads/profiles/{filename}"
+                    else:
+                        flash('Invalid file type. Please upload an image file (PNG, JPG, JPEG, GIF, WEBP).', 'error')
+                        return redirect(url_for('dashboard.user_profile'))
+
+            db.session.commit()
+            flash('Profile updated successfully!', 'success')
+            return redirect(url_for('dashboard.user_profile'))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating profile: {str(e)}', 'error')
+            return redirect(url_for('dashboard.user_profile'))
+
     return render_template('dashboard/user/profile.html')
 
 @dashboard_bp.route('/user/settings')
