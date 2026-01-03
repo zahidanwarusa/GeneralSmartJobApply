@@ -287,6 +287,95 @@ def user_settings():
     """User settings page"""
     return render_template('dashboard/user/settings.html')
 
+@dashboard_bp.route('/user/delete-profile-picture', methods=['POST'])
+@login_required
+def delete_profile_picture():
+    """Delete user's profile picture"""
+    try:
+        if current_user.profile_picture:
+            import os
+            from services.supabase_storage import get_storage_service
+
+            # Check if it's a Supabase Storage URL
+            if 'supabase' in current_user.profile_picture:
+                # Delete from Supabase Storage
+                storage_service = get_storage_service()
+                if storage_service.is_available():
+                    filename = storage_service.get_filename_from_url(current_user.profile_picture)
+                    if filename:
+                        storage_service.delete_file(filename)
+                        flash('Profile picture deleted from Supabase Storage successfully!', 'success')
+                    else:
+                        flash('Could not extract filename from URL.', 'warning')
+                else:
+                    flash('Supabase Storage not available. Please try again later.', 'error')
+            else:
+                # Delete from local storage
+                local_path = os.path.join('webapp', 'static', current_user.profile_picture)
+                if os.path.exists(local_path):
+                    os.remove(local_path)
+                    flash('Profile picture deleted successfully!', 'success')
+
+            # Remove from database
+            current_user.profile_picture = None
+            db.session.commit()
+        else:
+            flash('No profile picture to delete.', 'info')
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting profile picture: {str(e)}', 'error')
+
+    return redirect(url_for('dashboard.user_settings'))
+
+@dashboard_bp.route('/user/delete-account', methods=['POST'])
+@login_required
+def delete_account():
+    """Delete user's account permanently"""
+    try:
+        # Verify confirmation
+        confirmation = request.form.get('confirmation', '').strip()
+        if confirmation != 'DELETE':
+            flash('Account deletion cancelled. Confirmation text did not match.', 'warning')
+            return redirect(url_for('dashboard.user_settings'))
+
+        import os
+        from services.supabase_storage import get_storage_service
+        from flask_login import logout_user
+
+        user_id = current_user.id
+        user_email = current_user.email
+
+        # Delete profile picture from storage if exists
+        if current_user.profile_picture:
+            if 'supabase' in current_user.profile_picture:
+                # Delete from Supabase Storage
+                storage_service = get_storage_service()
+                if storage_service.is_available():
+                    filename = storage_service.get_filename_from_url(current_user.profile_picture)
+                    if filename:
+                        storage_service.delete_file(filename)
+            else:
+                # Delete from local storage
+                local_path = os.path.join('webapp', 'static', current_user.profile_picture)
+                if os.path.exists(local_path):
+                    os.remove(local_path)
+
+        # Delete user (cascade will handle related data: resumes, applications, job descriptions)
+        db.session.delete(current_user)
+        db.session.commit()
+
+        # Logout user
+        logout_user()
+
+        flash(f'Account {user_email} has been permanently deleted. We\'re sorry to see you go!', 'info')
+        return redirect(url_for('auth.login'))
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting account: {str(e)}', 'error')
+        return redirect(url_for('dashboard.user_settings'))
+
 # ============================================================================
 # ADMIN DASHBOARD ROUTES
 # ============================================================================
