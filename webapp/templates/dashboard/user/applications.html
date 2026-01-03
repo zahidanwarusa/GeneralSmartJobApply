@@ -1,0 +1,14 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Applications - SmartApply{% endblock %}
+{% block content %}
+<div class="p-4">
+    <h3 class="fw-bold">My Applications</h3>
+    <div class="card mt-4">
+        <div class="card-body text-center py-5">
+            <i class="bx bx-briefcase fs-1 text-muted mb-3"></i>
+            <p>No applications tracked yet.</p>
+            <a href="{{ url_for('dashboard.user_applications_kanban') }}" class="btn btn-primary">View Kanban Board</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

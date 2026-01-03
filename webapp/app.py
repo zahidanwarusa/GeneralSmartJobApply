@@ -1,7 +1,9 @@
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, render_template
 from config import config
 from extensions import db, login_manager, migrate
 from models.user import User
+from sqlalchemy.exc import OperationalError, DBAPIError
+import logging
 
 def create_app(config_name='development'):
     """Application factory pattern"""
@@ -21,9 +23,11 @@ def create_app(config_name='development'):
     # Register blueprints
     from routes.auth import auth_bp
     from routes.main import main_bp
+    from routes.dashboard import dashboard_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(main_bp)
+    app.register_blueprint(dashboard_bp)
 
     # Error handlers
     @app.errorhandler(404)
@@ -34,6 +38,20 @@ def create_app(config_name='development'):
     def internal_error(error):
         db.session.rollback()
         return "500 - Internal Server Error", 500
+
+    @app.errorhandler(OperationalError)
+    def handle_db_operational_error(error):
+        """Handle database operational errors"""
+        db.session.rollback()
+        logging.error(f"Database operational error: {str(error)}")
+        return "Database connection error. Please try again in a moment.", 503
+
+    @app.errorhandler(DBAPIError)
+    def handle_db_api_error(error):
+        """Handle database API errors"""
+        db.session.rollback()
+        logging.error(f"Database API error: {str(error)}")
+        return "Database error. Please try again in a moment.", 503
 
     # Shell context for flask shell
     @app.shell_context_processor

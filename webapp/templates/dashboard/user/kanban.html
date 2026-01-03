@@ -1,0 +1,232 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Kanban Board - SmartApply{% endblock %}
+
+{% block extra_css %}
+<style>
+    .kanban-column {
+        background: #f8f9fa;
+        border-radius: 8px;
+        min-height: 500px;
+    }
+    .kanban-card {
+        background: white;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        cursor: move;
+        transition: all 0.2s;
+    }
+    .kanban-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
+    .drag-over {
+        border: 2px dashed #0d6efd;
+        background: #e7f1ff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="p-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h3 class="fw-bold">Application Kanban Board</h3>
+            <p class="text-muted">Drag and drop to update application status</p>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('dashboard.user_applications') }}" class="btn btn-outline-primary">
+                <i class="bx bx-list-ul me-2"></i>List View
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <!-- Applied Column -->
+        <div class="col-md-6 col-lg-3">
+            <div class="kanban-column p-3" data-status="applied">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-semibold mb-0">
+                        <span class="badge bg-primary bg-opacity-10 text-primary me-2">{{ kanban_data.applied|length }}</span>
+                        Applied
+                    </h6>
+                </div>
+                <div class="kanban-cards" id="applied-cards">
+                    {% for app in kanban_data.applied %}
+                    <div class="kanban-card" draggable="true" data-id="{{ app.id }}">
+                        <h6 class="mb-1">{{ app.job.title if app.job else 'Unknown Position' }}</h6>
+                        <p class="text-muted small mb-2">{{ app.job.company if app.job else 'N/A' }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">{{ app.applied_date.strftime('%b %d') if app.applied_date else '-' }}</small>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-horizontal-rounded"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="#"><i class="bx bx-edit me-2"></i>Edit</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#"><i class="bx bx-trash me-2"></i>Delete</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if not kanban_data.applied %}
+                    <p class="text-muted text-center py-4">No applications</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Interview Column -->
+        <div class="col-md-6 col-lg-3">
+            <div class="kanban-column p-3" data-status="interview">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-semibold mb-0">
+                        <span class="badge bg-warning bg-opacity-10 text-warning me-2">{{ kanban_data.interview|length }}</span>
+                        Interview
+                    </h6>
+                </div>
+                <div class="kanban-cards" id="interview-cards">
+                    {% for app in kanban_data.interview %}
+                    <div class="kanban-card" draggable="true" data-id="{{ app.id }}">
+                        <h6 class="mb-1">{{ app.job.title if app.job else 'Unknown Position' }}</h6>
+                        <p class="text-muted small mb-2">{{ app.job.company if app.job else 'N/A' }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">{{ app.applied_date.strftime('%b %d') if app.applied_date else '-' }}</small>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-horizontal-rounded"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="#"><i class="bx bx-edit me-2"></i>Edit</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#"><i class="bx bx-trash me-2"></i>Delete</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if not kanban_data.interview %}
+                    <p class="text-muted text-center py-4">No applications</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Offer Column -->
+        <div class="col-md-6 col-lg-3">
+            <div class="kanban-column p-3" data-status="offer">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-semibold mb-0">
+                        <span class="badge bg-success bg-opacity-10 text-success me-2">{{ kanban_data.offer|length }}</span>
+                        Offer
+                    </h6>
+                </div>
+                <div class="kanban-cards" id="offer-cards">
+                    {% for app in kanban_data.offer %}
+                    <div class="kanban-card" draggable="true" data-id="{{ app.id }}">
+                        <h6 class="mb-1">{{ app.job.title if app.job else 'Unknown Position' }}</h6>
+                        <p class="text-muted small mb-2">{{ app.job.company if app.job else 'N/A' }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">{{ app.applied_date.strftime('%b %d') if app.applied_date else '-' }}</small>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-horizontal-rounded"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="#"><i class="bx bx-edit me-2"></i>Edit</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#"><i class="bx bx-trash me-2"></i>Delete</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if not kanban_data.offer %}
+                    <p class="text-muted text-center py-4">No applications</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Rejected Column -->
+        <div class="col-md-6 col-lg-3">
+            <div class="kanban-column p-3" data-status="rejected">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-semibold mb-0">
+                        <span class="badge bg-secondary bg-opacity-10 text-secondary me-2">{{ kanban_data.rejected|length }}</span>
+                        Rejected
+                    </h6>
+                </div>
+                <div class="kanban-cards" id="rejected-cards">
+                    {% for app in kanban_data.rejected %}
+                    <div class="kanban-card" draggable="true" data-id="{{ app.id }}">
+                        <h6 class="mb-1">{{ app.job.title if app.job else 'Unknown Position' }}</h6>
+                        <p class="text-muted small mb-2">{{ app.job.company if app.job else 'N/A' }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">{{ app.applied_date.strftime('%b %d') if app.applied_date else '-' }}</small>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-horizontal-rounded"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="#"><i class="bx bx-edit me-2"></i>Edit</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#"><i class="bx bx-trash me-2"></i>Delete</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if not kanban_data.rejected %}
+                    <p class="text-muted text-center py-4">No applications</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Simple drag and drop (will be enhanced with backend integration)
+let draggedElement = null;
+
+document.querySelectorAll('.kanban-card').forEach(card => {
+    card.addEventListener('dragstart', function(e) {
+        draggedElement = this;
+        this.style.opacity = '0.4';
+    });
+
+    card.addEventListener('dragend', function(e) {
+        this.style.opacity = '1';
+    });
+});
+
+document.querySelectorAll('.kanban-column').forEach(column => {
+    column.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('drag-over');
+    });
+
+    column.addEventListener('dragleave', function(e) {
+        this.classList.remove('drag-over');
+    });
+
+    column.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+
+        if (draggedElement) {
+            const cardsContainer = this.querySelector('.kanban-cards');
+            cardsContainer.appendChild(draggedElement);
+
+            // TODO: Send AJAX request to update status in backend
+            const newStatus = this.dataset.status;
+            const appId = draggedElement.dataset.id;
+            console.log(`Update application ${appId} to status: ${newStatus}`);
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Analytics - Admin{% endblock %}
+{% block content %}
+<div class="p-4">
+    <h3 class="fw-bold mb-4">System Analytics</h3>
+    <div class="row g-3">
+        <div class="col-md-3"><div class="card"><div class="card-body"><h6>Total Users</h6><h3>{{ stats.total_users }}</h3></div></div></div>
+        <div class="col-md-3"><div class="card"><div class="card-body"><h6>Applications</h6><h3>{{ stats.total_applications }}</h3></div></div></div>
+        <div class="col-md-3"><div class="card"><div class="card-body"><h6>Resumes</h6><h3>{{ stats.total_resumes }}</h3></div></div></div>
+        <div class="col-md-3"><div class="card"><div class="card-body"><h6>Avg Apps/User</h6><h3>{{ stats.avg_applications_per_user }}</h3></div></div></div>
+    </div>
+</div>
+{% endblock %}

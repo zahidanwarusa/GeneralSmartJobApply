@@ -1,0 +1,402 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Dashboard - SmartApply{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h3 class="fw-bold">Welcome back, {{ current_user.full_name or current_user.username }}!</h3>
+            <p class="text-muted">Manage your job applications with ease</p>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="card">
+        <div class="card-header bg-transparent border-bottom-0">
+            <ul class="nav nav-pills nav-pills-primary" id="dashboardTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">
+                        <i class="bx bx-home-alt me-2"></i>Overview
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="applications-tab" data-bs-toggle="tab" data-bs-target="#applications" type="button" role="tab" aria-controls="applications" aria-selected="false">
+                        <i class="bx bx-briefcase me-2"></i>Applications
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="resumes-tab" data-bs-toggle="tab" data-bs-target="#resumes" type="button" role="tab" aria-controls="resumes" aria-selected="false">
+                        <i class="bx bx-file me-2"></i>Resumes
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card-body">
+            <div class="tab-content" id="dashboardTabsContent">
+                <!-- Overview Tab -->
+                <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                    <!-- Statistics Cards -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card border-start border-primary border-3">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <p class="text-muted mb-1 text-uppercase fw-semibold fs-7">Total Applications</p>
+                                            <h4 class="fw-bold mb-0">{{ stats.total_applications }}</h4>
+                                            <small class="text-success">
+                                                <i class="bx bx-trending-up"></i> {{ stats.active_applications }} Active
+                                            </small>
+                                        </div>
+                                        <div class="fs-1 text-primary">
+                                            <i class="bx bx-briefcase"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card border-start border-success border-3">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <p class="text-muted mb-1 text-uppercase fw-semibold fs-7">Resumes</p>
+                                            <h4 class="fw-bold mb-0">{{ stats.total_resumes }}</h4>
+                                            <small class="text-info">
+                                                <i class="bx bx-file"></i> Ready to use
+                                            </small>
+                                        </div>
+                                        <div class="fs-1 text-success">
+                                            <i class="bx bx-file-blank"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card border-start border-warning border-3">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <p class="text-muted mb-1 text-uppercase fw-semibold fs-7">Tracked Jobs</p>
+                                            <h4 class="fw-bold mb-0">{{ stats.total_jobs }}</h4>
+                                            <small class="text-warning">
+                                                <i class="bx bx-search"></i> Job listings
+                                            </small>
+                                        </div>
+                                        <div class="fs-1 text-warning">
+                                            <i class="bx bx-search-alt"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card border-start border-danger border-3">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <p class="text-muted mb-1 text-uppercase fw-semibold fs-7">Success Rate</p>
+                                            <h4 class="fw-bold mb-0">{{ ((stats.active_applications / stats.total_applications * 100) if stats.total_applications > 0 else 0) | round(1) }}%</h4>
+                                            <small class="text-success">
+                                                <i class="bx bx-trending-up"></i> Keep going!
+                                            </small>
+                                        </div>
+                                        <div class="fs-1 text-danger">
+                                            <i class="bx bx-line-chart"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="mb-3 fw-semibold">Quick Actions</h6>
+                                    <div class="row g-2">
+                                        <div class="col-md-3">
+                                            <a href="{{ url_for('dashboard.user_resume_builder') }}" class="btn btn-outline-primary w-100">
+                                                <i class="bx bx-plus-circle me-1"></i>Create Resume
+                                            </a>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <a href="{{ url_for('dashboard.user_jobs') }}" class="btn btn-outline-success w-100">
+                                                <i class="bx bx-briefcase me-1"></i>Add Job
+                                            </a>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <a href="{{ url_for('dashboard.user_applications') }}" class="btn btn-outline-info w-100">
+                                                <i class="bx bx-task me-1"></i>Track Application
+                                            </a>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <a href="{{ url_for('dashboard.user_applications_kanban') }}" class="btn btn-outline-warning w-100">
+                                                <i class="bx bx-grid-alt me-1"></i>Kanban View
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Application Status Chart -->
+                    <div class="row g-3">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="mb-3 fw-semibold">Recent Activity</h6>
+                                    <p class="text-muted">Your latest job application activities</p>
+                                    <div class="mt-3">
+                                        {% if recent_applications %}
+                                        <div class="list-group">
+                                            {% for app in recent_applications[:5] %}
+                                            <div class="list-group-item border-start-0 border-end-0">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <h6 class="mb-1">{{ app.job.title if app.job else 'N/A' }}</h6>
+                                                        <small class="text-muted">{{ app.job.company if app.job else '-' }}</small>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        {% if app.status == 'applied' %}
+                                                        <span class="badge bg-primary">Applied</span>
+                                                        {% elif app.status == 'interview' %}
+                                                        <span class="badge bg-warning">Interview</span>
+                                                        {% elif app.status == 'offer' %}
+                                                        <span class="badge bg-success">Offer</span>
+                                                        {% else %}
+                                                        <span class="badge bg-secondary">{{ app.status.title() }}</span>
+                                                        {% endif %}
+                                                        <br><small class="text-muted">{{ app.applied_date.strftime('%b %d') if app.applied_date else '-' }}</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        <div class="text-center py-5">
+                                            <i class="bx bx-briefcase display-4 text-muted"></i>
+                                            <p class="text-muted mt-2">No applications yet</p>
+                                            <a href="{{ url_for('dashboard.user_applications') }}" class="btn btn-sm btn-primary">Create Your First Application</a>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="mb-3 fw-semibold">Application Status</h6>
+                                    <div class="mt-3">
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span class="text-muted">Applied</span>
+                                                <span class="fw-semibold">{{ status_breakdown.get('applied', 0) }}</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-primary" style="width: {{ (status_breakdown.get('applied', 0) / stats.total_applications * 100) if stats.total_applications > 0 else 0 }}%"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span class="text-muted">Interview</span>
+                                                <span class="fw-semibold">{{ status_breakdown.get('interview', 0) }}</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-warning" style="width: {{ (status_breakdown.get('interview', 0) / stats.total_applications * 100) if stats.total_applications > 0 else 0 }}%"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span class="text-muted">Offer</span>
+                                                <span class="fw-semibold">{{ status_breakdown.get('offer', 0) }}</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-success" style="width: {{ (status_breakdown.get('offer', 0) / stats.total_applications * 100) if stats.total_applications > 0 else 0 }}%"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span class="text-muted">Rejected</span>
+                                                <span class="fw-semibold">{{ status_breakdown.get('rejected', 0) }}</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-secondary" style="width: {{ (status_breakdown.get('rejected', 0) / stats.total_applications * 100) if stats.total_applications > 0 else 0 }}%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Applications Tab -->
+                <div class="tab-pane fade" id="applications" role="tabpanel" aria-labelledby="applications-tab">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="fw-semibold mb-0">My Applications</h5>
+                                <a href="{{ url_for('dashboard.user_applications') }}" class="btn btn-primary btn-sm">
+                                    <i class="bx bx-plus me-1"></i>New Application
+                                </a>
+                            </div>
+
+                            {% if recent_applications %}
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Position</th>
+                                            <th>Company</th>
+                                            <th>Status</th>
+                                            <th>Applied Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for app in recent_applications %}
+                                        <tr>
+                                            <td>
+                                                <h6 class="mb-0 fw-semibold">{{ app.job.title if app.job else 'N/A' }}</h6>
+                                            </td>
+                                            <td>{{ app.job.company if app.job else '-' }}</td>
+                                            <td>
+                                                {% if app.status == 'applied' %}
+                                                <span class="badge bg-primary">Applied</span>
+                                                {% elif app.status == 'interview' %}
+                                                <span class="badge bg-warning">Interview</span>
+                                                {% elif app.status == 'offer' %}
+                                                <span class="badge bg-success">Offer</span>
+                                                {% else %}
+                                                <span class="badge bg-secondary">{{ app.status.title() }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ app.applied_date.strftime('%b %d, %Y') if app.applied_date else '-' }}</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">
+                                                    <i class="bx bx-show"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-secondary">
+                                                    <i class="bx bx-edit"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-center mt-3">
+                                <a href="{{ url_for('dashboard.user_applications') }}" class="btn btn-outline-primary">View All Applications</a>
+                            </div>
+                            {% else %}
+                            <div class="card bg-light border-0">
+                                <div class="card-body text-center py-5">
+                                    <i class="bx bx-briefcase display-3 text-muted"></i>
+                                    <h5 class="mt-3">No Applications Yet</h5>
+                                    <p class="text-muted">Start tracking your job applications to see them here</p>
+                                    <a href="{{ url_for('dashboard.user_applications') }}" class="btn btn-primary mt-2">Create First Application</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumes Tab -->
+                <div class="tab-pane fade" id="resumes" role="tabpanel" aria-labelledby="resumes-tab">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="fw-semibold mb-0">My Resumes</h5>
+                                <a href="{{ url_for('dashboard.user_resume_builder') }}" class="btn btn-primary btn-sm">
+                                    <i class="bx bx-plus me-1"></i>Create Resume
+                                </a>
+                            </div>
+
+                            <div class="row g-3">
+                                {% if stats.total_resumes > 0 %}
+                                    {% for i in range(stats.total_resumes) %}
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="bx bx-file-blank fs-1 text-primary"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h6 class="mb-0 fw-semibold">Resume {{ i + 1 }}</h6>
+                                                        <small class="text-muted">Last updated: Recently</small>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex gap-2">
+                                                    <button class="btn btn-sm btn-outline-primary flex-fill">
+                                                        <i class="bx bx-show me-1"></i>View
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-secondary flex-fill">
+                                                        <i class="bx bx-edit me-1"></i>Edit
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-success flex-fill">
+                                                        <i class="bx bx-download me-1"></i>Download
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                <div class="col-12">
+                                    <div class="card bg-light border-0">
+                                        <div class="card-body text-center py-5">
+                                            <i class="bx bx-file display-3 text-muted"></i>
+                                            <h5 class="mt-3">No Resumes Yet</h5>
+                                            <p class="text-muted">Create your first resume to get started with job applications</p>
+                                            <a href="{{ url_for('dashboard.user_resume_builder') }}" class="btn btn-primary mt-2">Create First Resume</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .nav-pills .nav-link {
+        color: #6c757d;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+    }
+    .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .nav-pills .nav-link:hover:not(.active) {
+        background-color: #f8f9fa;
+    }
+    .fs-7 {
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}

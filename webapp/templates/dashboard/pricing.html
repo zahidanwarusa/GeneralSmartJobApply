@@ -1,0 +1,209 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Pricing - SmartApply{% endblock %}
+
+{% block content %}
+<div class="p-4">
+    <div class="row mb-5">
+        <div class="col text-center">
+            <h2 class="fw-bold">Choose Your Plan</h2>
+            <p class="text-muted">Unlock powerful features to accelerate your job search</p>
+        </div>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        {% for plan in plans %}
+        <div class="col-lg-4">
+            <div class="card {% if plan.recommended %}border-primary shadow{% endif %} h-100">
+                {% if plan.recommended %}
+                <div class="card-header bg-primary text-white text-center py-2">
+                    <small class="fw-semibold">MOST POPULAR</small>
+                </div>
+                {% endif %}
+
+                <div class="card-body text-center p-4">
+                    <h3 class="fw-bold mb-3">{{ plan.name }}</h3>
+
+                    <div class="mb-4">
+                        <h2 class="fw-bold display-4">
+                            {% if plan.price == 0 %}
+                            Free
+                            {% else %}
+                            ${{ plan.price }}
+                            {% endif %}
+                        </h2>
+                        <p class="text-muted">{% if plan.price > 0 %}per {{ plan.period }}{% else %}{{ plan.period }}{% endif %}</p>
+                    </div>
+
+                    <ul class="list-unstyled text-start mb-4">
+                        {% for feature in plan.features %}
+                        <li class="mb-3">
+                            <i class="bx bx-check-circle text-success me-2"></i>
+                            {{ feature }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="d-grid">
+                        {% if plan.current %}
+                        <button class="btn btn-secondary" disabled>Current Plan</button>
+                        {% else %}
+                        <button class="btn {% if plan.recommended %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                            Choose {{ plan.name }}
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Features Comparison -->
+    <div class="row mt-5">
+        <div class="col">
+            <div class="card">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4 text-center">Feature Comparison</h4>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Feature</th>
+                                    <th class="text-center">Free</th>
+                                    <th class="text-center">Pro</th>
+                                    <th class="text-center">Enterprise</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Resume Generations</td>
+                                    <td class="text-center">5/month</td>
+                                    <td class="text-center"><i class="bx bx-check-circle text-success fs-5"></i></td>
+                                    <td class="text-center"><i class="bx bx-check-circle text-success fs-5"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Job Application Tracking</td>
+                                    <td class="text-center">10 applications</td>
+                                    <td class="text-center"><i class="bx bx-check-circle text-success fs-5"></i></td>
+                                    <td class="text-center"><i class="bx bx-check-circle text-success fs-5"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Resume Templates</td>
+                                    <td class="text-center">Basic (3)</td>
+                                    <td class="text-center">All Premium</td>
+                                    <td class="text-center">All + Custom</td>
+                                </tr>
+                                <tr>
+                                    <td>AI-Powered Optimization</td>
+                                    <td class="text-center"><i class="bx bx-x text-danger fs-5"></i></td>
+                                    <td class="text-center"><i class="bx bx-check-circle text-success fs-5"></i></td>
+                                    <td class="text-center"><i class="bx bx-check-circle text-success fs-5"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Export Formats</td>
+                                    <td class="text-center">PDF only</td>
+                                    <td class="text-center">PDF & DOCX</td>
+                                    <td class="text-center">All formats</td>
+                                </tr>
+                                <tr>
+                                    <td>Priority Support</td>
+                                    <td class="text-center"><i class="bx bx-x text-danger fs-5"></i></td>
+                                    <td class="text-center"><i class="bx bx-check-circle text-success fs-5"></i></td>
+                                    <td class="text-center"><i class="bx bx-check-circle text-success fs-5"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Team Collaboration</td>
+                                    <td class="text-center"><i class="bx bx-x text-danger fs-5"></i></td>
+                                    <td class="text-center"><i class="bx bx-x text-danger fs-5"></i></td>
+                                    <td class="text-center"><i class="bx bx-check-circle text-success fs-5"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>API Access</td>
+                                    <td class="text-center"><i class="bx bx-x text-danger fs-5"></i></td>
+                                    <td class="text-center"><i class="bx bx-x text-danger fs-5"></i></td>
+                                    <td class="text-center"><i class="bx bx-check-circle text-success fs-5"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Advanced Analytics</td>
+                                    <td class="text-center"><i class="bx bx-x text-danger fs-5"></i></td>
+                                    <td class="text-center">Basic</td>
+                                    <td class="text-center"><i class="bx bx-check-circle text-success fs-5"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Dedicated Support</td>
+                                    <td class="text-center"><i class="bx bx-x text-danger fs-5"></i></td>
+                                    <td class="text-center"><i class="bx bx-x text-danger fs-5"></i></td>
+                                    <td class="text-center"><i class="bx bx-check-circle text-success fs-5"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="row mt-5">
+        <div class="col">
+            <h4 class="fw-bold mb-4 text-center">Frequently Asked Questions</h4>
+
+            <div class="accordion" id="pricingFAQ">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            Can I upgrade or downgrade my plan anytime?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#pricingFAQ">
+                        <div class="accordion-body">
+                            Yes! You can upgrade or downgrade your plan at any time. Changes will be prorated and reflected in your next billing cycle.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            What payment methods do you accept?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#pricingFAQ">
+                        <div class="accordion-body">
+                            We accept all major credit cards (Visa, MasterCard, American Express) and PayPal. Enterprise customers can also pay via invoice.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            Is there a free trial for paid plans?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#pricingFAQ">
+                        <div class="accordion-body">
+                            Yes! We offer a 14-day free trial for all paid plans. No credit card required to start your trial.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            What happens to my data if I downgrade?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#pricingFAQ">
+                        <div class="accordion-body">
+                            All your data is safely preserved. You'll still have access to everything, but some premium features will be locked until you upgrade again.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

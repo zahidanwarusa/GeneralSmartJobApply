@@ -1,0 +1,44 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}My Resumes - SmartApply{% endblock %}
+
+{% block content %}
+<div class="p-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h3 class="fw-bold">My Resumes</h3>
+            <p class="text-muted">Manage and download your AI-optimized resumes</p>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('dashboard.user_resume_builder') }}" class="btn btn-primary">
+                <i class="bx bx-plus-circle me-2"></i>Create New Resume
+            </a>
+        </div>
+    </div>
+
+    {% if resumes %}
+    <div class="row g-3">
+        {% for resume in resumes %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="fw-semibold mb-2">{{ resume.title }}</h5>
+                    <p class="text-muted small mb-3">
+                        {% if resume.job %}For: {{ resume.job.title }}{% else %}General Resume{% endif %}
+                    </p>
+                    <small class="text-muted">{{ resume.created_at.strftime('%b %d, %Y') }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <h5>No resumes yet</h5>
+            <a href="{{ url_for('dashboard.user_resume_builder') }}" class="btn btn-primary mt-3">Create Resume</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

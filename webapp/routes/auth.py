@@ -7,6 +7,8 @@ from forms.auth import LoginForm, RegistrationForm
 from services.auth_service import AuthService
 from services.email_service import EmailService
 from datetime import datetime
+from sqlalchemy.exc import OperationalError, DBAPIError
+import time
 
 auth_bp = Blueprint('auth', __name__)
 auth_service = AuthService()
@@ -419,8 +421,26 @@ def oauth_callback():
     if result['success']:
         user_data = result['user']
 
-        # Check if user exists in database
-        user = User.query.filter_by(email=user_data.email).first()
+        # Check if user exists in database with retry logic
+        max_retries = 3
+        retry_delay = 1  # seconds
+        user = None
+
+        for attempt in range(max_retries):
+            try:
+                user = User.query.filter_by(email=user_data.email).first()
+                break  # Success, exit retry loop
+            except (OperationalError, DBAPIError) as e:
+                if attempt < max_retries - 1:
+                    # Rollback the session to clear the failed transaction
+                    db.session.rollback()
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                else:
+                    # Final attempt failed
+                    db.session.rollback()
+                    flash('Database connection error. Please try again in a moment.', 'error')
+                    return redirect(url_for('auth.login'))
 
         if not user:
             # New user - redirect to complete signup form
@@ -445,12 +465,21 @@ def oauth_callback():
             # Existing user - log in directly
             # Update supabase_user_id if not set
             if not user.supabase_user_id:
-                user.supabase_user_id = user_data.id
-                db.session.commit()
+                try:
+                    user.supabase_user_id = user_data.id
+                    db.session.commit()
+                except (OperationalError, DBAPIError) as e:
+                    db.session.rollback()
+                    # Continue with login even if this update fails
 
             # Log in the user
             login_user(user, remember=True)
-            user.update_last_login()
+
+            try:
+                user.update_last_login()
+            except (OperationalError, DBAPIError) as e:
+                db.session.rollback()
+                # Continue with login even if last_login update fails
 
             # Store Supabase session data in Flask session (convert to dict for JSON serialization)
             supabase_session = result['session']

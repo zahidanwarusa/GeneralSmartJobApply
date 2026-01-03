@@ -1,0 +1,24 @@
+<div class="offcanvas offcanvas-top h-100 searchbar" tabindex="-1" id="offcanvasSearch">
+    <div class="offcanvas-header container px-5">
+        <h5 class="offcanvas-title h5">Search SmartApply</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body container px-5">
+        <div class="position-relative mb-4">
+            <input type="text" id="searchInput" class="form-control form-control-lg ps-5 search-control" placeholder="Search jobs, resumes, applications...">
+            <span class="position-absolute top-50 ms-3 translate-middle-y start-0 fs-4 text-muted">
+                <i class="bx bx-search"></i>
+            </span>
+        </div>
+
+        <div class="trending-search mt-5">
+            <h5 class="mb-3 fw-bold">Quick Actions</h5>
+            <div class="d-flex align-items-center flex-wrap gap-3">
+                <a href="{{ url_for('dashboard.user_resume_builder') }}" class="btn btn-outline-primary">Create Resume</a>
+                <a href="{{ url_for('dashboard.user_jobs') }}" class="btn btn-outline-primary">Add Job</a>
+                <a href="{{ url_for('dashboard.user_applications') }}" class="btn btn-outline-primary">Track Application</a>
+            </div>
+        </div>
+    </div>
+</div>

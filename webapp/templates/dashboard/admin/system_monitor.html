@@ -1,0 +1,13 @@
+{% extends "dashboard/base.html" %}
+{% block title %}System Monitor - Admin{% endblock %}
+{% block content %}
+<div class="p-4">
+    <h3 class="fw-bold mb-4">System Monitoring</h3>
+    <div class="row g-3">
+        <div class="col-md-3"><div class="card"><div class="card-body"><h6>System Health</h6><h4 class="text-success">Healthy</h4></div></div></div>
+        <div class="col-md-3"><div class="card"><div class="card-body"><h6>Uptime</h6><h4>99.9%</h4></div></div></div>
+        <div class="col-md-3"><div class="card"><div class="card-body"><h6>API Calls</h6><h4>{{ metrics.api_calls }}</h4></div></div></div>
+        <div class="col-md-3"><div class="card"><div class="card-body"><h6>Error Rate</h6><h4>{{ metrics.error_rate }}</h4></div></div></div>
+    </div>
+</div>
+{% endblock %}

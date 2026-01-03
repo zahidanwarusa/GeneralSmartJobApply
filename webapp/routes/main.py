@@ -13,5 +13,6 @@ def index():
 @main_bp.route('/dashboard')
 @login_required
 def dashboard():
-    """Main dashboard - user workspace"""
-    return render_template('dashboard/index.html')
+    """Main dashboard - user workspace with tabs"""
+    # Redirect to the dashboard blueprint
+    return redirect(url_for('dashboard.user_index'))

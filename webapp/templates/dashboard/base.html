@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="{{ url_for('static', filename='aeropanel/images/favicon.ico') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}SmartApply Dashboard{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+
+    <!-- SimpleBar CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/simplebar@6.3.3/dist/simplebar.min.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- AeroPanel Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='aeropanel/css/bootstrap-extended.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='aeropanel/scss/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='aeropanel/scss/dark-theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='aeropanel/scss/responsive.css') }}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <div class="layout-wrapper">
+        <!-- Top Header -->
+        {% include 'dashboard/components/header.html' %}
+
+        <!-- Sidebar -->
+        {% include 'dashboard/components/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="container-fluid px-4 pt-3">
+                        {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Search Offcanvas -->
+    {% include 'dashboard/components/search.html' %}
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay"></div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://unpkg.com/simplebar@6.3.3/dist/simplebar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='aeropanel/js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='aeropanel/js/header-search.js') }}"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

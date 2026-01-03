@@ -1,0 +1,12 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Analytics - SmartApply{% endblock %}
+{% block content %}
+<div class="p-4">
+    <h3 class="fw-bold mb-4">Analytics & Statistics</h3>
+    <div class="row g-3">
+        <div class="col-md-4"><div class="card"><div class="card-body"><h6>Success Rate</h6><h3>{{ stats.success_rate|round(1) }}%</h3></div></div></div>
+        <div class="col-md-4"><div class="card"><div class="card-body"><h6>Total Applications</h6><h3>{{ stats.total_applications }}</h3></div></div></div>
+        <div class="col-md-4"><div class="card"><div class="card-body"><h6>This Month</h6><h3>{{ stats.applications_this_month }}</h3></div></div></div>
+    </div>
+</div>
+{% endblock %}

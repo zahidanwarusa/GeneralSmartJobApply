@@ -1,0 +1,133 @@
+<header class="topheader">
+    <!-- Left Section -->
+    <div class="topheader-left d-flex align-items-center gap-3">
+        <button class="btn-toggle">
+            <i class="bx bx-menu"></i>
+        </button>
+        <div class="brand-logo d-flex align-items-center gap-2">
+            <img src="{{ url_for('static', filename='aeropanel/images/logo.png') }}" alt="Logo" class="logo-img" style="height: 32px;">
+            <h2 class="logo-name d-none d-sm-flex">SmartApply</h2>
+        </div>
+    </div>
+
+    <!-- Middle Section -->
+    <div class="topheader-middle d-flex align-items-center d-none d-lg-flex">
+        <ul class="nav gap-1">
+            {% if current_user.is_admin %}
+            <li class="nav-item"><a href="{{ url_for('dashboard.admin_index') }}" class="nav-link">Admin</a></li>
+            <li class="nav-item"><a href="{{ url_for('dashboard.admin_analytics') }}" class="nav-link">Analytics</a></li>
+            <li class="nav-item"><a href="{{ url_for('dashboard.admin_users') }}" class="nav-link">Users</a></li>
+            {% else %}
+            <li class="nav-item"><a href="{{ url_for('dashboard.pricing') }}" class="nav-link">Pricing</a></li>
+            <li class="nav-item"><a href="{{ url_for('dashboard.user_analytics') }}" class="nav-link">Analytics</a></li>
+            <li class="nav-item"><a href="{{ url_for('dashboard.user_profile') }}" class="nav-link">Profile</a></li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <!-- Right Section -->
+    <div class="topheader-right d-flex align-items-center gap-3">
+        <ul class="nav gap-0 align-items-center">
+            <!-- Search -->
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasSearch" role="button">
+                    <i class="bx bx-search"></i>
+                </a>
+            </li>
+
+            <!-- Theme Toggle -->
+            <li class="nav-item">
+                <a class="nav-link theme-toggle-btn" href="javascript:void(0)">
+                    <i class="bx bx-moon"></i>
+                </a>
+            </li>
+
+            <!-- Notifications -->
+            <li class="nav-item dropdown dropdown-notification pe-2">
+                <button class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" data-bs-toggle="dropdown">
+                    <span class="notify-badge">3</span>
+                    <i class="bx bx-bell"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <div class="dropdown-header py-3 border-bottom">
+                        <h6 class="dropdown-header-title">
+                            Notifications
+                            <span class="custom-badge bg-danger text-danger bg-opacity-10">3 New</span>
+                        </h6>
+                    </div>
+                    <div class="dropdown-noti-container" data-simplebar>
+                        <a class="dropdown-item" href="javascript:;">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="noti-msg-text"><span>S</span></div>
+                                <div class="noti-msg-body">
+                                    <h5 class="noti-msg-title mb-0">SmartApply</h5>
+                                    <p class="noti-msg-disc mb-0">Welcome to SmartApply Dashboard!</p>
+                                    <p class="noti-msg-time mb-0">Just now</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="dropdown-footer dropdown-item py-3 border-top">
+                        <button class="btn btn-primary w-100 rounded-3">View All Notifications</button>
+                    </div>
+                </div>
+            </li>
+
+            <!-- User Dropdown -->
+            <li class="dropdown dropdown-user">
+                <a class="dropdown-toggle dropdown-toggle-nocaret" href="javascript:;" data-bs-toggle="dropdown">
+                    <div class="user-img">
+                        <img src="{{ url_for('static', filename='aeropanel/images/avatars/01.png') }}" alt="user-avatar">
+                    </div>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li class="dropdown-header dropdown-item">
+                        <a class="d-flex align-items-center gap-3" href="javascript:;">
+                            <div class="user-img">
+                                <img src="{{ url_for('static', filename='aeropanel/images/avatars/01.png') }}" alt="user-avatar">
+                            </div>
+                            <div class="user-details">
+                                <h6 class="mb-0 user-name">{{ current_user.full_name or current_user.username }}</h6>
+                                <p class="mb-0 user-designation">{{ 'Administrator' if current_user.is_admin else 'User' }}</p>
+                            </div>
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url_for('dashboard.user_profile') }}">
+                            <p class="mb-0"><i class="bx bx-user fs-4"></i></p>
+                            <p class="mb-0">Profile</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url_for('dashboard.user_settings') }}">
+                            <p class="mb-0"><i class="bx bx-cog fs-4"></i></p>
+                            <p class="mb-0">Settings</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url_for('dashboard.index') }}">
+                            <p class="mb-0"><i class="bx bx-dashboard fs-4"></i></p>
+                            <p class="mb-0">Dashboard</p>
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    {% if current_user.is_admin %}
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url_for('dashboard.admin_index') }}">
+                            <p class="mb-0"><i class="bx bx-shield fs-4"></i></p>
+                            <p class="mb-0">Admin Panel</p>
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    {% endif %}
+                    <li class="dropdown-item dropdown-footer py-2 border-top">
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-primary rounded-3 w-100 d-flex align-items-center justify-content-center py-1 gap-2">
+                            <i class="bx bx-log-out"></i>Logout
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</header>

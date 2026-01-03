@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="en">
+
+
+<!-- Mirrored from codervent.com/aeropanel/demo/components-carousels.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 01 Jan 2026 12:33:04 GMT -->
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="assets/images/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AeroPanel – Bootstrap 5 Admin Dashboard Template</title>
+    <!-- google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&amp;display=swap"
+        rel="stylesheet">
+    <!-- SimpleBar CSS -->
+    <link rel="stylesheet" href="../../../unpkg.com/simplebar%406.3.3/dist/simplebar.min.css">    
+    <!--Icons -->
+    <link rel="stylesheet" href="../../../cdn.jsdelivr.net/npm/bootstrap-icons%401.13.1/font/bootstrap-icons.min.css">
+    <link href='../../../cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
+    <!-- Bootstrap main file -->
+    <link href="../../../cdn.jsdelivr.net/npm/bootstrap%405.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="assets/css/bootstrap-extended.css">
+    <link rel="stylesheet" href="assets/scss/styles.css">
+    <link rel="stylesheet" href="assets/scss/dark-theme.css">
+    <link rel="stylesheet" href="assets/scss/responsive.css">
+    
+</head>
+
+<body>
+
+    <!--layout wrapper start-->
+    <div class="layout-wrapper">
+        <!-- Top Header -->
+        <header class="topheader">
+            <!-- Left Section -->
+            <div class="topheader-left d-flex align-items-center gap-3">
+                <button class="btn-toggle">
+                    <i class="bx bx-menu"></i>
+                </button>
+                <div class="brand-logo d-flex align-items-center gap-2">
+                    <img src="assets/images/logo.png" alt="Logo" class="logo-img">
+                    <h2 class="logo-name d-none d-sm-flex">AeroPanel</h2>
+                </div>
+            </div>
+
+            <!-- Middle Section -->
+            <div class="topheader-middle d-flex align-items-center d-none d-lg-flex">
+                <ul class="nav gap-1">
+                    <li class="nav-item"><a href="pricing-tables.html" class="nav-link">Pricing</a></li>
+                    <li class="nav-item"><a href="index.html" class="nav-link">Analytics</a></li>
+                    <li class="nav-item"><a href="accounts-profile.html" class="nav-link">Profile</a></li>
+                    <li class="nav-item"><a href="support.html" class="nav-link">Support</a></li>
+                    <li class="nav-item">
+                        <a href="https://github.com/" class="nav-link">GitHub</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Right Section -->
+            <div class="topheader-right d-flex align-items-center gap-3">
+                <ul class="nav gap-0 align-items-center">
+                    <!-- Search -->
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasSearch" role="button">
+                            <i class="bx bx-search"></i>
+                        </a>
+                    </li>
+
+
+                    <!-- Theme Toggle Button -->
+                    <li class="nav-item">
+                        <a class="nav-link theme-toggle-btn" href="javascript:void(0)">
+                            <i class="bx bx-moon"></i>
+                        </a>
+                    </li>
+
+                    <!-- Language Dropdown -->
+                    <li class="nav-item dropdown dropdown-language d-none d-sm-flex">
+                        <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bx bx-flag-alt"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/01.png" alt="English" width="20" class="me-2">
+                                    English
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/02.png" alt="French" width="20" class="me-2">
+                                    French
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/03.png" alt="Japan" width="20" class="me-2">
+                                    Japan
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/04.png" alt="Canada" width="20" class="me-2">
+                                    Canada
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/05.png" alt="Australia" width="20" class="me-2">
+                                    Australia
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/06.png" alt="Sweden" width="20" class="me-2">
+                                    Sweden
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/07.png" alt="United Kingdom" width="20"
+                                        class="me-2">
+                                    United Kingdom
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/08.png" alt="Switzerland" width="20"
+                                        class="me-2">
+                                    Switzerland
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+                    <!-- Apps Dropdown -->
+                    <li class="nav-item dropdown dropdown-apps">
+                        <button class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-bs-toggle="dropdown">
+                            <i class="bx bx-grid-circle-plus"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end p-0" data-simplebar>
+                            <div class="app-container">
+                                <div class="row g-0 border-bottom">
+                                    <div class="col border-end">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-dark text-white">
+                                                <i class="bx bx-keyframe-easy-ease"></i>
+                                            </div>
+                                            <div class="app-name">
+                                              <h6 class="mb-0">Projects</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-primary text-white">
+                                                <i class="bx bx-receipt"></i>
+                                            </div>
+                                            <div class="app-name">
+                                               <h6 class="mb-0">Invoice</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-0 border-bottom">
+                                    <div class="col border-end">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-danger text-white">
+                                                <i class="bx bx-group"></i>
+                                            </div>
+                                            <div class="app-name">
+                                                <h6 class="mb-0">Teams</h6>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-warning text-dark">
+                                                <i class="bx bx-message-circle"></i>
+                                            </div>
+                                            <div class="app-name">
+                                              <h6 class="mb-0">Chat</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-0 border-bottom">
+                                    <div class="col border-end">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-info text-dark">
+                                                <i class="bx bx-cart"></i>
+                                            </div>
+                                            <div class="app-name">
+                                               <h6 class="mb-0">Billing</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-success text-white">
+                                                <i class="bx bx-credit-card-alt"></i>
+                                            </div>
+                                            <div class="app-name">
+                                              <h6 class="mb-0">Payment</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-0 border-bottom">
+                                    <div class="col border-end">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-purple text-white">
+                                                <i class="bx bx-chef-hat"></i>
+                                            </div>
+                                             <div class="app-name">
+                                               <h6 class="mb-0">Managment</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-pink text-white">
+                                                <i class="bx bx-inbox"></i>
+                                            </div>
+                                            <div class="app-name">
+                                               <h6 class="mb-0">Inbox</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-0 border-bottom">
+                                    <div class="col border-end">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-orange text-white">
+                                                <i class="bx bx-note"></i>
+                                            </div>
+                                            <div class="app-name">
+                                               <h6 class="mb-0">Docs</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-teal text-white">
+                                                <i class="bx bx-wrist-watch-round"></i>
+                                            </div>
+                                            <div class="app-name">
+                                               <h6 class="mb-0">Events</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-0">
+                                    <div class="col border-end">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-cyan text-dark">
+                                                <i class="bx bx-cloud-alt"></i>
+                                            </div>
+                                            <div class="app-name">
+                                               <h6 class="mb-0">Cloud</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-red text-white">
+                                                <i class="bx bx-groceries"></i>
+                                            </div>
+                                            <div class="app-name">
+                                               <h6 class="mb-0">Store</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </li>
+
+                    <!-- Notifications -->
+                    <li class="nav-item dropdown dropdown-notification pe-2">
+                        <button class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative"
+                            data-bs-toggle="dropdown">
+                            <span class="notify-badge">9</span>
+                            <i class="bx bx-bell"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <div class="dropdown-header py-3 border-bottom">
+                                <h6 class="dropdown-header-title">
+                                    Notifications
+                                    <span class="custom-badge bg-danger text-danger bg-opacity-10">5 New</span>
+                                </h6>
+                            </div>
+                           <div class="dropdown-noti-container" data-simplebar>
+                               <a class="dropdown-item" href="javascript:;">
+                                   <div class="d-flex align-items-start gap-3">
+                                       <div class="noti-msg-img"><img alt="avatar"
+                                               src="../../../randomuser.me/api/portraits/men/35.jpg"></div>
+                                       <div class="noti-msg-body">
+                                           <h5 class="noti-msg-title mb-0">Sarah Taylor</h5>
+                                           <p class="noti-msg-disc mb-0">You have 5 new tasks assigned</p>
+                                           <p class="noti-msg-time mb-0">Just now</p>
+                                       </div>
+                                   </div>
+                               </a>
+                               <a class="dropdown-item" href="javascript:;">
+                                   <div class="d-flex align-items-start gap-3">
+                                       <div class="noti-msg-text"><span>G</span></div>
+                                       <div class="noti-msg-body">
+                                           <h5 class="noti-msg-title mb-0">George Wilson</h5>
+                                           <p class="noti-msg-disc mb-0">New comment on your post</p>
+                                           <p class="noti-msg-time mb-0">8 mins ago</p>
+                                       </div>
+                                   </div>
+                               </a>
+                               <a class="dropdown-item" href="javascript:;">
+                                   <div class="d-flex align-items-start gap-3">
+                                       <div class="noti-msg-img"><img alt="avatar"
+                                               src="../../../randomuser.me/api/portraits/men/36.jpg"></div>
+                                       <div class="noti-msg-body">
+                                           <h5 class="noti-msg-title mb-0">Emma Brown</h5>
+                                           <p class="noti-msg-disc mb-0">Project status updated</p>
+                                           <p class="noti-msg-time mb-0">30 mins ago</p>
+                                       </div>
+                                   </div>
+                               </a>
+                               <a class="dropdown-item" href="javascript:;">
+                                   <div class="d-flex align-items-start gap-3">
+                                       <div class="noti-msg-text"><span>A</span></div>
+                                       <div class="noti-msg-body">
+                                           <h5 class="noti-msg-title mb-0">Alex Martin</h5>
+                                           <p class="noti-msg-disc mb-0">Sent you a new file</p>
+                                           <p class="noti-msg-time mb-0">1h ago</p>
+                                       </div>
+                                   </div>
+                               </a>
+                               <a class="dropdown-item" href="javascript:;">
+                                   <div class="d-flex align-items-start gap-3">
+                                       <div class="noti-msg-img"><img alt="avatar"
+                                               src="../../../randomuser.me/api/portraits/men/14.jpg"></div>
+                                       <div class="noti-msg-body">
+                                           <h5 class="noti-msg-title mb-0">David Lee</h5>
+                                           <p class="noti-msg-disc mb-0">Team meeting at 3 PM</p>
+                                           <p class="noti-msg-time mb-0">2h ago</p>
+                                       </div>
+                                   </div>
+                               </a>
+                               <a class="dropdown-item" href="javascript:;">
+                                   <div class="d-flex align-items-start gap-3">
+                                       <div class="noti-msg-img"><img alt="avatar"
+                                               src="../../../randomuser.me/api/portraits/women/14.jpg"></div>
+                                       <div class="noti-msg-body">
+                                           <h5 class="noti-msg-title mb-0">Lily Adams</h5>
+                                           <p class="noti-msg-disc mb-0">Payment received successfully</p>
+                                           <p class="noti-msg-time mb-0">Yesterday</p>
+                                       </div>
+                                   </div>
+                               </a>
+                               <a class="dropdown-item" href="javascript:;">
+                                   <div class="d-flex align-items-start gap-3">
+                                       <div class="noti-msg-text"><span>K</span></div>
+                                       <div class="noti-msg-body">
+                                           <h5 class="noti-msg-title mb-0">Kevin Harris</h5>
+                                           <p class="noti-msg-disc mb-0">Updated the project timeline</p>
+                                           <p class="noti-msg-time mb-0">2 days ago</p>
+                                       </div>
+                                   </div>
+                               </a>
+                               <a class="dropdown-item" href="javascript:;">
+                                   <div class="d-flex align-items-start gap-3">
+                                       <div class="noti-msg-text"><span>S</span></div>
+                                       <div class="noti-msg-body">
+                                           <h5 class="noti-msg-title mb-0">Sophie Evans</h5>
+                                           <p class="noti-msg-disc mb-0">Shared a new document</p>
+                                           <p class="noti-msg-time mb-0">3 days ago</p>
+                                       </div>
+                                   </div>
+                               </a>
+                               <a class="dropdown-item" href="javascript:;">
+                                   <div class="d-flex align-items-start gap-3">
+                                       <div class="noti-msg-img"><img alt="avatar"
+                                               src="../../../randomuser.me/api/portraits/men/37.jpg"></div>
+                                       <div class="noti-msg-body">
+                                           <h5 class="noti-msg-title mb-0">Michael Clark</h5>
+                                           <p class="noti-msg-disc mb-0">You have a meeting invite</p>
+                                           <p class="noti-msg-time mb-0">5 days ago</p>
+                                       </div>
+                                   </div>
+                               </a>
+                           </div>
+
+                            <div class="dropdown-footer dropdown-item py-3 border-top">
+                                <button class="btn btn-primary w-100 rounded-3">
+                                    View All Notifications
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- User Dropdown -->
+                    <li class="dropdown dropdown-user">
+                        <a class="dropdown-toggle dropdown-toggle-nocaret" href="javascript:;" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <div class="user-img">
+                                <img src="assets/images/avatars/01.png" alt="user-avatar">
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li class="dropdown-header dropdown-item">
+                                <a class="d-flex align-items-center gap-3" href="javascript:;">
+                                    <div class="user-img">
+                                        <img src="assets/images/avatars/01.png" alt="user-avatar">
+                                    </div>
+                                    <div class="user-details">
+                                        <h6 class="mb-0 user-name">Alex Martin</h6>
+                                        <p class="mb-0 user-designation">Manager</p>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="javascript:;">
+                                    <p class="mb-0"><i class="bx bx-user fs-4"></i></p>
+                                    <p class="mb-0">Alex Martin</p>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="javascript:;">
+                                    <p class="mb-0"><i class="bx bx-cog fs-4"></i></p>
+                                    <p class="mb-0">Settings</p>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="javascript:;">
+                                    <p class="mb-0"><i class="bx bx-dashboard fs-4"></i></p>
+                                    <p class="mb-0">Dashboard</p>
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="javascript:;">
+                                    <p class="mb-0"><i class="bx bx-arrow-down-circle fs-4"></i></p>
+                                    <p class="mb-0">Downloads</p>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="javascript:;">
+                                    <p class="mb-0"><i class="bx bx-dollar-circle fs-4"></i></p>
+                                    <p class="mb-0">Earning</p>
+                                </a>
+                            </li>
+                            <li class="dropdown-item dropdown-footer py-2 border-top">
+                                <a href="javascript:;" class="btn btn-primary rounded-3 w-100 d-flex align-items-center justify-content-center py-1 gap-2">
+								<i class="bx bx-arrow-out-right-square-half"></i>Logout</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </div>
+        </header>
+        <!-- Top Header End-->
+
+        <!-- Sidebar Wrapper -->
+        <aside class="sidebar-wrapper">
+
+            <!-- Sidebar Search -->
+            <div class="sidebar-wrapper-search">
+                <div class="position-relative w-100">
+                    <input type="text" class="form-control" placeholder="Type to search">
+                    <span class="position-absolute top-50 ms-3 translate-middle-y start-0 search-icon pe-none">
+                        <i class="bx bx-search"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- 🔹 Sidebar Nav -->
+            <nav class="sidebar-wrapper-nav" data-simplebar>
+                <ul class="nav flex-column sidebar">
+
+                    <!-- Dashboard -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-home parent-icon me-2"></i>Dashboard</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="index.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Analytics</a></li>
+                            <li><a href="dashboard-sales.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Sales</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Ecommerce -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-shopping-bag parent-icon me-2"></i>Ecommerce</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="ecommerce-product-list.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Product List</a></li>
+                            <li><a href="ecommerce-product-grid.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Product Grid</a></li>
+                            <li><a href="ecommerce-add-new-product.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Add Product</a></li>
+                            <li><a href="ecommerce-category-list.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Category List</a></li>
+                            <li><a href="ecommerce-order-list.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Order List</a></li>
+                            <li><a href="ecommerce-order-details.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Order Details</a></li>
+                            <li><a href="ecommerce-customer-list.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Customer List</a></li>
+                            <li><a href="ecommerce-customer-details.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Customer Details</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Apps -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-apps parent-icon me-2"></i>Apps</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="apps-chatbox.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Chatbox</a></li>
+                            <li><a href="apps-invoice.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Invoice</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Widgets -->
+                    <li><a href="widgets.html" class="sidebar-nav-link"><i
+                                class="bx bx-grid-circle-diagonal-left parent-icon me-2"></i>Widgets</a></li>
+                    <!-- Components -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-shapes parent-icon me-2"></i>Components</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li>
+                                <a href="components-alerts.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Alerts
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-accordion.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Accordion
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-notifications.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Notifications
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-badges.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Badges
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-buttons.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Buttons
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-cards.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Cards
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-listgroup.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>List Groups
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-carousels.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Carousels
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-media-object.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Media Object
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-navbars.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Navbars
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-progress.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Progress
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-spinners.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Spinners
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Icons -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-hot parent-icon me-2"></i>Icons</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="icons-boxicons.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Box Icons</a></li>
+                            <li><a href="icons-bootstrap.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Bootstrap Icons</a></li>
+                            <li><a href="icons-font-awesome.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Font Awesome</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Forms -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-clipboard-minus parent-icon me-2"></i>Forms</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="forms-basic-inputs.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Basic Inputs</a></li>
+                            <li><a href="forms-input-group.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Input Groups</a></li>
+                            <li><a href="forms-checks-radios.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Radio &amp; Checkboxes</a></li>
+                            <li><a href="forms-layouts.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Form Layouts</a></li>
+                            <li><a href="forms-wizard.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Form Wizard</a></li>
+                            <li><a href="forms-editor.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Text Editor</a></li>
+                            <li><a href="forms-file-upload.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>File Upload</a></li>
+                            <li><a href="forms-date-picker.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Date Pickers</a></li>
+                            <li><a href="forms-select2.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Select 2</a></li>
+                            <li><a href="forms-repeater.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Form Repeat</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Tables -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-table-layout parent-icon me-2"></i>Tables</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="tables-basic-tables.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Basic Tables</a></li>
+                            <li><a href="tables-data-table.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Data Tables</a></li>
+                            <li><a href="tables-advance-tables.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Advanced Tables</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Pricing -->
+                    <li><a href="pricing-tables.html" class="sidebar-nav-link"><i
+                                class="bx bx-price-tag parent-icon me-2"></i>Pricing</a></li>
+
+                    <!-- Authentication (Nested Example) -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-lock-keyhole-open parent-icon me-2"></i>Authentication</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li class="has-submenu">
+                                <div class="sidebar-nav-link">
+                                    <span><i class="bx bx-caret-right me-2"></i>Basic</span>
+                                    <i class="bi bi-chevron-right rotate-icon"></i>
+                                </div>
+                                <ul class="submenu list-unstyled ps-4">
+                                    <li><a href="auth-basic-login.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Login</a></li>
+                                    <li><a href="auth-basic-register.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Register</a></li>
+                                    <li><a href="auth-basic-verify-email.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Verify Email</a></li>
+                                    <li><a href="auth-basic-forgot-password.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Forgot Password</a></li>
+                                    <li><a href="auth-basic-new-password.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>New Password</a></li>
+                                    <li><a href="auth-basic-pass-reset-success.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Reset Success</a></li>
+                                </ul>
+                            </li>
+                            <li class="has-submenu">
+                                <div class="sidebar-nav-link">
+                                    <span><i class="bx bx-caret-right me-2"></i>Cover</span>
+                                    <i class="bi bi-chevron-right rotate-icon"></i>
+                                </div>
+                                <ul class="submenu list-unstyled ps-4">
+                                    <li><a href="auth-cover-login.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Login</a></li>
+                                    <li><a href="auth-cover-register.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Register</a></li>
+                                    <li><a href="auth-cover-verify-email.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Verify Email</a></li>
+                                    <li><a href="auth-cover-forgot-password.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Forgot Password</a></li>
+                                    <li><a href="auth-cover-new-password.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Neww Password</a></li>
+                                    <li><a href="auth-cover-pass-reset-success.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Reset Success</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Accounts -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-user-circle parent-icon me-2"></i>Accounts</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="accounts-profile.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Profile</a></li>
+                            <li><a href="accounts-edit-profile.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Edit Profile</a></li>
+                            <li><a href="accounts-password-settings.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Password Settings</a></li>
+                            <li><a href="accounts-notifications.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Notifications</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Charts -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-chart-spline parent-icon me-2"></i>Charts</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="charts-chartjs.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Charts JS</a></li>
+                            <li><a href="charts-apexcharts.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Apex Charts</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Other Pages -->
+                    <li><a href="timeline.html" class="sidebar-nav-link"><i
+                                class="bx bx-cup-hot parent-icon me-2"></i>Timeline</a></li>
+                    <li><a href="faq.html" class="sidebar-nav-link"><i
+                                class="bx bx-help-circle parent-icon me-2"></i>FAQ</a></li>
+
+                    <!-- Errors -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-bug-alt parent-icon me-2"></i>Errors</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="errors-404-error.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>404 Error</a></li>
+                            <li><a href="errors-500-error.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>500 Error</a></li>
+                            <li><a href="errors-coming-soon.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Coming Soon</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Documentation -->
+                    <li>
+                        <a href="https://codervent.com/aeropanel/documentation/index.html"
+                            class="sidebar-nav-link">
+                            <i class="bx bx-folder-code parent-icon me-2"></i>Documentation
+                        </a>
+                    </li>
+
+                    <!-- Support -->
+                    <li><a href="support.html" class="sidebar-nav-link"><i
+                                class="bx bx-headphone-mic parent-icon me-2"></i>Support</a></li>
+
+                </ul>
+            </nav>
+        </aside>
+        <!-- Sidebar Wrapper End-->
+
+        <!-- Main Content Start -->
+        <main class="main-content">
+              <div class="compCarousel">
+                <div id="compCarousel" class="carousel slide" data-bs-ride="carousel">
+                  <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#compCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#compCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#compCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                  </div>
+            
+                  <div class="carousel-inner rounded-4 overflow-hidden">
+                    <div class="carousel-item active">
+                      <img src="assets/images/carousels/02.jpg" class="d-block w-100 img-fluid rounded-4" alt="First slide">
+                      <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-25 rounded p-2">
+                        <h5>First slide label</h5>
+                        <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+                      </div>
+                    </div>
+            
+                    <div class="carousel-item">
+                      <img src="assets/images/carousels/01.jpg" class="d-block w-100 img-fluid rounded-4" alt="Second slide">
+                      <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-25 rounded p-2">
+                        <h5>Second slide label</h5>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                      </div>
+                    </div>
+            
+                    <div class="carousel-item">
+                      <img src="assets/images/carousels/03.jpg" class="d-block w-100 img-fluid rounded-4" alt="Third slide">
+                      <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-25 rounded p-2">
+                        <h5>Third slide label</h5>
+                        <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
+                      </div>
+                    </div>
+                  </div>
+            
+                  <button class="carousel-control-prev" type="button" data-bs-target="#compCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#compCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                  </button>
+                </div>
+              </div>
+        </main>
+        <!-- Main Content End -->
+
+    </div>
+    <!--layout wrapper end-->
+
+    <!-- 🔎 Search Offcanvas -->
+		<div class="offcanvas offcanvas-top h-100 searchbar" tabindex="-1" id="offcanvasSearch">
+			<div class="offcanvas-header container px-5">
+				<h5 class="offcanvas-title h5">Type to search anything</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+			</div>
+		
+			<div class="offcanvas-body container px-5">
+				<!-- Search Input -->
+				<div class="position-relative mb-4">
+					<input type="text" id="searchInput" class="form-control form-control-lg ps-5 search-control"
+						placeholder="Search...">
+					<span class="position-absolute top-50 ms-3 translate-middle-y start-0 fs-4 text-muted">
+						<i class="bx bx-search"></i>
+					</span>
+				</div>
+		
+				<!-- Trending Keywords -->
+				<div class="trending-search mt-5">
+					<h5 class="mb-3 fw-bold">Trending Now</h5>
+					<div class="d-flex align-items-center flex-wrap gap-3" id="trendingKeywords"></div>
+				</div>
+		
+				<!-- Results -->
+				<div class="list-search mt-4">
+					<h5 class="mb-3 fw-bold" id="resultsTitle">Most Popular</h5>
+					<div class="row row-cols-1 row-cols-lg-3 g-4" id="searchResults"></div>
+				</div>
+			</div>
+		</div>
+
+    <!-- Sidebar Overlay (for mobile) -->
+      <div class="sidebar-overlay"></div>
+
+
+
+
+    <!-- JQuery -->
+    <script src="../../../code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- SimpleBar JS -->
+    <script src="../../../unpkg.com/simplebar%406.3.3/dist/simplebar.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="../../../cdn.jsdelivr.net/npm/bootstrap%405.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main JS -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/header-search.js"></script>
+
+</body>
+
+<script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpsh-oh'},{'server':'p3plzcpnl509132'},{'dcenter':'p3'},{'cp_id':'10399385'},{'cp_cl':'8'}) // Monitoring performance to make your website faster. If you want to opt-out, please contact web hosting support.</script><script src='../../../img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
+<!-- Mirrored from codervent.com/aeropanel/demo/components-carousels.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 01 Jan 2026 12:33:05 GMT -->
+</html>

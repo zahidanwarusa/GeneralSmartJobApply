@@ -1,0 +1,265 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Admin Dashboard - SmartApply{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper p-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h3 class="fw-bold">System Overview</h3>
+            <p class="text-muted">Monitor and manage SmartApply platform</p>
+        </div>
+    </div>
+
+    <!-- System Statistics -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Users</h6>
+                            <h3 class="fw-bold mb-0">{{ stats.total_users }}</h3>
+                            <small class="text-success">
+                                <i class="bx bx-trending-up"></i> +{{ stats.new_users_week }} this week
+                            </small>
+                        </div>
+                        <div class="wh-60 bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bx bx-group fs-3"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Active Users</h6>
+                            <h3 class="fw-bold mb-0">{{ stats.active_users }}</h3>
+                            <small class="text-info">
+                                {{ (stats.active_users / stats.total_users * 100) | round(1) if stats.total_users > 0 else 0 }}% of total
+                            </small>
+                        </div>
+                        <div class="wh-60 bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bx bx-user-check fs-3"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Applications</h6>
+                            <h3 class="fw-bold mb-0">{{ stats.total_applications }}</h3>
+                            <small class="text-warning">
+                                System-wide
+                            </small>
+                        </div>
+                        <div class="wh-60 bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bx bx-briefcase fs-3"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Resumes Generated</h6>
+                            <h3 class="fw-bold mb-0">{{ stats.total_resumes }}</h3>
+                            <small class="text-danger">
+                                Total count
+                            </small>
+                        </div>
+                        <div class="wh-60 bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bx bx-file fs-3"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Tables -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="fw-semibold mb-3">User Growth</h5>
+                    <div id="userGrowthChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="fw-semibold mb-3">Quick Stats</h5>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Job Descriptions</span>
+                            <span class="fw-semibold">{{ stats.total_jobs }}</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-primary" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Active Sessions</span>
+                            <span class="fw-semibold">{{ stats.active_users }}</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" style="width: {{ (stats.active_users / stats.total_users * 100) if stats.total_users > 0 else 0 }}%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>System Health</span>
+                            <span class="fw-semibold text-success">Healthy</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" style="width: 95%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row g-3">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-semibold mb-0">Recent Users</h5>
+                        <a href="{{ url_for('dashboard.admin_users') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Email</th>
+                                    <th>Joined</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in recent_users[:5] %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="wh-40 bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center">
+                                                <i class="bx bx-user"></i>
+                                            </div>
+                                            <span>{{ user.username }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.created_at.strftime('%b %d, %Y') }}</td>
+                                    <td>
+                                        <span class="badge bg-success bg-opacity-10 text-success">Active</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-semibold mb-0">Recent Applications</h5>
+                        <a href="{{ url_for('dashboard.admin_analytics') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Position</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in recent_applications[:5] %}
+                                <tr>
+                                    <td>{{ app.user.username }}</td>
+                                    <td>{{ (app.job.title if app.job else 'N/A')[:30] }}</td>
+                                    <td>
+                                        {% if app.status == 'applied' %}
+                                        <span class="badge bg-primary bg-opacity-10 text-primary">Applied</span>
+                                        {% elif app.status == 'interview' %}
+                                        <span class="badge bg-warning bg-opacity-10 text-warning">Interview</span>
+                                        {% elif app.status == 'offer' %}
+                                        <span class="badge bg-success bg-opacity-10 text-success">Offer</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary">{{ app.status.title() }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ app.created_at.strftime('%b %d') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// User growth chart
+var options = {
+    series: [{
+        name: 'New Users',
+        data: {{ monthly_users | tojson | safe }}
+    }],
+    chart: {
+        type: 'area',
+        height: 300,
+        toolbar: { show: false }
+    },
+    dataLabels: { enabled: false },
+    stroke: { curve: 'smooth', width: 2 },
+    xaxis: {
+        categories: {{ monthly_users | map(attribute='month') | list | tojson | safe }}
+    },
+    yaxis: {
+        title: { text: 'Users' }
+    },
+    colors: ['#0d6efd'],
+    fill: {
+        type: 'gradient',
+        gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.4,
+            opacityTo: 0.1,
+        }
+    }
+};
+
+var chart = new ApexCharts(document.querySelector("#userGrowthChart"), options);
+chart.render();
+</script>
+{% endblock %}

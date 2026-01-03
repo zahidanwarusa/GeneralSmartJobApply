@@ -1,0 +1,148 @@
+<aside class="sidebar-wrapper">
+    <!-- Sidebar Search -->
+    <div class="sidebar-wrapper-search">
+        <div class="position-relative w-100">
+            <input type="text" class="form-control" placeholder="Search...">
+            <span class="position-absolute top-50 ms-3 translate-middle-y start-0 search-icon pe-none">
+                <i class="bx bx-search"></i>
+            </span>
+        </div>
+    </div>
+
+    <!-- Sidebar Nav -->
+    <nav class="sidebar-wrapper-nav" data-simplebar>
+        <ul class="nav flex-column sidebar">
+
+            {% if current_user.is_admin %}
+            <!-- ADMIN MENU -->
+            <li class="nav-header">Admin Dashboard</li>
+
+            <li>
+                <a href="{{ url_for('dashboard.admin_index') }}" class="sidebar-nav-link">
+                    <i class="bx bx-home parent-icon me-2"></i>Overview
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('dashboard.admin_users') }}" class="sidebar-nav-link">
+                    <i class="bx bx-group parent-icon me-2"></i>User Management
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('dashboard.admin_system_monitor') }}" class="sidebar-nav-link">
+                    <i class="bx bx-server parent-icon me-2"></i>System Monitor
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('dashboard.admin_payments') }}" class="sidebar-nav-link">
+                    <i class="bx bx-credit-card parent-icon me-2"></i>Payments
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('dashboard.admin_analytics') }}" class="sidebar-nav-link">
+                    <i class="bx bx-chart-spline parent-icon me-2"></i>Analytics
+                </a>
+            </li>
+
+            <li class="nav-header mt-3">User Features</li>
+
+            <li>
+                <a href="{{ url_for('dashboard.user_index') }}" class="sidebar-nav-link">
+                    <i class="bx bx-user parent-icon me-2"></i>User Dashboard
+                </a>
+            </li>
+
+            {% else %}
+            <!-- USER MENU -->
+            <li class="nav-header">Dashboard</li>
+
+            <li>
+                <a href="{{ url_for('dashboard.user_index') }}" class="sidebar-nav-link">
+                    <i class="bx bx-home parent-icon me-2"></i>Overview
+                </a>
+            </li>
+
+            <li class="has-submenu">
+                <div class="sidebar-nav-link">
+                    <span><i class="bx bx-file parent-icon me-2"></i>Resumes</span>
+                    <i class="bi bi-chevron-right rotate-icon"></i>
+                </div>
+                <ul class="submenu list-unstyled ps-3">
+                    <li><a href="{{ url_for('dashboard.user_resumes') }}" class="sidebar-nav-link">
+                        <i class="bx bx-caret-right me-2"></i>My Resumes</a>
+                    </li>
+                    <li><a href="{{ url_for('dashboard.user_resume_builder') }}" class="sidebar-nav-link">
+                        <i class="bx bx-caret-right me-2"></i>Resume Builder</a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="has-submenu">
+                <div class="sidebar-nav-link">
+                    <span><i class="bx bx-briefcase parent-icon me-2"></i>Applications</span>
+                    <i class="bi bi-chevron-right rotate-icon"></i>
+                </div>
+                <ul class="submenu list-unstyled ps-3">
+                    <li><a href="{{ url_for('dashboard.user_applications') }}" class="sidebar-nav-link">
+                        <i class="bx bx-caret-right me-2"></i>All Applications</a>
+                    </li>
+                    <li><a href="{{ url_for('dashboard.user_applications_kanban') }}" class="sidebar-nav-link">
+                        <i class="bx bx-caret-right me-2"></i>Kanban Board</a>
+                    </li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="{{ url_for('dashboard.user_jobs') }}" class="sidebar-nav-link">
+                    <i class="bx bx-search-alt parent-icon me-2"></i>Job Descriptions
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('dashboard.user_analytics') }}" class="sidebar-nav-link">
+                    <i class="bx bx-chart-spline parent-icon me-2"></i>Analytics
+                </a>
+            </li>
+
+            <li class="nav-header mt-3">Account</li>
+
+            <li>
+                <a href="{{ url_for('dashboard.user_profile') }}" class="sidebar-nav-link">
+                    <i class="bx bx-user-circle parent-icon me-2"></i>Profile
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('dashboard.user_settings') }}" class="sidebar-nav-link">
+                    <i class="bx bx-cog parent-icon me-2"></i>Settings
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('dashboard.pricing') }}" class="sidebar-nav-link">
+                    <i class="bx bx-price-tag parent-icon me-2"></i>Upgrade
+                </a>
+            </li>
+
+            {% endif %}
+
+            <li class="nav-header mt-3">Support</li>
+
+            <li>
+                <a href="javascript:void(0)" class="sidebar-nav-link">
+                    <i class="bx bx-help-circle parent-icon me-2"></i>Help & FAQ
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('auth.logout') }}" class="sidebar-nav-link">
+                    <i class="bx bx-log-out parent-icon me-2"></i>Logout
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+</aside>

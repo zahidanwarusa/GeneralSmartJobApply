@@ -1,0 +1,43 @@
+SmartApply Dashboard - Setup Instructions
+==========================================
+
+IMPORTANT: Run these commands in order!
+
+Step 1: Create Database Tables
+-------------------------------
+cd webapp
+python create_tables.py
+
+This creates all required tables:
+- users
+- job_descriptions  
+- resumes
+- applications
+
+Step 2: Create Admin User
+--------------------------
+python add_admin_field.py
+
+This creates the admin account:
+Email: admin@smartapply.com
+Password: Admin@123
+
+Step 3: Start Application
+--------------------------
+python app.py
+
+Step 4: Access Dashboard
+-------------------------
+Open: http://localhost:5000
+
+Login with admin credentials above!
+
+Troubleshooting
+---------------
+If you see "relation does not exist" error:
+- Run: python create_tables.py
+- Then restart the app
+
+If admin login doesn't work:
+- Run: python add_admin_field.py
+- Try logging in again

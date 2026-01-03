@@ -1,0 +1,1495 @@
+<!doctype html>
+<html lang="en">
+
+
+<!-- Mirrored from codervent.com/aeropanel/demo/components-cards.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 01 Jan 2026 12:32:56 GMT -->
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="assets/images/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AeroPanel – Bootstrap 5 Admin Dashboard Template</title>
+    <!-- google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&amp;display=swap"
+        rel="stylesheet">
+    <!-- SimpleBar CSS -->
+    <link rel="stylesheet" href="../../../unpkg.com/simplebar%406.3.3/dist/simplebar.min.css">
+    <!--Icons -->
+    <link rel="stylesheet" href="../../../cdn.jsdelivr.net/npm/bootstrap-icons%401.13.1/font/bootstrap-icons.min.css">
+    <link href='../../../cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
+    <!-- Bootstrap main file -->
+    <link href="../../../cdn.jsdelivr.net/npm/bootstrap%405.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="assets/css/bootstrap-extended.css">
+    <link rel="stylesheet" href="assets/scss/styles.css">
+    <link rel="stylesheet" href="assets/scss/dark-theme.css">
+    <link rel="stylesheet" href="assets/scss/responsive.css">
+
+</head>
+
+<body>
+
+    <!--layout wrapper start-->
+    <div class="layout-wrapper">
+        <!-- Top Header -->
+        <header class="topheader">
+            <!-- Left Section -->
+            <div class="topheader-left d-flex align-items-center gap-3">
+                <button class="btn-toggle">
+                    <i class="bx bx-menu"></i>
+                </button>
+                <div class="brand-logo d-flex align-items-center gap-2">
+                    <img src="assets/images/logo.png" alt="Logo" class="logo-img">
+                    <h2 class="logo-name d-none d-sm-flex">AeroPanel</h2>
+                </div>
+            </div>
+
+            <!-- Middle Section -->
+            <div class="topheader-middle d-flex align-items-center d-none d-lg-flex">
+                <ul class="nav gap-1">
+                    <li class="nav-item"><a href="pricing-tables.html" class="nav-link">Pricing</a></li>
+                    <li class="nav-item"><a href="index.html" class="nav-link">Analytics</a></li>
+                    <li class="nav-item"><a href="accounts-profile.html" class="nav-link">Profile</a></li>
+                    <li class="nav-item"><a href="support.html" class="nav-link">Support</a></li>
+                    <li class="nav-item">
+                        <a href="https://github.com/" class="nav-link">GitHub</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Right Section -->
+            <div class="topheader-right d-flex align-items-center gap-3">
+                <ul class="nav gap-0 align-items-center">
+                    <!-- Search -->
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasSearch" role="button">
+                            <i class="bx bx-search"></i>
+                        </a>
+                    </li>
+
+                    <!-- Theme Toggle Button -->
+                    <li class="nav-item">
+                        <a class="nav-link theme-toggle-btn" href="javascript:void(0)">
+                            <i class="bx bx-moon"></i>
+                        </a>
+                    </li>
+
+                    <!-- Language Dropdown -->
+                    <li class="nav-item dropdown dropdown-language d-none d-sm-flex">
+                        <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bx bx-flag-alt"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/01.png" alt="English" width="20" class="me-2">
+                                    English
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/02.png" alt="French" width="20" class="me-2">
+                                    French
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/03.png" alt="Japan" width="20" class="me-2">
+                                    Japan
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/04.png" alt="Canada" width="20" class="me-2">
+                                    Canada
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/05.png" alt="Australia" width="20" class="me-2">
+                                    Australia
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/06.png" alt="Sweden" width="20" class="me-2">
+                                    Sweden
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/07.png" alt="United Kingdom" width="20"
+                                        class="me-2">
+                                    United Kingdom
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <img src="assets/images/countries/08.png" alt="Switzerland" width="20"
+                                        class="me-2">
+                                    Switzerland
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+                    <!-- Apps Dropdown -->
+                    <li class="nav-item dropdown dropdown-apps">
+                        <button class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-bs-toggle="dropdown">
+                            <i class="bx bx-grid-circle-plus"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end p-0" data-simplebar>
+                            <div class="app-container">
+                                <div class="row g-0 border-bottom">
+                                    <div class="col border-end">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-dark text-white">
+                                                <i class="bx bx-keyframe-easy-ease"></i>
+                                            </div>
+                                            <div class="app-name">
+                                                <h6 class="mb-0">Projects</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-primary text-white">
+                                                <i class="bx bx-receipt"></i>
+                                            </div>
+                                            <div class="app-name">
+                                                <h6 class="mb-0">Invoice</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-0 border-bottom">
+                                    <div class="col border-end">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-danger text-white">
+                                                <i class="bx bx-group"></i>
+                                            </div>
+                                            <div class="app-name">
+                                                <h6 class="mb-0">Teams</h6>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-warning text-dark">
+                                                <i class="bx bx-message-circle"></i>
+                                            </div>
+                                            <div class="app-name">
+                                                <h6 class="mb-0">Chat</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-0 border-bottom">
+                                    <div class="col border-end">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-info text-dark">
+                                                <i class="bx bx-cart"></i>
+                                            </div>
+                                            <div class="app-name">
+                                                <h6 class="mb-0">Billing</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-success text-white">
+                                                <i class="bx bx-credit-card-alt"></i>
+                                            </div>
+                                            <div class="app-name">
+                                                <h6 class="mb-0">Payment</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-0 border-bottom">
+                                    <div class="col border-end">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-purple text-white">
+                                                <i class="bx bx-chef-hat"></i>
+                                            </div>
+                                            <div class="app-name">
+                                                <h6 class="mb-0">Managment</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-pink text-white">
+                                                <i class="bx bx-inbox"></i>
+                                            </div>
+                                            <div class="app-name">
+                                                <h6 class="mb-0">Inbox</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-0 border-bottom">
+                                    <div class="col border-end">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-orange text-white">
+                                                <i class="bx bx-note"></i>
+                                            </div>
+                                            <div class="app-name">
+                                                <h6 class="mb-0">Docs</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-teal text-white">
+                                                <i class="bx bx-wrist-watch-round"></i>
+                                            </div>
+                                            <div class="app-name">
+                                                <h6 class="mb-0">Events</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-0">
+                                    <div class="col border-end">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-cyan text-dark">
+                                                <i class="bx bx-cloud-alt"></i>
+                                            </div>
+                                            <div class="app-name">
+                                                <h6 class="mb-0">Cloud</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex flex-column align-items-center gap-2 p-3">
+                                            <div class="app-icon bg-red text-white">
+                                                <i class="bx bx-groceries"></i>
+                                            </div>
+                                            <div class="app-name">
+                                                <h6 class="mb-0">Store</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </li>
+
+                    <!-- Notifications -->
+                    <li class="nav-item dropdown dropdown-notification pe-2">
+                        <button class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative"
+                            data-bs-toggle="dropdown">
+                            <span class="notify-badge">9</span>
+                            <i class="bx bx-bell"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <div class="dropdown-header py-3 border-bottom">
+                                <h6 class="dropdown-header-title">
+                                    Notifications
+                                    <span class="custom-badge bg-danger text-danger bg-opacity-10">5 New</span>
+                                </h6>
+                            </div>
+                            <div class="dropdown-noti-container" data-simplebar>
+                                <a class="dropdown-item" href="javascript:;">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="noti-msg-img"><img alt="avatar"
+                                                src="../../../randomuser.me/api/portraits/men/35.jpg"></div>
+                                        <div class="noti-msg-body">
+                                            <h5 class="noti-msg-title mb-0">Sarah Taylor</h5>
+                                            <p class="noti-msg-disc mb-0">You have 5 new tasks assigned</p>
+                                            <p class="noti-msg-time mb-0">Just now</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item" href="javascript:;">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="noti-msg-text"><span>G</span></div>
+                                        <div class="noti-msg-body">
+                                            <h5 class="noti-msg-title mb-0">George Wilson</h5>
+                                            <p class="noti-msg-disc mb-0">New comment on your post</p>
+                                            <p class="noti-msg-time mb-0">8 mins ago</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item" href="javascript:;">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="noti-msg-img"><img alt="avatar"
+                                                src="../../../randomuser.me/api/portraits/men/36.jpg"></div>
+                                        <div class="noti-msg-body">
+                                            <h5 class="noti-msg-title mb-0">Emma Brown</h5>
+                                            <p class="noti-msg-disc mb-0">Project status updated</p>
+                                            <p class="noti-msg-time mb-0">30 mins ago</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item" href="javascript:;">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="noti-msg-text"><span>A</span></div>
+                                        <div class="noti-msg-body">
+                                            <h5 class="noti-msg-title mb-0">Alex Martin</h5>
+                                            <p class="noti-msg-disc mb-0">Sent you a new file</p>
+                                            <p class="noti-msg-time mb-0">1h ago</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item" href="javascript:;">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="noti-msg-img"><img alt="avatar"
+                                                src="../../../randomuser.me/api/portraits/men/14.jpg"></div>
+                                        <div class="noti-msg-body">
+                                            <h5 class="noti-msg-title mb-0">David Lee</h5>
+                                            <p class="noti-msg-disc mb-0">Team meeting at 3 PM</p>
+                                            <p class="noti-msg-time mb-0">2h ago</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item" href="javascript:;">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="noti-msg-img"><img alt="avatar"
+                                                src="../../../randomuser.me/api/portraits/women/14.jpg"></div>
+                                        <div class="noti-msg-body">
+                                            <h5 class="noti-msg-title mb-0">Lily Adams</h5>
+                                            <p class="noti-msg-disc mb-0">Payment received successfully</p>
+                                            <p class="noti-msg-time mb-0">Yesterday</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item" href="javascript:;">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="noti-msg-text"><span>K</span></div>
+                                        <div class="noti-msg-body">
+                                            <h5 class="noti-msg-title mb-0">Kevin Harris</h5>
+                                            <p class="noti-msg-disc mb-0">Updated the project timeline</p>
+                                            <p class="noti-msg-time mb-0">2 days ago</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item" href="javascript:;">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="noti-msg-text"><span>S</span></div>
+                                        <div class="noti-msg-body">
+                                            <h5 class="noti-msg-title mb-0">Sophie Evans</h5>
+                                            <p class="noti-msg-disc mb-0">Shared a new document</p>
+                                            <p class="noti-msg-time mb-0">3 days ago</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item" href="javascript:;">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="noti-msg-img"><img alt="avatar"
+                                                src="../../../randomuser.me/api/portraits/men/37.jpg"></div>
+                                        <div class="noti-msg-body">
+                                            <h5 class="noti-msg-title mb-0">Michael Clark</h5>
+                                            <p class="noti-msg-disc mb-0">You have a meeting invite</p>
+                                            <p class="noti-msg-time mb-0">5 days ago</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="dropdown-footer dropdown-item py-3 border-top">
+                                <button class="btn btn-primary w-100 rounded-3">
+                                    View All Notifications
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- User Dropdown -->
+                    <li class="dropdown dropdown-user">
+                        <a class="dropdown-toggle dropdown-toggle-nocaret" href="javascript:;" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <div class="user-img">
+                                <img src="assets/images/avatars/01.png" alt="user-avatar">
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li class="dropdown-header dropdown-item">
+                                <a class="d-flex align-items-center gap-3" href="javascript:;">
+                                    <div class="user-img">
+                                        <img src="assets/images/avatars/01.png" alt="user-avatar">
+                                    </div>
+                                    <div class="user-details">
+                                        <h6 class="mb-0 user-name">Alex Martin</h6>
+                                        <p class="mb-0 user-designation">Manager</p>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="javascript:;">
+                                    <p class="mb-0"><i class="bx bx-user fs-4"></i></p>
+                                    <p class="mb-0">Alex Martin</p>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="javascript:;">
+                                    <p class="mb-0"><i class="bx bx-cog fs-4"></i></p>
+                                    <p class="mb-0">Settings</p>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="javascript:;">
+                                    <p class="mb-0"><i class="bx bx-dashboard fs-4"></i></p>
+                                    <p class="mb-0">Dashboard</p>
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="javascript:;">
+                                    <p class="mb-0"><i class="bx bx-arrow-down-circle fs-4"></i></p>
+                                    <p class="mb-0">Downloads</p>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="javascript:;">
+                                    <p class="mb-0"><i class="bx bx-dollar-circle fs-4"></i></p>
+                                    <p class="mb-0">Earning</p>
+                                </a>
+                            </li>
+                            <li class="dropdown-item dropdown-footer py-2 border-top">
+                                <a href="javascript:;" class="btn btn-primary rounded-3 w-100 d-flex align-items-center justify-content-center py-1 gap-2">
+								<i class="bx bx-arrow-out-right-square-half"></i>Logout</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </div>
+        </header>
+        <!-- Top Header End-->
+
+        <!-- Sidebar Wrapper -->
+        <aside class="sidebar-wrapper">
+
+            <!-- Sidebar Search -->
+            <div class="sidebar-wrapper-search">
+                <div class="position-relative w-100">
+                    <input type="text" class="form-control" placeholder="Type to search">
+                    <span class="position-absolute top-50 ms-3 translate-middle-y start-0 search-icon pe-none">
+                        <i class="bx bx-search"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- 🔹 Sidebar Nav -->
+            <nav class="sidebar-wrapper-nav" data-simplebar>
+                <ul class="nav flex-column sidebar">
+
+                    <!-- Dashboard -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-home parent-icon me-2"></i>Dashboard</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="index.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Analytics</a></li>
+                            <li><a href="dashboard-sales.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Sales</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Ecommerce -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-shopping-bag parent-icon me-2"></i>Ecommerce</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="ecommerce-product-list.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Product List</a></li>
+                            <li><a href="ecommerce-product-grid.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Product Grid</a></li>
+                            <li><a href="ecommerce-add-new-product.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Add Product</a></li>
+                            <li><a href="ecommerce-category-list.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Category List</a></li>
+                            <li><a href="ecommerce-order-list.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Order List</a></li>
+                            <li><a href="ecommerce-order-details.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Order Details</a></li>
+                            <li><a href="ecommerce-customer-list.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Customer List</a></li>
+                            <li><a href="ecommerce-customer-details.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Customer Details</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Apps -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-apps parent-icon me-2"></i>Apps</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="apps-chatbox.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Chatbox</a></li>
+                            <li><a href="apps-invoice.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Invoice</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Widgets -->
+                    <li><a href="widgets.html" class="sidebar-nav-link"><i
+                                class="bx bx-grid-circle-diagonal-left parent-icon me-2"></i>Widgets</a></li>
+                    <!-- Components -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-shapes parent-icon me-2"></i>Components</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li>
+                                <a href="components-alerts.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Alerts
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-accordion.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Accordion
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-notifications.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Notifications
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-badges.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Badges
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-buttons.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Buttons
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-cards.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Cards
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-listgroup.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>List Groups
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-carousels.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Carousels
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-media-object.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Media Object
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-navbars.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Navbars
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-progress.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Progress
+                                </a>
+                            </li>
+                            <li>
+                                <a href="components-spinners.html" class="sidebar-nav-link">
+                                    <i class="bx bx-caret-right me-2"></i>Spinners
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Icons -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-hot parent-icon me-2"></i>Icons</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="icons-boxicons.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Box Icons</a></li>
+                            <li><a href="icons-bootstrap.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Bootstrap Icons</a></li>
+                            <li><a href="icons-font-awesome.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Font Awesome</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Forms -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-clipboard-minus parent-icon me-2"></i>Forms</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="forms-basic-inputs.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Basic Inputs</a></li>
+                            <li><a href="forms-input-group.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Input Groups</a></li>
+                            <li><a href="forms-checks-radios.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Radio &amp; Checkboxes</a></li>
+                            <li><a href="forms-layouts.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Form Layouts</a></li>
+                            <li><a href="forms-wizard.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Form Wizard</a></li>
+                            <li><a href="forms-editor.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Text Editor</a></li>
+                            <li><a href="forms-file-upload.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>File Upload</a></li>
+                            <li><a href="forms-date-picker.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Date Pickers</a></li>
+                            <li><a href="forms-select2.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Select 2</a></li>
+                            <li><a href="forms-repeater.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Form Repeat</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Tables -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-table-layout parent-icon me-2"></i>Tables</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="tables-basic-tables.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Basic Tables</a></li>
+                            <li><a href="tables-data-table.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Data Tables</a></li>
+                            <li><a href="tables-advance-tables.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Advanced Tables</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Pricing -->
+                    <li><a href="pricing-tables.html" class="sidebar-nav-link"><i
+                                class="bx bx-price-tag parent-icon me-2"></i>Pricing</a></li>
+
+                    <!-- Authentication (Nested Example) -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-lock-keyhole-open parent-icon me-2"></i>Authentication</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li class="has-submenu">
+                                <div class="sidebar-nav-link">
+                                    <span><i class="bx bx-caret-right me-2"></i>Basic</span>
+                                    <i class="bi bi-chevron-right rotate-icon"></i>
+                                </div>
+                                <ul class="submenu list-unstyled ps-4">
+                                    <li><a href="auth-basic-login.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Login</a></li>
+                                    <li><a href="auth-basic-register.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Register</a></li>
+                                    <li><a href="auth-basic-verify-email.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Verify Email</a></li>
+                                    <li><a href="auth-basic-forgot-password.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Forgot Password</a></li>
+                                    <li><a href="auth-basic-new-password.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>New Password</a></li>
+                                    <li><a href="auth-basic-pass-reset-success.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Reset Success</a></li>
+                                </ul>
+                            </li>
+                            <li class="has-submenu">
+                                <div class="sidebar-nav-link">
+                                    <span><i class="bx bx-caret-right me-2"></i>Cover</span>
+                                    <i class="bi bi-chevron-right rotate-icon"></i>
+                                </div>
+                                <ul class="submenu list-unstyled ps-4">
+                                    <li><a href="auth-cover-login.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Login</a></li>
+                                    <li><a href="auth-cover-register.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Register</a></li>
+                                    <li><a href="auth-cover-verify-email.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Verify Email</a></li>
+                                    <li><a href="auth-cover-forgot-password.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Forgot Password</a></li>
+                                    <li><a href="auth-cover-new-password.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Neww Password</a></li>
+                                    <li><a href="auth-cover-pass-reset-success.html" class="sidebar-nav-link"><i
+                                                class="bx bx-caret-right me-2"></i>Reset Success</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Accounts -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-user-circle parent-icon me-2"></i>Accounts</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="accounts-profile.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Profile</a></li>
+                            <li><a href="accounts-edit-profile.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Edit Profile</a></li>
+                            <li><a href="accounts-password-settings.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Password Settings</a></li>
+                            <li><a href="accounts-notifications.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Notifications</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Charts -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-chart-spline parent-icon me-2"></i>Charts</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="charts-chartjs.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Charts JS</a></li>
+                            <li><a href="charts-apexcharts.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Apex Charts</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Other Pages -->
+                    <li><a href="timeline.html" class="sidebar-nav-link"><i
+                                class="bx bx-cup-hot parent-icon me-2"></i>Timeline</a></li>
+                    <li><a href="faq.html" class="sidebar-nav-link"><i
+                                class="bx bx-help-circle parent-icon me-2"></i>FAQ</a></li>
+
+                    <!-- Errors -->
+                    <li class="has-submenu">
+                        <div class="sidebar-nav-link">
+                            <span><i class="bx bx-bug-alt parent-icon me-2"></i>Errors</span>
+                            <i class="bi bi-chevron-right rotate-icon"></i>
+                        </div>
+                        <ul class="submenu list-unstyled ps-3">
+                            <li><a href="errors-404-error.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>404 Error</a></li>
+                            <li><a href="errors-500-error.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>500 Error</a></li>
+                            <li><a href="errors-coming-soon.html" class="sidebar-nav-link"><i
+                                        class="bx bx-caret-right me-2"></i>Coming Soon</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Documentation -->
+                    <li>
+                        <a href="https://codervent.com/aeropanel/documentation/index.html"
+                            class="sidebar-nav-link">
+                            <i class="bx bx-folder-code parent-icon me-2"></i>Documentation
+                        </a>
+                    </li>
+
+                    <!-- Support -->
+                    <li><a href="support.html" class="sidebar-nav-link"><i
+                                class="bx bx-headphone-mic parent-icon me-2"></i>Support</a></li>
+
+                </ul>
+            </nav>
+        </aside>
+        <!-- Sidebar Wrapper End-->
+
+        <!-- Main Content Start -->
+        <main class="main-content">
+            <div class="card-wrapper">
+                <h5 class="mb-3 fw-bold">Basic Cards</h5>
+                <div class="row">
+  <div class="col-12 col-lg-3">
+    <div class="card">
+      <img alt="Solana Community" class="card-img-top rounded-top-4"
+        src="assets/images/cards/basic/01.jpg">
+      <div class="card-body">
+        <h5 class="card-title fw-semibold">Solana Community</h5>
+        <p class="card-text text-muted">
+          There's something for everybody. Follow along, chat on
+          Discord, or read up on what we’re doing.
+        </p>
+        <button class="btn btn-outline-primary w-100 rounded-pill gap-2">
+          Learn more <i class="bi bi-arrow-right lh-0 fs-5"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-3">
+    <div class="card">
+      <img alt="Validator" class="card-img-top rounded-top-4"
+        src="assets/images/cards/basic/02.jpg">
+      <div class="card-body">
+        <h5 class="card-title fw-semibold">Become a Validator</h5>
+        <p class="card-text text-muted">
+          Help secure the network by running decentralised infrastructure.
+        </p>
+        <button class="btn btn-outline-success w-100 rounded-pill d-flex align-items-center gap-2">
+          Get started <i class="bi bi-arrow-right lh-0 fs-5"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-3">
+    <div class="card">
+      <img alt="Developer Resources" class="card-img-top rounded-top-4"
+        src="assets/images/cards/basic/03.jpg">
+      <div class="card-body">
+        <h5 class="card-title fw-semibold">Developer Resources</h5>
+        <p class="card-text text-muted">
+          Explore guides, videos, tutorials, SDKs, and reference implementations for developers.
+        </p>
+        <button class="btn btn-outline-info w-100 rounded-pill d-flex align-items-center gap-2">
+          Start building <i class="bi bi-arrow-right lh-0 fs-5"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-3">
+    <div class="card">
+      <img alt="Events" class="card-img-top rounded-top-4"
+        src="assets/images/cards/basic/04.jpg">
+      <div class="card-body">
+        <h5 class="card-title fw-semibold">Events &amp; Meetups</h5>
+        <p class="card-text text-muted">
+          Join upcoming Solana events and community meetups around
+          the world and connect with others.
+        </p>
+        <button class="btn btn-outline-warning w-100 rounded-pill d-flex align-items-center gap-2">
+          View events <i class="bi bi-arrow-right lh-0 fs-5"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+                <h5 class="mb-3 fw-bold">Blog Cards</h5>
+                <div class="row">
+  <div class="col-12 col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <img class="card-img-top rounded-4 mb-4" alt="Investing"
+          src="assets/images/cards/blog/01.jpg">
+        <small class="text-muted">Zoe Martinez &nbsp; • &nbsp; 5 min read</small>
+        <h6 class="mt-2 fw-semibold d-flex justify-content-between">
+          The Basics of Investing in stock for Millennials
+          <i class="bi bi-box-arrow-up-right ms-2"></i>
+        </h6>
+        <p class="text-muted mb-3">
+          A simple guide to understanding the basics of investing, including stocks...
+        </p>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="badge bg-success bg-opacity-10 text-success px-3 py-1">Finance</span>
+          <small class="text-muted">Mar 09, 2024</small>
+        </div>
+        <button
+          class="btn btn-success bg-success bg-opacity-10 text-success w-100 rounded-pill gap-2 mt-4">
+          View events <i class="bi bi-arrow-right lh-0 fs-5"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <img class="card-img-top rounded-4 mb-4" alt="Personal Brand"
+          src="assets/images/cards/blog/02.jpg">
+        <small class="text-muted">Kevin Tran &nbsp; • &nbsp; 5 min read</small>
+        <h6 class="mt-2 fw-semibold d-flex justify-content-between">
+          Effective Strategies for Building a Personal Brand
+          <i class="bi bi-box-arrow-up-right ms-2"></i>
+        </h6>
+        <p class="text-muted mb-3">
+          Step-by-step strategies for creating a memorable and authentic personal brand...
+        </p>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-1">Marketing</span>
+          <small class="text-muted">Mar 09, 2024</small>
+        </div>
+        <button
+          class="btn btn-danger bg-danger bg-opacity-10 text-danger w-100 rounded-pill gap-2 mt-4">
+          Learn More <i class="bi bi-arrow-right lh-0 fs-5"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <div class="position-relative">
+          <img class="card-img-top rounded-4 mb-4" alt="Interview"
+            src="assets/images/cards/blog/03.jpg">
+          <i
+            class="bi bi-play-circle-fill position-absolute top-50 start-50 translate-middle text-white fs-2"></i>
+        </div>
+        <small class="text-muted">Jamie Li &nbsp; • &nbsp; 5 min read</small>
+        <h6 class="mt-2 fw-semibold d-flex justify-content-between">
+          How to Prepare Yourself for a Successful Job Interview
+          <i class="bi bi-box-arrow-up-right ms-2"></i>
+        </h6>
+        <p class="text-muted mb-3">
+          From research to follow-up, explore practical tips on how to make a great...
+        </p>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1">Career Advice</span>
+          <small class="text-muted">Mar 09, 2024</small>
+        </div>
+        <button
+          class="btn btn-primary bg-primary bg-opacity-10 text-primary w-100 rounded-pill gap-2 mt-4">
+          Get Started <i class="bi bi-arrow-right lh-0 fs-5"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-6">
+    <div class="product-grid">
+      <div class="row g-4 row-cols-1 row-cols-lg-2">
+        <div class="col">
+          <div class="card mb-0">
+            <img class="card-img-top rounded-top-4 bg-primary bg-opacity-25 p-3"
+              alt="Product" src="assets/images/cards/eComm/01.png">
+            <div class="card-body">
+              <h5 class="card-title fw-bold">Wireless Headphones</h5>
+              <p class="card-text text-muted mb-2">
+                Noise-cancelling over-ear headphones with 30h battery.
+              </p>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-primary fs-5 fw-semibold">$129.00</span>
+                <span class="badge bg-success">In Stock</span>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-primary rounded-pill w-100">
+                  <i class="bx bx-cart-plus lh-0 fs-5 me-1"></i>Add to Cart
+                </button>
+                <button class="btn flex-shrink-0 border wh-40 rounded-circle btn-float">
+                  <i class="bx bx-heart fs-5 lh-0"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card mb-0">
+            <img class="card-img-top rounded-top-4 bg-info bg-opacity-25 p-3"
+              alt="Smartwatch" src="assets/images/cards/eComm/02.png">
+            <div class="card-body">
+              <h5 class="card-title fw-bold">Smartwatch Pro</h5>
+              <p class="card-text text-muted mb-2">
+                Fitness tracking, heart rate monitor, and notifications go.
+              </p>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-primary fs-5 fw-semibold">$89.00</span>
+                <span class="badge bg-warning text-dark">Limited</span>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary rounded-pill w-100">
+                  <i class="bx bx-cart-plus lh-0 fs-5 me-1"></i>Add to Cart
+                </button>
+                <button class="btn flex-shrink-0 border wh-40 rounded-circle btn-float">
+                  <i class="bx bx-heart fs-5 lh-0"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card mb-0">
+            <img class="card-img-top rounded-top-4 bg-secondary bg-opacity-25 p-3"
+              alt="Gaming Mouse" src="assets/images/cards/eComm/03.png">
+            <div class="card-body">
+              <h5 class="card-title fw-bold">RGB Gaming Mouse</h5>
+              <p class="card-text text-muted mb-2">
+                Ergonomic design, 7 programmable buttons, RGB lighting effects.
+              </p>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-primary fs-5 fw-semibold">$49.00</span>
+                <span class="badge bg-success">In Stock</span>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-primary rounded-pill w-100">
+                  <i class="bx bx-cart-plus lh-0 fs-5 me-1"></i>Add to Cart
+                </button>
+                <button class="btn flex-shrink-0 border wh-40 rounded-circle btn-float">
+                  <i class="bx bx-heart fs-5 lh-0"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card mb-0">
+            <img class="card-img-top rounded-top-4 bg-warning bg-opacity-25 p-3"
+              alt="DSLR Camera" src="assets/images/cards/eComm/04.png">
+            <div class="card-body">
+              <h5 class="card-title fw-bold">DSLR Camera 20MP</h5>
+              <p class="card-text text-muted mb-2">
+                Capture stunning photos with 20MP resolution and 4K video recording.
+              </p>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-primary fs-5 fw-semibold">$499.00</span>
+                <span class="badge bg-danger">Out of Stock</span>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary rounded-pill w-100" disabled>
+                  <i class="bx bx-cart-plus lh-0 fs-5 me-1"></i>Add to Cart
+                </button>
+                <button class="btn flex-shrink-0 border wh-40 rounded-circle btn-float">
+                  <i class="bx bx-heart fs-5 lh-0"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-6">
+    <div class="d-flex flex-column gap-4">
+      <div class="card flex-row overflow-hidden p-3 gap-3 mb-0">
+        <img alt="Personal Brand" class="img-fluid rounded-4"
+          src="assets/images/cards/blog/04.jpg"
+          style="width: 180px; object-fit: cover;">
+        <div class="card-body p-0">
+          <small class="text-muted">Kevin Tran &nbsp; • &nbsp; 5 min read</small>
+          <h6 class="mt-2 fw-semibold d-flex justify-content-between">
+            Effective Strategies for Building a Personal Brand
+            <i class="bi bi-box-arrow-up-right"></i>
+          </h6>
+          <p class="text-muted mb-0">
+            Step-by-step strategies for creating a memorable and authentic personal brand...
+          </p>
+        </div>
+      </div>
+
+      <div class="card flex-row overflow-hidden p-3 gap-3 mb-0">
+        <img alt="Goal Setting" class="img-fluid rounded-4"
+          src="assets/images/cards/blog/05.jpg"
+          style="width: 180px; object-fit: cover;">
+        <div class="card-body p-0">
+          <small class="text-muted">Laura Zhang &nbsp; • &nbsp; 5 min read</small>
+          <h6 class="mt-2 fw-semibold d-flex justify-content-between">
+            The Science Behind Effective Goal Setting
+            <i class="bi bi-box-arrow-up-right"></i>
+          </h6>
+          <p class="text-muted mb-0">
+            An exploration of the psychology of goal setting, with tips on setting achievable goals...
+          </p>
+        </div>
+      </div>
+
+      <div class="card flex-row overflow-hidden p-3 gap-3 mb-0">
+        <img alt="Investing" class="img-fluid rounded-4"
+          src="assets/images/cards/blog/06.jpg"
+          style="width: 180px; object-fit: cover;">
+        <div class="card-body p-0">
+          <small class="text-muted">Zoe Martinez &nbsp; • &nbsp; 5 min read</small>
+          <h6 class="mt-2 fw-semibold d-flex justify-content-between">
+            The Basics of Investing in stock for Millennials
+            <i class="bi bi-box-arrow-up-right"></i>
+          </h6>
+          <p class="text-muted mb-0">
+            A simple guide to understanding the basics of investing, including stocks, mutual funds, and more...
+          </p>
+        </div>
+      </div>
+
+      <div class="card flex-row overflow-hidden p-3 gap-3 mb-0">
+        <img alt="Time Management" class="img-fluid rounded-4"
+          src="assets/images/cards/blog/07.jpg"
+          style="width: 180px; object-fit: cover;">
+        <div class="card-body p-0">
+          <small class="text-muted">David Kim &nbsp; • &nbsp; 4 min read</small>
+          <h6 class="mt-2 fw-semibold d-flex justify-content-between">
+            Mastering Time Management: Strategies That Work
+            <i class="bi bi-box-arrow-up-right"></i>
+          </h6>
+          <p class="text-muted mb-0">
+            Learn practical time management techniques to prioritize tasks, stay focused, and achieve more each day with less stress...
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+                <h5 class="mb-3 mt-4 fw-bold">Travel Cards</h5>
+                <div class="row">
+  <div class="col-12 col-lg-4">
+    <div class="card">
+      <img alt="San Francisco" class="card-img-top rounded-top-4"
+        src="assets/images/cards/travel/01.jpg">
+      <div class="card-body text-center p-4">
+        <h5 class="card-title fw-bold mb-1">San Francisco</h5>
+        <p class="text-muted mb-3">Premium economy</p>
+        <div class="d-flex justify-content-center align-items-center gap-2 text-muted mb-4">
+          <i class="bx bx-price-tag"></i>
+          <span>from <strong>$240</strong></span>
+          <i class="bx bx-plane-alt ms-3"></i>
+          <span class="fw-semibold">SFO</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center gap-3">
+          <button class="btn btn-primary w-100 rounded-pill shadow-sm">Search flight</button>
+          <button class="btn btn-light wh-40 btn-float rounded-circle shadow-sm flex-shrink-0">
+            <i class="bx bx-heart fs-5 lh-0"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-4">
+    <div class="card">
+      <img alt="Paris" class="card-img-top rounded-top-4"
+        src="assets/images/cards/travel/02.jpg">
+      <div class="card-body text-center p-4">
+        <h5 class="card-title fw-bold mb-1">Paris</h5>
+        <p class="text-muted mb-3">Business class</p>
+        <div class="d-flex justify-content-center align-items-center gap-2 text-muted mb-4">
+          <i class="bx bx-price-tag"></i>
+          <span>from <strong>$560</strong></span>
+          <i class="bx bx-plane-alt ms-3"></i>
+          <span class="fw-semibold">CDG</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center gap-3">
+          <button class="btn btn-success w-100 rounded-pill">Search flight</button>
+          <button class="btn btn-light wh-40 btn-float rounded-circle shadow-sm flex-shrink-0">
+            <i class="bx bx-heart fs-5 lh-0"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-4">
+    <div class="card">
+      <img alt="Tokyo" class="card-img-top rounded-top-4"
+        src="assets/images/cards/travel/03.jpg">
+      <div class="card-body text-center p-4">
+        <h5 class="card-title fw-bold mb-1">Tokyo</h5>
+        <p class="text-muted mb-3">First class</p>
+        <div class="d-flex justify-content-center align-items-center gap-2 text-muted mb-4">
+          <i class="bx bx-price-tag"></i>
+          <span>from <strong>$920</strong></span>
+          <i class="bx bx-plane-alt ms-3"></i>
+          <span class="fw-semibold">NRT</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center gap-3">
+          <button class="btn btn-danger w-100 rounded-pill">Search flight</button>
+          <button class="btn btn-light wh-40 btn-float rounded-circle shadow-sm flex-shrink-0">
+            <i class="bx bx-heart fs-5 lh-0"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+                <h5 class="mb-3 mt-4 fw-bold">Tool Cards</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card p-4">
+                            <div class="d-flex justify-content-between"><img alt="Figma" width="40"
+                                    src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg"><small
+                                    class="text-muted">2 Days Ago</small></div>
+                            <h5 class="fw-bold mt-3">Figma Design Tool</h5>
+                            <p class="text-muted">Our elite teams build apps, responsive websites, bots — any digital
+                                product that interacts with users for the world's leading companies.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex gap-2"><button
+                                        class="btn gap-2 bg-youtube text-white wh-40 btn-float rounded-circle"><i
+                                            class="bi bi-youtube fs-5 lh-0"></i></button><button
+                                        class="btn gap-2 bg-behance text-white wh-40 btn-float rounded-circle"><i
+                                            class="bi bi-behance fs-5 lh-0"></i></button></div><button
+                                    class="btn btn-outline-primary rounded-pill gap-2">Learn more<i
+                                        class="bi bi-arrow-right lh-0 fs-5"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card p-4">
+                            <div class="d-flex justify-content-between"><img alt="Notion" width="40"
+                                    src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/notion/notion-original.svg"><small
+                                    class="text-muted">5 Days Ago</small></div>
+                            <h5 class="fw-bold mt-3">Notion Workspace</h5>
+                            <p class="text-muted">Centralize your notes, tasks, databases, and wikis with Notion. Ideal
+                                for individuals and teams collaborating in real time.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex gap-2"><button
+                                        class="btn gap-2 bg-instagram text-white wh-40 btn-float rounded-circle"><i
+                                            class="bi bi-instagram fs-5 lh-0"></i></button><button
+                                        class="btn gap-2 bg-twitter text-white wh-40 btn-float rounded-circle"><i
+                                            class="bi bi-twitter fs-5 lh-0"></i></button></div><button
+                                    class="btn btn-outline-primary rounded-pill gap-2">Learn more<i
+                                        class="bi bi-arrow-right lh-0 fs-5"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card p-4">
+                            <div class="d-flex justify-content-between"><img alt="Slack" width="40"
+                                    src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/slack/slack-original.svg"><small
+                                    class="text-muted">1 Week Ago</small></div>
+                            <h5 class="fw-bold mt-3">Slack Team Chat</h5>
+                            <p class="text-muted">Keep your team in sync with real-time messaging, file sharing, and
+                                integrations to tools you already use.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex gap-2"><button
+                                        class="btn gap-2 bg-pinterest text-white wh-40 btn-float rounded-circle"><i
+                                            class="bi bi-pinterest fs-5 lh-0"></i></button><button
+                                        class="btn gap-2 bg-facebook text-white wh-40 btn-float rounded-circle"><i
+                                            class="bi bi-facebook fs-5 lh-0"></i></button></div><button
+                                    class="btn btn-outline-primary rounded-pill gap-2">Learn more<i
+                                        class="bi bi-arrow-right lh-0 fs-5"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card p-4">
+                            <div class="d-flex justify-content-between"><img alt="Trello" width="40"
+                                    src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/trello/trello-plain.svg"><small
+                                    class="text-muted">3 Days Ago</small></div>
+                            <h5 class="fw-bold mt-3">Trello Boards</h5>
+                            <p class="text-muted">Organize your workflow with Trello's flexible kanban boards and
+                                intuitive task tracking for agile teams.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex gap-2"><button
+                                        class="btn gap-2 bg-apple text-white wh-40 btn-float rounded-circle"><i
+                                            class="bi bi-apple fs-5 lh-0"></i></button><button
+                                        class="btn gap-2 bg-linkedin text-white wh-40 btn-float rounded-circle"><i
+                                            class="bi bi-linkedin fs-5 lh-0"></i></button></div><button
+                                    class="btn btn-outline-primary rounded-pill gap-2">Learn more<i
+                                        class="bi bi-arrow-right lh-0 fs-5"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h5 class="mb-3 mt-4 fw-bold">Job Cards</h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card p-2">
+                            <div class="bg-warning p-3 bg-opacity-25 rounded-4">
+                                <div class="d-flex justify-content-between "><span class="fw-semibold">20 May,
+                                        2023</span><i class="bi bi-bookmark"></i></div>
+                                <p class="text-muted mb-0 mt-2">Amazon</p>
+                                <h5 class="fw-bold">Senior UI/UX Designer</h5>
+                                <div class="d-flex flex-wrap gap-2 mt-2"><span
+                                        class="badge border border-dark border-opacity-25 text-dark rounded-pill">Part
+                                        time</span><span
+                                        class="badge border border-dark border-opacity-25 text-dark rounded-pill">Senior
+                                        Level</span><span
+                                        class="badge border border-dark border-opacity-25 text-dark rounded-pill">Distant</span><span
+                                        class="badge border border-dark border-opacity-25 text-dark rounded-pill">Project
+                                        work</span></div>
+                                <div class="d-flex justify-content-between align-items-center mt-4">
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">$250/hr</h6><small class="text-muted">San Francisco,
+                                            CA</small>
+                                    </div><button class="btn btn-warning rounded-pill px-4">Details</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card p-2">
+                            <div class="bg-success p-3 bg-opacity-25 rounded-4">
+                                <div class="d-flex justify-content-between"><span class="fw-semibold">4 Feb,
+                                        2023</span><i class="bi bi-bookmark"></i></div>
+                                <p class="text-muted mb-0 mt-2">Google</p>
+                                <h5 class="fw-bold">Junior UI/UX Designer</h5>
+                                <div class="d-flex flex-wrap gap-2 mt-2"><span
+                                        class="badge border border-dark border-opacity-25 text-dark rounded-pill">Full
+                                        time</span><span
+                                        class="badge border border-dark border-opacity-25 text-dark rounded-pill">Junior
+                                        Level</span><span
+                                        class="badge border border-dark border-opacity-25 text-dark rounded-pill">Distant</span><span
+                                        class="badge border border-dark border-opacity-25 text-dark rounded-pill">Project
+                                        work</span></div>
+                                <div class="d-flex justify-content-between align-items-center mt-4">
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">$150/hr</h6><small class="text-muted">California,
+                                            CA</small>
+                                    </div><button class="btn btn-success rounded-pill px-4">Details</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card p-2">
+                            <div class="bg-primary p-3 bg-opacity-25 rounded-4">
+                                <div class="d-flex justify-content-between"><span class="fw-semibold">29 Jan,
+                                        2023</span><i class="bi bi-bookmark"></i></div>
+                                <p class="text-muted mb-0 mt-2">Dribbble</p>
+                                <h5 class="fw-bold">Senior Motion Designer</h5>
+                                <div class="d-flex flex-wrap gap-2 mt-2"><span
+                                        class="badge border border-dark border-opacity-25 text-dark rounded-pill">Part
+                                        time</span><span
+                                        class="badge border border-dark border-opacity-25 text-dark rounded-pill">Senior
+                                        Level</span><span
+                                        class="badge border border-dark border-opacity-25 text-dark rounded-pill">Full
+                                        Day</span><span
+                                        class="badge border border-dark border-opacity-25 text-dark rounded-pill">Shift
+                                        work</span></div>
+                                <div class="d-flex justify-content-between align-items-center mt-4">
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">$260/hr</h6><small class="text-muted">New York,
+                                            NY</small>
+                                    </div><button class="btn btn-primary rounded-pill px-4">Details</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h5 class="mb-3 mt-4 fw-bold">Gift Cards</h5>
+                <div class="row g-4 row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
+                    <div class="col">
+                        <div class="gift-card bg-facebook text-white text-center p-4 rounded-4 shadow-sm"><i
+                                class="bi bi-facebook display-6 mb-3"></i>
+                            <h4 class="fw-bold mb-4">facebook</h4>
+                            <div class="price fw-semibold">$ 55.00</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="gift-card bg-spotify text-white text-center p-4 rounded-4 shadow-sm"><i
+                                class="bi bi-spotify display-6 mb-3"></i>
+                            <h4 class="fw-bold mb-4">Spotify</h4>
+                            <div class="price fw-semibold">$ 24.00</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="gift-card bg-dark text-white text-center p-4 rounded-4 shadow-sm"><i
+                                class="bi bi-amazon display-6 mb-3"></i>
+                            <h4 class="fw-bold mb-4">Amazon</h4>
+                            <div class="price fw-semibold">$ 20.00</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="gift-card bg-netflix text-white text-center p-4 rounded-4 shadow-sm"><i
+                                class="bi bi-youtube display-6 mb-3"></i>
+                            <h4 class="fw-bold mb-4">YouTube</h4>
+                            <div class="price fw-semibold">$ 68.00</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="gift-card bg-itunes text-white text-center p-4 rounded-4 shadow-sm"><i
+                                class="bi bi-apple display-6 mb-3"></i>
+                            <h5 class="fw-bold">iTunes</h5>
+                            <div class="price fw-semibold mt-2">$ 37.00</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="gift-card bg-googleplay text-white text-center p-4 rounded-4 shadow-sm"><i
+                                class="bi bi-google-play display-6 mb-3"></i>
+                            <h5 class="fw-bold">Google Play</h5>
+                            <div class="price fw-semibold mt-2">$ 96.00</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="gift-card bg-danger text-white text-center p-4 rounded-4 shadow-sm"><i
+                                class="bi bi-xbox display-6 mb-3"></i>
+                            <h5 class="fw-bold">Xbox</h5>
+                            <div class="price fw-semibold mt-2">$ 76.00</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="gift-card bg-playstation text-white text-center p-4 rounded-4 shadow-sm"><i
+                                class="bi bi-tencent-qq display-6 mb-3"></i>
+                            <h5 class="fw-bold">Tencent QQ</h5>
+                            <div class="price fw-semibold mt-2">$ 36.00</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="gift-card bg-skype text-white text-center p-4 rounded-4 shadow-sm"><i
+                                class="bi bi-paypal display-6 mb-3"></i>
+                            <h5 class="fw-bold">Paypal</h5>
+                            <div class="price fw-semibold mt-2">$ 20.00</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="gift-card bg-prepay text-white text-center p-4 rounded-4 shadow-sm"><i
+                                class="bi bi-gitlab display-6 mb-3"></i>
+                            <h5 class="fw-bold">Gitlab</h5>
+                            <div class="price fw-semibold mt-2">$ 20.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Main Content End -->
+
+    </div>
+    <!--layout wrapper end-->
+
+    <!-- 🔎 Search Offcanvas -->
+		<div class="offcanvas offcanvas-top h-100 searchbar" tabindex="-1" id="offcanvasSearch">
+			<div class="offcanvas-header container px-5">
+				<h5 class="offcanvas-title h5">Type to search anything</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+			</div>
+		
+			<div class="offcanvas-body container px-5">
+				<!-- Search Input -->
+				<div class="position-relative mb-4">
+					<input type="text" id="searchInput" class="form-control form-control-lg ps-5 search-control"
+						placeholder="Search...">
+					<span class="position-absolute top-50 ms-3 translate-middle-y start-0 fs-4 text-muted">
+						<i class="bx bx-search"></i>
+					</span>
+				</div>
+		
+				<!-- Trending Keywords -->
+				<div class="trending-search mt-5">
+					<h5 class="mb-3 fw-bold">Trending Now</h5>
+					<div class="d-flex align-items-center flex-wrap gap-3" id="trendingKeywords"></div>
+				</div>
+		
+				<!-- Results -->
+				<div class="list-search mt-4">
+					<h5 class="mb-3 fw-bold" id="resultsTitle">Most Popular</h5>
+					<div class="row row-cols-1 row-cols-lg-3 g-4" id="searchResults"></div>
+				</div>
+			</div>
+		</div>
+
+    <!-- Sidebar Overlay (for mobile) -->
+    <div class="sidebar-overlay"></div>
+
+
+
+
+    <!-- JQuery -->
+    <script src="../../../code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- SimpleBar JS -->
+    <script src="../../../unpkg.com/simplebar%406.3.3/dist/simplebar.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="../../../cdn.jsdelivr.net/npm/bootstrap%405.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main JS -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/header-search.js"></script>
+
+</body>
+
+<script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpsh-oh'},{'server':'p3plzcpnl509132'},{'dcenter':'p3'},{'cp_id':'10399385'},{'cp_cl':'8'}) // Monitoring performance to make your website faster. If you want to opt-out, please contact web hosting support.</script><script src='../../../img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
+<!-- Mirrored from codervent.com/aeropanel/demo/components-cards.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 01 Jan 2026 12:33:01 GMT -->
+</html>

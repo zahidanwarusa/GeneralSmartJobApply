@@ -1,0 +1,15 @@
+{% extends "dashboard/base.html" %}
+{% block title %}User Detail - Admin{% endblock %}
+{% block content %}
+<div class="p-4">
+    <h3 class="fw-bold mb-4">User: {{ user.username }}</h3>
+    <div class="card">
+        <div class="card-body">
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Full Name:</strong> {{ user.full_name or 'Not set' }}</p>
+            <p><strong>Member Since:</strong> {{ user.created_at.strftime('%B %d, %Y') }}</p>
+            <p><strong>Status:</strong> <span class="badge bg-success">Active</span></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
