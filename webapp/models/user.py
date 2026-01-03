@@ -45,7 +45,13 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         """Check if the provided password matches the hash"""
+        if not self.password_hash:
+            return False
         return check_password_hash(self.password_hash, password)
+
+    def has_password(self):
+        """Check if user has a password set (False for OAuth users)"""
+        return self.password_hash is not None and self.password_hash != ''
 
     def update_last_login(self):
         """Update the last login timestamp"""

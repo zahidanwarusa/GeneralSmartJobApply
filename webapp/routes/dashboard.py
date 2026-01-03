@@ -287,6 +287,65 @@ def user_settings():
     """User settings page"""
     return render_template('dashboard/user/settings.html')
 
+@dashboard_bp.route('/user/change-password', methods=['POST'])
+@login_required
+def change_password():
+    """Change user password"""
+    try:
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+
+        # Check if user has a password set (OAuth users don't have passwords)
+        has_existing_password = current_user.has_password()
+
+        # For users with existing password, validate current password
+        if has_existing_password:
+            if not current_password:
+                flash('Current password is required', 'error')
+                return redirect(url_for('dashboard.user_settings'))
+
+            # Check if current password is correct
+            if not current_user.check_password(current_password):
+                flash('Current password is incorrect', 'error')
+                return redirect(url_for('dashboard.user_settings'))
+
+        # Validate new password fields
+        if not all([new_password, confirm_password]):
+            flash('New password and confirmation are required', 'error')
+            return redirect(url_for('dashboard.user_settings'))
+
+        # Check if new passwords match
+        if new_password != confirm_password:
+            flash('New passwords do not match', 'error')
+            return redirect(url_for('dashboard.user_settings'))
+
+        # Validate password strength
+        if len(new_password) < 8:
+            flash('New password must be at least 8 characters long', 'error')
+            return redirect(url_for('dashboard.user_settings'))
+
+        # For existing password users, check if new password is different from current
+        if has_existing_password and current_password == new_password:
+            flash('New password must be different from current password', 'error')
+            return redirect(url_for('dashboard.user_settings'))
+
+        # Update password
+        current_user.set_password(new_password)
+        db.session.commit()
+
+        if has_existing_password:
+            flash('Password changed successfully!', 'success')
+        else:
+            flash('Password set successfully! You can now use it to log in.', 'success')
+
+        return redirect(url_for('dashboard.user_settings'))
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error changing password: {str(e)}', 'error')
+        return redirect(url_for('dashboard.user_settings'))
+
 @dashboard_bp.route('/user/delete-profile-picture', methods=['POST'])
 @login_required
 def delete_profile_picture():

@@ -52,20 +52,20 @@
                         <i class="bx bx-lock-alt text-primary me-2"></i>Password & Security
                     </h5>
 
-                    <p class="text-muted">Change your password or update security settings</p>
+                    <p class="text-muted">Manage your password and security settings</p>
 
                     <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-outline-primary" disabled>
-                            <i class="bx bx-key me-2"></i>Change Password
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                            <i class="bx bx-key me-2"></i>{% if current_user.has_password() %}Change Password{% else %}Set Password{% endif %}
                         </button>
                         <button type="button" class="btn btn-outline-primary" disabled>
                             <i class="bx bx-shield me-2"></i>Two-Factor Authentication
                         </button>
                     </div>
 
-                    <div class="alert alert-secondary mt-3 mb-0">
-                        <i class="bx bx-time me-2"></i>
-                        <small>Coming soon! Password and security features will be available in the next update.</small>
+                    <div class="alert alert-info mt-3 mb-0">
+                        <i class="bx bx-info-circle me-2"></i>
+                        <small>Use a strong password with at least 8 characters, including numbers and special characters.</small>
                     </div>
                 </div>
             </div>
@@ -164,6 +164,114 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="changePasswordModalLabel">
+                    <i class="bx bx-key me-2 text-primary"></i>{% if current_user.has_password() %}Change Password{% else %}Set Password{% endif %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('dashboard.change_password') }}" id="changePasswordForm">
+                <div class="modal-body">
+                    {% if current_user.has_password() %}
+                    <p class="text-muted mb-4">Enter your current password and choose a new secure password.</p>
+                    {% else %}
+                    <p class="text-muted mb-4">Create a password to enable email and password login in addition to Google sign-in.</p>
+                    {% endif %}
+
+                    <!-- Current Password (only for users with existing password) -->
+                    {% if current_user.has_password() %}
+                    <div class="mb-3" id="currentPasswordField">
+                        <label for="current_password" class="form-label fw-semibold">
+                            <i class="bx bx-lock me-1"></i>Current Password
+                        </label>
+                        <div class="input-group">
+                            <input type="password"
+                                   class="form-control"
+                                   id="current_password"
+                                   name="current_password"
+                                   placeholder="Enter current password"
+                                   required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="current_password">
+                                <i class="bx bx-show"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% else %}
+                    <!-- Info for OAuth users setting password for the first time -->
+                    <div class="alert alert-info mb-3">
+                        <i class="bx bx-info-circle me-2"></i>
+                        <strong>Set a Password:</strong> You signed up with Google. Setting a password will allow you to log in with email and password as well.
+                    </div>
+                    {% endif %}
+
+                    <!-- New Password -->
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label fw-semibold">
+                            <i class="bx bx-lock-open me-1"></i>New Password
+                        </label>
+                        <div class="input-group">
+                            <input type="password"
+                                   class="form-control"
+                                   id="new_password"
+                                   name="new_password"
+                                   placeholder="Enter new password"
+                                   minlength="8"
+                                   required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="new_password">
+                                <i class="bx bx-show"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted">Must be at least 8 characters</small>
+                    </div>
+
+                    <!-- Confirm New Password -->
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label fw-semibold">
+                            <i class="bx bx-check-circle me-1"></i>Confirm New Password
+                        </label>
+                        <div class="input-group">
+                            <input type="password"
+                                   class="form-control"
+                                   id="confirm_password"
+                                   name="confirm_password"
+                                   placeholder="Confirm new password"
+                                   minlength="8"
+                                   required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="confirm_password">
+                                <i class="bx bx-show"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Password Match Indicator -->
+                    <div id="passwordMatchMessage" class="alert d-none" role="alert"></div>
+
+                    <!-- Password Strength Indicator -->
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Password Strength:</label>
+                        <div class="progress" style="height: 5px;">
+                            <div id="passwordStrength" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <small id="strengthText" class="text-muted"></small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bx bx-x me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="changePasswordBtn">
+                        <i class="bx bx-save me-2"></i>{% if current_user.has_password() %}Change Password{% else %}Set Password{% endif %}
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -300,6 +408,116 @@ document.addEventListener('DOMContentLoaded', function() {
             themeText.textContent = "Light Mode";
         }
     }
+
+    // Password visibility toggle
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.dataset.target;
+            const input = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bx-show');
+                icon.classList.add('bx-hide');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bx-hide');
+                icon.classList.add('bx-show');
+            }
+        });
+    });
+
+    // Password strength checker
+    const newPasswordInput = document.getElementById('new_password');
+    const confirmPasswordInput = document.getElementById('confirm_password');
+    const strengthBar = document.getElementById('passwordStrength');
+    const strengthText = document.getElementById('strengthText');
+    const matchMessage = document.getElementById('passwordMatchMessage');
+    const changePasswordBtn = document.getElementById('changePasswordBtn');
+
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        const checks = {
+            length: password.length >= 8,
+            lowercase: /[a-z]/.test(password),
+            uppercase: /[A-Z]/.test(password),
+            numbers: /\d/.test(password),
+            special: /[^a-zA-Z\d]/.test(password)
+        };
+
+        strength += checks.length ? 20 : 0;
+        strength += checks.lowercase ? 20 : 0;
+        strength += checks.uppercase ? 20 : 0;
+        strength += checks.numbers ? 20 : 0;
+        strength += checks.special ? 20 : 0;
+
+        return strength;
+    }
+
+    newPasswordInput.addEventListener('input', function() {
+        const password = this.value;
+        const strength = checkPasswordStrength(password);
+
+        strengthBar.style.width = strength + '%';
+
+        if (strength === 0) {
+            strengthBar.className = 'progress-bar';
+            strengthText.textContent = '';
+        } else if (strength <= 40) {
+            strengthBar.className = 'progress-bar bg-danger';
+            strengthText.textContent = 'Weak';
+            strengthText.className = 'text-danger small';
+        } else if (strength <= 60) {
+            strengthBar.className = 'progress-bar bg-warning';
+            strengthText.textContent = 'Fair';
+            strengthText.className = 'text-warning small';
+        } else if (strength <= 80) {
+            strengthBar.className = 'progress-bar bg-info';
+            strengthText.textContent = 'Good';
+            strengthText.className = 'text-info small';
+        } else {
+            strengthBar.className = 'progress-bar bg-success';
+            strengthText.textContent = 'Strong';
+            strengthText.className = 'text-success small';
+        }
+
+        checkPasswordMatch();
+    });
+
+    confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+
+    function checkPasswordMatch() {
+        const newPass = newPasswordInput.value;
+        const confirmPass = confirmPasswordInput.value;
+
+        if (confirmPass.length === 0) {
+            matchMessage.classList.add('d-none');
+            changePasswordBtn.disabled = false;
+            return;
+        }
+
+        if (newPass === confirmPass) {
+            matchMessage.classList.remove('d-none');
+            matchMessage.className = 'alert alert-success';
+            matchMessage.innerHTML = '<i class="bx bx-check-circle me-2"></i>Passwords match!';
+            changePasswordBtn.disabled = false;
+        } else {
+            matchMessage.classList.remove('d-none');
+            matchMessage.className = 'alert alert-danger';
+            matchMessage.innerHTML = '<i class="bx bx-error-circle me-2"></i>Passwords do not match';
+            changePasswordBtn.disabled = true;
+        }
+    }
+
+    // Reset form on modal close
+    document.getElementById('changePasswordModal').addEventListener('hidden.bs.modal', function() {
+        document.getElementById('changePasswordForm').reset();
+        strengthBar.style.width = '0%';
+        strengthText.textContent = '';
+        matchMessage.classList.add('d-none');
+        changePasswordBtn.disabled = false;
+    });
 });
 </script>
 
