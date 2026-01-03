@@ -1,0 +1,141 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Help & FAQ - SmartApply Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 fw-bold">Help & FAQ</h1>
+            <p class="text-muted mb-0">Find answers to common questions</p>
+        </div>
+    </div>
+
+    <!-- FAQ Categories -->
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            {% for category_data in faqs %}
+            <div class="card shadow-sm mb-4 faq-category">
+                <div class="card-header bg-primary bg-opacity-10 border-0">
+                    <h5 class="mb-0 fw-bold text-primary">
+                        <i class="bx bx-help-circle me-2"></i>{{ category_data.category }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="accordion modern-accordion" id="accordion{{ loop.index }}">
+                        {% set category_index = loop.index %}
+                        {% for faq in category_data.questions %}
+                        <div class="accordion-item faq-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#collapse{{ category_index }}_{{ loop.index }}"
+                                        aria-expanded="{% if loop.first %}true{% else %}false{% endif %}">
+                                    {{ faq.question }}
+                                </button>
+                            </h2>
+                            <div id="collapse{{ category_index }}_{{ loop.index }}"
+                                 class="accordion-collapse collapse {% if loop.first %}show{% endif %}"
+                                 data-bs-parent="#accordion{{ category_index }}">
+                                <div class="accordion-body">
+                                    {{ faq.answer }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Contact Support -->
+            <div class="card shadow-sm border-0 bg-light">
+                <div class="card-body text-center p-5">
+                    <div class="mb-3">
+                        <i class="bx bx-support fs-1 text-primary"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Still need help?</h5>
+                    <p class="text-muted mb-4">Can't find the answer you're looking for? Our support team is here to help.</p>
+                    <a href="mailto:support@smartapply.com" class="btn btn-primary">
+                        <i class="bx bx-envelope me-2"></i>Contact Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.faq-item {
+    border: none !important;
+    margin-bottom: 0.5rem;
+}
+
+.faq-item .accordion-button {
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.faq-item .accordion-button:not(.collapsed) {
+    background-color: rgba(79, 70, 229, 0.05);
+    color: var(--bs-primary);
+}
+
+.faq-category {
+    transition: transform 0.2s ease;
+}
+
+.faq-category:hover {
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('faqSearch');
+    const faqItems = document.querySelectorAll('.faq-item');
+    const faqCategories = document.querySelectorAll('.faq-category');
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+
+        if (query === '') {
+            // Show all items
+            faqItems.forEach(item => item.style.display = 'block');
+            faqCategories.forEach(cat => cat.style.display = 'block');
+            return;
+        }
+
+        // Search through questions and answers
+        faqCategories.forEach(category => {
+            let hasVisibleItems = false;
+            const items = category.querySelectorAll('.faq-item');
+
+            items.forEach(item => {
+                const question = item.querySelector('.accordion-button').textContent.toLowerCase();
+                const answer = item.querySelector('.accordion-body').textContent.toLowerCase();
+
+                if (question.includes(query) || answer.includes(query)) {
+                    item.style.display = 'block';
+                    hasVisibleItems = true;
+
+                    // Auto-expand matching items
+                    const button = item.querySelector('.accordion-button');
+                    const collapse = item.querySelector('.accordion-collapse');
+                    if (button && collapse) {
+                        button.classList.remove('collapsed');
+                        collapse.classList.add('show');
+                    }
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Hide category if no items match
+            category.style.display = hasVisibleItems ? 'block' : 'none';
+        });
+    });
+});
+</script>
+{% endblock %}

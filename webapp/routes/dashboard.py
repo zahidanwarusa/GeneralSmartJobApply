@@ -436,3 +436,97 @@ def search():
         })
 
     return jsonify({'results': results})
+
+@dashboard_bp.route('/help')
+@login_required
+def help_faq():
+    """Help & FAQ page"""
+    faqs = [
+        {
+            'category': 'Getting Started',
+            'questions': [
+                {
+                    'question': 'How do I create my first resume?',
+                    'answer': 'Navigate to "Resume Builder" from the sidebar, fill in your details, and our AI will help you create a professional resume tailored to your target job.'
+                },
+                {
+                    'question': 'Can I import my existing resume?',
+                    'answer': 'Yes! You can upload your existing resume in PDF or DOCX format, and our system will parse the information to create an editable version.'
+                },
+                {
+                    'question': 'How do I track my job applications?',
+                    'answer': 'Go to "Applications" in the sidebar and click "Add Application" to start tracking your job applications. You can update the status and view them on the Kanban board.'
+                }
+            ]
+        },
+        {
+            'category': 'Resume Features',
+            'questions': [
+                {
+                    'question': 'Can I create multiple resumes?',
+                    'answer': 'Absolutely! You can create unlimited resumes and tailor each one to different job positions or industries.'
+                },
+                {
+                    'question': 'How does the AI optimization work?',
+                    'answer': 'Our AI analyzes job descriptions and optimizes your resume content to match keywords and requirements, increasing your chances of passing ATS systems.'
+                },
+                {
+                    'question': 'What formats can I export my resume in?',
+                    'answer': 'You can export your resume in PDF and DOCX formats. PDF is recommended for applications, while DOCX allows further editing.'
+                }
+            ]
+        },
+        {
+            'category': 'Application Tracking',
+            'questions': [
+                {
+                    'question': 'What is the Kanban Board?',
+                    'answer': 'The Kanban Board is a visual tool that helps you track your applications through different stages: Applied, Interview, Offer, and Rejected.'
+                },
+                {
+                    'question': 'Can I set reminders for follow-ups?',
+                    'answer': 'Yes, you can add notes and set reminders for each application to keep track of follow-up dates and important deadlines.'
+                },
+                {
+                    'question': 'How do I move applications between stages?',
+                    'answer': 'Simply drag and drop applications between columns on the Kanban board, or update the status in the application details page.'
+                }
+            ]
+        },
+        {
+            'category': 'Account & Billing',
+            'questions': [
+                {
+                    'question': 'What\'s included in the free plan?',
+                    'answer': 'The free plan includes 5 resume generations per month, basic templates, and tracking up to 10 job applications.'
+                },
+                {
+                    'question': 'How do I upgrade my account?',
+                    'answer': 'Click on "Upgrade" in the sidebar to view our premium plans and unlock unlimited resumes, advanced templates, and priority support.'
+                },
+                {
+                    'question': 'Can I cancel my subscription anytime?',
+                    'answer': 'Yes, you can cancel your subscription at any time from the Settings page. You\'ll continue to have access until the end of your billing period.'
+                }
+            ]
+        },
+        {
+            'category': 'Privacy & Security',
+            'questions': [
+                {
+                    'question': 'Is my data secure?',
+                    'answer': 'Yes, we use industry-standard encryption to protect your data. Your resumes and personal information are stored securely and never shared with third parties.'
+                },
+                {
+                    'question': 'Can I delete my account?',
+                    'answer': 'Yes, you can delete your account from the Settings page. This will permanently remove all your data from our servers.'
+                },
+                {
+                    'question': 'Do you share my information with employers?',
+                    'answer': 'No, we never share your information with anyone. You have full control over which resumes you send to employers.'
+                }
+            ]
+        }
+    ]
+
+    return render_template('dashboard/help.html', faqs=faqs)
