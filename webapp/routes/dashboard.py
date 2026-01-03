@@ -372,3 +372,67 @@ def pricing():
     ]
 
     return render_template('dashboard/pricing.html', plans=plans)
+
+@dashboard_bp.route('/search')
+@login_required
+def search():
+    """Search endpoint for dashboard global search"""
+    query = request.args.get('q', '').strip().lower()
+
+    if not query or len(query) < 2:
+        return jsonify({'results': []})
+
+    results = []
+
+    # Search user's resumes
+    resumes = current_user.resumes.filter(
+        Resume.name.ilike(f'%{query}%')
+    ).limit(5).all()
+
+    for resume in resumes:
+        results.append({
+            'id': resume.id,
+            'title': resume.name,
+            'description': f'Resume - Created {resume.created_at.strftime("%b %d, %Y")}',
+            'type': 'resume',
+            'url': f'/dashboard/user/resumes'
+        })
+
+    # Search user's job descriptions
+    jobs = current_user.job_descriptions.filter(
+        db.or_(
+            JobDescription.title.ilike(f'%{query}%'),
+            JobDescription.company.ilike(f'%{query}%')
+        )
+    ).limit(5).all()
+
+    for job in jobs:
+        results.append({
+            'id': job.id,
+            'title': job.title,
+            'description': f'{job.company} - Added {job.created_at.strftime("%b %d, %Y")}',
+            'type': 'job',
+            'url': f'/dashboard/user/jobs'
+        })
+
+    # Search user's applications
+    applications = current_user.applications.join(JobDescription).filter(
+        db.or_(
+            JobDescription.title.ilike(f'%{query}%'),
+            JobDescription.company.ilike(f'%{query}%'),
+            Application.status.ilike(f'%{query}%')
+        )
+    ).limit(5).all()
+
+    for app in applications:
+        job_title = app.job_description.title if app.job_description else 'Unknown Job'
+        company = app.job_description.company if app.job_description else 'Unknown Company'
+        results.append({
+            'id': app.id,
+            'title': f'{job_title} at {company}',
+            'description': f'Status: {app.status.title()} - Applied {app.created_at.strftime("%b %d, %Y")}',
+            'type': 'application',
+            'url': f'/dashboard/user/applications'
+        })
+
+    return jsonify({'results': results})
