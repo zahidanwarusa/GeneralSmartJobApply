@@ -1,0 +1,37 @@
+{# Avatar Component - Generates letter avatar or displays profile picture #}
+{% macro avatar(user, size='40px', border=false, border_width='3px') %}
+    {% if user.profile_picture %}
+        {# Show uploaded profile picture #}
+        {% if 'supabase' in user.profile_picture or 'http' in user.profile_picture %}
+        <img src="{{ user.profile_picture }}"
+             alt="{{ user.full_name or user.username }}"
+             class="rounded-circle {% if border %}border border-{{ border_width }} border-primary{% endif %}"
+             style="width: {{ size }}; height: {{ size }}; object-fit: cover;">
+        {% else %}
+        <img src="{{ url_for('static', filename=user.profile_picture) }}"
+             alt="{{ user.full_name or user.username }}"
+             class="rounded-circle {% if border %}border border-{{ border_width }} border-primary{% endif %}"
+             style="width: {{ size }}; height: {{ size }}; object-fit: cover;">
+        {% endif %}
+    {% else %}
+        {# Generate letter avatar #}
+        {% set name = user.full_name or user.username %}
+        {% set first_letter = name[0]|upper if name else 'U' %}
+        {% set user_id = user.id if user.id else 1 %}
+
+        {# Color palette for avatars #}
+        {% set colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+            '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B195', '#F67280',
+            '#C06C84', '#6C5B7B', '#355C7D', '#2A9D8F', '#E76F51',
+            '#F4A261', '#E9C46A', '#264653', '#8338EC', '#3A86FF'
+        ] %}
+        {% set color_index = user_id % colors|length %}
+        {% set bg_color = colors[color_index] %}
+
+        <div class="avatar-letter rounded-circle d-flex align-items-center justify-content-center {% if border %}border border-{{ border_width }} border-primary{% endif %}"
+             style="width: {{ size }}; height: {{ size }}; background-color: {{ bg_color }}; color: white; font-weight: 600; font-size: calc({{ size }} * 0.4);">
+            {{ first_letter }}
+        </div>
+    {% endif %}
+{% endmacro %}

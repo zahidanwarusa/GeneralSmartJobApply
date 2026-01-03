@@ -1,4 +1,5 @@
 {% extends "dashboard/base.html" %}
+{% from 'dashboard/components/avatar.html' import avatar %}
 {% block title %}Profile - SmartApply{% endblock %}
 {% block content %}
 <div class="container-fluid px-4 py-4">
@@ -20,7 +21,7 @@
 
                         <!-- Profile Picture Preview -->
                         <div class="mb-4">
-                            <div class="position-relative d-inline-block">
+                            <div class="position-relative d-inline-block" id="avatarContainer">
                                 {% if current_user.profile_picture %}
                                     {% if 'supabase' in current_user.profile_picture or 'http' in current_user.profile_picture %}
                                     <img id="profilePreview" src="{{ current_user.profile_picture }}"
@@ -34,10 +35,10 @@
                                          style="width: 180px; height: 180px; object-fit: cover;">
                                     {% endif %}
                                 {% else %}
-                                <img id="profilePreview" src="{{ url_for('static', filename='aeropanel/images/avatars/01.png') }}"
-                                     alt="Default Avatar"
-                                     class="rounded-circle border border-3 border-primary"
-                                     style="width: 180px; height: 180px; object-fit: cover;">
+                                    {# Show letter avatar by default #}
+                                    <div id="profilePreview">
+                                        {{ avatar(current_user, size='180px', border=true) }}
+                                    </div>
                                 {% endif %}
 
                                 <!-- Camera Icon Overlay -->
@@ -224,7 +225,10 @@ document.getElementById('profile_picture').addEventListener('change', function(e
         // Preview the image
         const reader = new FileReader();
         reader.onload = function(event) {
-            document.getElementById('profilePreview').src = event.target.result;
+            const previewContainer = document.getElementById('profilePreview');
+
+            // Replace content with img element
+            previewContainer.innerHTML = '<img src="' + event.target.result + '" alt="Profile Picture" class="rounded-circle border border-3 border-primary" style="width: 180px; height: 180px; object-fit: cover;">';
         };
         reader.readAsDataURL(file);
     }

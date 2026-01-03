@@ -1,3 +1,4 @@
+{% from 'dashboard/components/avatar.html' import avatar %}
 <header class="topheader">
     <!-- Left Section -->
     <div class="topheader-left d-flex align-items-center gap-3">
@@ -65,30 +66,14 @@
             <li class="dropdown dropdown-user">
                 <a class="dropdown-toggle dropdown-toggle-nocaret" href="javascript:;" data-bs-toggle="dropdown">
                     <div class="user-img">
-                        {% if current_user.profile_picture %}
-                            {% if 'supabase' in current_user.profile_picture or 'http' in current_user.profile_picture %}
-                            <img src="{{ current_user.profile_picture }}" alt="user-avatar">
-                            {% else %}
-                            <img src="{{ url_for('static', filename=current_user.profile_picture) }}" alt="user-avatar">
-                            {% endif %}
-                        {% else %}
-                        <img src="{{ url_for('static', filename='aeropanel/images/avatars/01.png') }}" alt="user-avatar">
-                        {% endif %}
+                        {{ avatar(current_user, size='40px') }}
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li class="dropdown-header dropdown-item">
                         <a class="d-flex align-items-center gap-3" href="javascript:;">
                             <div class="user-img">
-                                {% if current_user.profile_picture %}
-                                    {% if 'supabase' in current_user.profile_picture or 'http' in current_user.profile_picture %}
-                                    <img src="{{ current_user.profile_picture }}" alt="user-avatar">
-                                    {% else %}
-                                    <img src="{{ url_for('static', filename=current_user.profile_picture) }}" alt="user-avatar">
-                                    {% endif %}
-                                {% else %}
-                                <img src="{{ url_for('static', filename='aeropanel/images/avatars/01.png') }}" alt="user-avatar">
-                                {% endif %}
+                                {{ avatar(current_user, size='40px') }}
                             </div>
                             <div class="user-details">
                                 <h6 class="mb-0 user-name">{{ current_user.full_name or current_user.username }}</h6>
